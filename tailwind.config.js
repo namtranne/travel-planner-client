@@ -2,12 +2,7 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}', './app/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {
-      fontFamily: {
-        inter: ['Inter', 'system-ui'], // Default Inter font
-        'inter-italic': ['Inter-Italic', 'system-ui'],
-      },
-    },
+    extend: {},
   },
   plugins: [],
 };

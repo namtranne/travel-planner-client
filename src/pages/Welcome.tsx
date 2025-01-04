@@ -1,11 +1,11 @@
 /* eslint-disable global-require */
 import { Link } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-
+import { LogoText } from '@/assets';
 const Welcome = () => (
   <View className="flex h-full w-full items-center pt-36">
     <Image
-      source={require('assets/logo-text.png')}
+      source={LogoText}
       className="h-[238.44px] w-[300px]"
     />
     <View>
