@@ -5,7 +5,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { LogoText } from '@/assets';
 
 const Welcome = () => (
-    <View className="flex h-full w-full items-center pt-36">
+    <View className="flex h-full w-full items-center bg-white pt-36">
         <Image source={LogoText} className="h-[238.44px] w-[300px]" />
         <View>
             <View className="flex flex-row">
