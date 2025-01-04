@@ -1,6 +1,5 @@
 {
   "expo": {
-    "entryPoint": "./App.tsx",
     "name": "react-native-boilerplate",
     "slug": "react-native-boilerplate",
     "version": "1.0.0",
@@ -13,7 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*", "assets/fonts/*"],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.reactnativeboilerplate"
