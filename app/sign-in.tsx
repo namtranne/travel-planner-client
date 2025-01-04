@@ -2,12 +2,12 @@
 import { Link } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
-import { LogoText } from '@/assets';
+import { Logo } from '@/assets';
 
 export default function SignIn() {
   return (
     <View className="flex-1 items-center">
-      <Image source={LogoText} className="h-[238.44px] w-[300px]" />
+      <Image source={Logo} className="h-[121px] w-[120px]" />
       <View>
         <View className="flex flex-row">
           <TouchableOpacity
