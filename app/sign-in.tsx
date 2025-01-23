@@ -11,7 +11,7 @@ export default function SignIn() {
 
             <View>
                 <Input className="h-[41px] w-[248px]" />
-                <View className="flex flex-row">
+                <View className="flex flex-row items-center justify-center">
                     <TouchableOpacity
                         onPress={() => console.log('Sign In Pressed')}
                         className="flex h-[41px] w-[140px] items-center justify-center rounded-xl bg-[#60ABEF]"
