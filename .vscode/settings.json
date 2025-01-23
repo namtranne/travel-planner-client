@@ -21,5 +21,6 @@
     "prettier.ignorePath": ".gitignore",
     "[typescriptreact]": {
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
-    } // Don't run prettier for files listed in .gitignore
+    },
+    "cSpell.words": ["daterange"] // Don't run prettier for files listed in .gitignore
 }

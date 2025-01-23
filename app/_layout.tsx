@@ -1,3 +1,5 @@
+// @@iconify-code-gen
+
 import { useFonts } from 'expo-font'; // Static import
 import { Slot } from 'expo-router';
 import { NativeWindStyleSheet } from 'nativewind';
@@ -24,5 +26,9 @@ export default function Layout() {
         );
     }
 
-    return <Slot />;
+    return (
+        <View className="h-full w-full bg-[#FAFAFA]">
+            <Slot />
+        </View>
+    );
 }
