@@ -32,7 +32,12 @@ module.exports = (api) => {
                         'material-symbols:calendar-month',
                         'iconamoon:profile-fill',
                         'material-symbols:search',
-                        'material-symbols:close'
+                        'material-symbols:close',
+                        'lets-icons:back-light',
+                        'mdi:filter',
+                        'solar:calendar-linear',
+                        'mi:location',
+                        'weui:share-outlined'
                     ]
                 }
             ]

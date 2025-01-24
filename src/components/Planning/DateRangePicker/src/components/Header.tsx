@@ -1,6 +1,6 @@
 import React from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { width, height } from "./util";
+import { StyleSheet, Text, View } from "react-native";
+import { height, width } from "./util";
 
 const Header = ({ index, dayHeaderTextStyle, dayHeaderStyle, day }) => {
   const dayHeaderStyles = {

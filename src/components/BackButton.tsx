@@ -2,7 +2,7 @@
 import { useNavigation } from 'expo-router';
 import type React from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Iconify from 'react-native-iconify';
 
 const BackButton: React.FC = () => {
     const navigation = useNavigation();
@@ -10,7 +10,7 @@ const BackButton: React.FC = () => {
     return (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mb-4 h-8 w-8 items-center justify-center">
             <View className="flex items-center justify-center">
-                <Icon name="back" size={24} color="black" />
+                <Iconify icon="lets-icons:back-light" width="30" height="30" />
             </View>
         </TouchableOpacity>
     );
