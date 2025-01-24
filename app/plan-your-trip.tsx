@@ -4,8 +4,8 @@ import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react
 import Iconify from 'react-native-iconify';
 import tw from 'tailwind-react-native-classnames';
 
-import BackButton from '@/src/components/BackButton';
-import HeaderComponent from '@/src/components/HeaderComponent';
+import BackButton from '@/src/components/ui/BackButton';
+import HeaderComponent from '@/src/components/ui/HeaderComponent';
 
 const tripOverview = {
     title: 'Da Lat',
@@ -90,7 +90,7 @@ const PlanYourTripScreen: React.FC = () => {
     };
 
     return (
-        <ScrollView className="flex-1 bg-gray-50 p-4">
+        <ScrollView className="flex-1 bg-gray-50 p-4 px-6 pt-12">
             <BackButton />
             <View className="flex-row items-center justify-between bg-white p-4">
                 <HeaderComponent title="Plan your trip 📅" />

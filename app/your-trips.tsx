@@ -1,12 +1,11 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import type React from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 import Icon from 'react-native-vector-icons/Ionicons'; // For icons
 import tw from 'tailwind-react-native-classnames';
 
-import BackButton from '@/src/components/BackButton';
-import HeaderComponent from '@/src/components/HeaderComponent';
+import BackButton from '@/src/components/ui/BackButton';
+import HeaderComponent from '@/src/components/ui/HeaderComponent';
 
 interface TripItem {
     id: string;
@@ -59,7 +58,7 @@ const YourTripsScreen: React.FC = () => {
     );
 
     return (
-        <View className="flex-1 bg-white p-4">
+        <View className="flex-1 bg-white p-4 px-6 pt-12">
             <View className="flex-row justify-between space-x-4">
                 <BackButton />
                 <TouchableOpacity className="h-6 w-6 items-center justify-center border border-black">

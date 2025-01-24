@@ -25,7 +25,6 @@ export default function Home() {
                             className="mt-6 flex-row rounded-3xl bg-[#CCE4FF] px-4 py-6"
                             onPress={() => router.push('planning')}
                         >
-                            {/* Left Section: 70% width (flex-[7]) */}
                             <View className="flex-1 pr-[2px]">
                                 <Text className="font-inter text-sm font-bold">Start planning now!</Text>
                                 <Text className="font-inter text-xs">Create a perfect plan in just a few clicks</Text>

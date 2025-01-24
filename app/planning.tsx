@@ -1,14 +1,13 @@
-import { router } from 'expo-router';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import moment from 'moment';
 import { useState } from 'react';
 import { Keyboard, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import Iconify from 'react-native-iconify';
 
 import { destinations } from '@/assets/data/destinations';
 import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
 import type { SearchItem } from '@/src/components/Planning/SearchBar';
 import SearchBar from '@/src/components/Planning/SearchBar';
+import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
 
 export default function Planning() {
@@ -26,10 +25,7 @@ export default function Planning() {
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View>
                 <View className="px-6 pt-12">
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <Iconify icon="lets-icons:back-light" width="30" height="30" />
-                    </TouchableOpacity>
-
+                    <BackButton />
                     <Text className="mt-20 font-inter text-2xl font-semibold">
                         Let’s make your trip unforgettable!{' '}
                     </Text>

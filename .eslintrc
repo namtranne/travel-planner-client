@@ -45,6 +45,7 @@
             "endOfLine": "auto"
           }
         ],
+        "global-require": "off",
         "import/extensions": [
           "error",
           "ignorePackages",

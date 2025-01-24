@@ -8,4 +8,10 @@ export const Hanoi = require('./hanoi.jpg');
 export const DaLat = require('./dalat.jpg');
 export const VungTau = require('./vung-tau.jpg');
 export const NhaTrang = require('./nha-trang.jpg');
+export const TravelTips1 = require('./travel-tips/travel-tips-1.png');
+export const TravelTips2 = require('./travel-tips/travel-tips-2.png');
+export const TravelTips3 = require('./travel-tips/travel-tips-3.png');
+export const TravelTips4 = require('./travel-tips/travel-tips-4.png');
+export const TravelTips5 = require('./travel-tips/travel-tips-5.png');
+export const TravelTips6 = require('./travel-tips/travel-tips-6.png');
 /* eslint-enable global-require */
