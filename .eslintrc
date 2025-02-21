@@ -11,7 +11,14 @@
         "singleQuote": true,
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "packageDir": "./"
+      }
+    ],
+    "react/no-unstable-nested-components": "off",
   },
   "overrides": [
     // Configuration for TypeScript files

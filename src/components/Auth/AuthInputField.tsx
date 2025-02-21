@@ -1,5 +1,6 @@
 import { Input } from '@rneui/base';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { useState } from 'react';
+import { TouchableOpacity } from 'react-native';
 import Iconify from 'react-native-iconify';
 
 export default function AuthInputField({
@@ -15,9 +16,23 @@ export default function AuthInputField({
     onChangeText: (text: string) => void;
     secureTextEntry?: boolean;
 }) {
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
     return (
         <Input
             leftIcon={<Iconify icon={icon} width="24" height="24" color="black" opacity="40%" />}
+            rightIcon={
+                secureTextEntry && (
+                    <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+                        <Iconify
+                            icon={isPasswordVisible ? 'mdi:eye-outline' : 'mdi:eye-off-outline'}
+                            width="24"
+                            height="24"
+                            color="black"
+                        />
+                    </TouchableOpacity>
+                )
+            }
             containerStyle={{
                 width: 312,
                 height: 50,
@@ -28,7 +43,7 @@ export default function AuthInputField({
             placeholder={placeholder}
             value={value}
             onChangeText={onChangeText}
-            secureTextEntry={secureTextEntry}
+            secureTextEntry={secureTextEntry && !isPasswordVisible}
             inputContainerStyle={{
                 borderBottomWidth: 0
             }}

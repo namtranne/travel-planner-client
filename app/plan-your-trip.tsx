@@ -1,10 +1,8 @@
 import { CheckBox } from '@rneui/themed';
 import type React from 'react';
-import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import Iconify from 'react-native-iconify';
+import { FlatList, Image, ScrollView, Text, View } from 'react-native';
 import tw from 'tailwind-react-native-classnames';
 
-import BackButton from '@/src/components/ui/BackButton';
 import HeaderComponent from '@/src/components/ui/HeaderComponent';
 
 const tripOverview = {
@@ -91,14 +89,7 @@ const PlanYourTripScreen: React.FC = () => {
 
     return (
         <ScrollView className="flex-1 bg-gray-50 p-4 px-6 pt-12">
-            <BackButton />
-            <View className="flex-row items-center justify-between bg-white p-4">
-                <HeaderComponent title="Plan your trip 📅" />
-                <TouchableOpacity className="h-8 w-8 items-center justify-center">
-                    <Iconify icon="weui:share-outlined" width="30" height="30" />
-                </TouchableOpacity>
-            </View>
-
+            <HeaderComponent title="Plan your trip 📅" />
             <View className="mx-2 my-4 flex-row rounded-lg bg-white p-4 shadow-md">
                 <Image source={{ uri: tripOverview.image }} className="h-36 w-24 rounded-lg" resizeMode="cover" />
                 <View className="ml-4 flex-1">
