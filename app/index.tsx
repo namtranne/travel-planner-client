@@ -2,6 +2,7 @@ import { Link, router } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { LogoText } from '@/assets';
+import GoogleSigninButton from '@/src/components/Auth/GoogleSigninButton';
 
 const Welcome = () => {
     return (
@@ -10,7 +11,7 @@ const Welcome = () => {
             <View>
                 <View className="flex flex-row">
                     <TouchableOpacity
-                        onPress={() => console.log('Sign In Pressed')}
+                        // onPress={() => console.log('Sign In Pressed')}
                         className="mr-8 flex h-[41px] w-[140px] items-center justify-center rounded-xl border border-[#60ABEF]"
                     >
                         <Link href="/sign-up" className="font-inter text-xs font-semibold text-black">
@@ -19,7 +20,7 @@ const Welcome = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => console.log('Sign In Pressed')}
+                        // onPress={() => console.log('Sign In Pressed')}
                         className="flex h-[41px] w-[140px] items-center justify-center rounded-xl bg-[#60ABEF]"
                     >
                         <Link href="./sign-in" className="font-inter text-xs font-semibold text-white">
@@ -34,13 +35,7 @@ const Welcome = () => {
                     >
                         <Text className="font-inter text-xs font-semibold text-white">Home</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => router.navigate('./user-survey')}
-                        className="mt-5 flex h-[41px] w-[312px] flex-row items-center justify-center rounded-xl bg-black"
-                    >
-                        <Text className="mr-2 pb-[3px] text-xl text-white"></Text>
-                        <Text className="font-inter text-xs font-semibold text-white">Sign in with Apple</Text>
-                    </TouchableOpacity>
+                    <GoogleSigninButton />
                 </View>
             </View>
         </View>
