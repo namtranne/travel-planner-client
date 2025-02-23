@@ -17,8 +17,7 @@
       {
         "packageDir": "./"
       }
-    ],
-    "react/no-unstable-nested-components": "off",
+    ]
   },
   "overrides": [
     // Configuration for TypeScript files
@@ -86,7 +85,11 @@
           {
             "argsIgnorePattern": "^_"
           }
-        ]
+        ],
+        "react/no-unstable-nested-components": "off",
+        "react/no-array-index-key": "off",
+        "no-return-assign": "off",
+        "eslint-disable-next-line react/no-unstable-nested-components": "off"
       }
     },
     // Configuration for testing

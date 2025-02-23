@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
+import BackButton from '@/src/components/ui/BackButton';
 import HeaderComponent from '@/src/components/ui/HeaderComponent';
 
 export default function ProfileScreen() {
@@ -21,7 +22,8 @@ export default function ProfileScreen() {
     return (
         <ScrollView className="flex-1 bg-white">
             <SafeAreaView>
-                <HeaderComponent title="Profile" />
+                <BackButton />
+                <HeaderComponent title="Profile" hasBackButton={false} />
                 <View className="w-full px-6 pt-4">
                     <View className="mt-6 items-center">
                         <Avatar

@@ -24,7 +24,7 @@ const Welcome = ({ navigation }: any) => {
                 </View>
                 <View>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('MainScreen')}
+                        onPress={() => navigation.navigate('ResetPassword', { usernameOrEmail: 'nvhieu212@gmail.com' })}
                         className="mt-5 flex h-[41px] w-[312px] flex-row items-center justify-center rounded-xl bg-black"
                     >
                         <Text className="font-inter text-xs font-semibold text-white">Home</Text>

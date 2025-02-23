@@ -1,6 +1,5 @@
-import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Image, SafeAreaView, Text, View } from 'react-native';
+import { Alert, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
 import { Logo } from '@/assets';
 import AuthInputField from '@/src/components/Auth/AuthInputField';
@@ -42,7 +41,7 @@ export default function SignIn({ navigation }: any) {
             <View className="mt-2 flex-1 items-center">
                 <Image source={Logo} className="h-[121px] w-[120px]" />
                 <Text className="mb-4 font-inter text-lg font-semibold">Welcome back!</Text>
-                <View>
+                <View className="flex w-full items-center justify-center px-12">
                     <AuthInputField
                         placeholder="Username or Email"
                         icon="basil:user-outline"
@@ -56,6 +55,12 @@ export default function SignIn({ navigation }: any) {
                         onChangeText={setPassword}
                         secureTextEntry
                     />
+                    <TouchableOpacity
+                        className="mb-6 w-full text-right"
+                        onPress={() => navigation.navigate('ForgotPassword')}
+                    >
+                        <Text className="text-right font-inter text-xs text-[#60ABEF]">Forgot your password?</Text>
+                    </TouchableOpacity>
                     <Button
                         text="Login"
                         onPress={handleSignIn}
@@ -63,12 +68,11 @@ export default function SignIn({ navigation }: any) {
                         isPending={isPending}
                     />
                     <View />
-                    <Text className="mt-4 text-center font-inter text-xs">
-                        {"Don't have account?"}{' '}
-                        <Link href="./sign-up" className="font-inter text-[#60ABEF]">
-                            Sign Up
-                        </Link>
-                    </Text>
+                    <TouchableOpacity className="mt-4" onPress={() => navigation.navigate('SignUp')}>
+                        <Text className="text-center font-inter text-xs">
+                            Don&apos;t have an account? <Text className="text-[#60ABEF]">Sign Up</Text>
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </SafeAreaView>

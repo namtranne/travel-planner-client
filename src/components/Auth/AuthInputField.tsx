@@ -11,7 +11,7 @@ export default function AuthInputField({
     secureTextEntry
 }: {
     placeholder: string;
-    icon: string;
+    icon?: string;
     value: string;
     onChangeText: (text: string) => void;
     secureTextEntry?: boolean;
@@ -20,7 +20,7 @@ export default function AuthInputField({
 
     return (
         <Input
-            leftIcon={<Iconify icon={icon} width="24" height="24" color="black" opacity="40%" />}
+            leftIcon={icon ? <Iconify icon={icon} width="24" height="24" color="black" opacity="40%" /> : undefined}
             rightIcon={
                 secureTextEntry && (
                     <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
@@ -34,7 +34,7 @@ export default function AuthInputField({
                 )
             }
             containerStyle={{
-                width: 312,
+                width: '100%',
                 height: 50,
                 backgroundColor: 'rgba(0, 0, 0, 0.03)',
                 borderRadius: 14,

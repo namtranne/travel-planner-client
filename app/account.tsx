@@ -1,25 +1,43 @@
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import Iconify from 'react-native-iconify';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Alert, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import HeaderComponent from '@/src/components/ui/HeaderComponent';
-
-const OptionItem = ({ icon, title, handlePress }: { icon: string; title: string; handlePress: any }) => {
-    return (
-        <TouchableOpacity
-            className="flex-row items-center justify-between border-b border-gray-100 px-3 py-4"
-            onPress={handlePress}
-        >
-            <View className="flex-row items-center">
-                <Iconify icon={icon} size={20} color="black" />
-                <Text className="ml-3 text-base">{title}</Text>
-            </View>
-            <Icon name="chevron-right" size={15} color="gray" />
-        </TouchableOpacity>
-    );
-};
+import OptionItem from '@/src/components/ui/OptionItem';
+import { useLogout } from '@/src/hooks/use-authenticate';
 
 const AccountScreen = ({ navigation }: any) => {
+    const { logout, isPending } = useLogout();
+
+    const handleLogout = () => {
+        Alert.alert(
+            'Log out',
+            'Are you sure you want to log out?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Log out',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            logout();
+                            // await AsyncStorage.removeItem('token');
+                            // authAxios.defaults.headers.common.Authorization = null;
+                            navigation.navigate('Welcome');
+                        } catch (error: unknown) {
+                            Alert.alert('Logout Failed', (error as Error)?.message, [
+                                { text: 'Try Again', onPress: () => console.log('User retries log out') },
+                                { text: 'Cancel', style: 'cancel' }
+                            ]);
+                        }
+                    }
+                }
+            ],
+            { cancelable: true }
+        );
+    };
+
     return (
         <View className="h-full w-full bg-white">
             <ScrollView showsHorizontalScrollIndicator={false}>
@@ -44,7 +62,7 @@ const AccountScreen = ({ navigation }: any) => {
                             <OptionItem
                                 icon="material-symbols:settings-outline"
                                 title="Settings"
-                                handlePress={() => navigation.navigate('Profile')}
+                                handlePress={() => navigation.navigate('Settings')}
                             />
                             <OptionItem
                                 icon="tabler:trash-off"
@@ -54,7 +72,8 @@ const AccountScreen = ({ navigation }: any) => {
                             <OptionItem
                                 icon="pepicons-pencil:leave"
                                 title="Log out"
-                                handlePress={() => navigation.navigate('Profile')}
+                                handlePress={handleLogout}
+                                disabled={isPending}
                             />
                         </View>
                     </View>

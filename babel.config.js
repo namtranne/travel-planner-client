@@ -45,7 +45,17 @@ module.exports = (api) => {
                         'pepicons-pencil:leave',
                         'material-symbols:settings-outline',
                         'mdi:eye-outline',
-                        'mdi:eye-off-outline'
+                        'mdi:eye-off-outline',
+                        'mdi:translate',
+                        'mdi:history',
+                        'mdi-light:bell',
+                        'material-symbols:help-outline',
+                        'solar:shield-line-duotone',
+                        'akar-icons:file',
+                        'devicon:facebook',
+                        'skill-icons:instagram',
+                        'mdi-light:comment',
+                        'carbon:password'
                     ]
                 }
             ]

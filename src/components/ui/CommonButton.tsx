@@ -17,6 +17,7 @@ export default function Button({
         <TouchableOpacity
             onPress={onPress}
             className={`flex h-[41px] items-center justify-center rounded-xl ${additionalStyle}`}
+            disabled={isPending}
         >
             {isPending ? (
                 <ActivityIndicator />
