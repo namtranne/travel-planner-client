@@ -10,7 +10,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function GoogleSigninButton() {
     const [request, response, promptAsync] = Google.useAuthRequest({
-        // clientId: '745261753786-omd5ol18l7pbnq9sjgh2trjunkioaerr.apps.googleusercontent.com',
+        clientId: '745261753786-omd5ol18l7pbnq9sjgh2trjunkioaerr.apps.googleusercontent.com',
         iosClientId: '745261753786-7j5ku10504k63vo2erv5i034bun7lrtp.apps.googleusercontent.com',
         redirectUri: 'com.anonymous.reactnativeboilerplate:/oauthredirect'
     });

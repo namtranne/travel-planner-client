@@ -37,7 +37,15 @@ module.exports = (api) => {
                         'mdi:filter',
                         'solar:calendar-linear',
                         'mi:location',
-                        'weui:share-outlined'
+                        'weui:share-outlined',
+                        'mingcute:down-line',
+                        'mingcute:up-line',
+                        'fontisto:map-marker',
+                        'mdi:information-outline',
+                        'material-symbols:star',
+                        'mdi:clock-outline',
+                        'ic:baseline-phone',
+                        'material-symbols:map'
                     ]
                 }
             ]
