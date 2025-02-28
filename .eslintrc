@@ -11,6 +11,12 @@
         "singleQuote": true,
         "endOfLine": "auto"
       }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "packageDir": "./"
+      }
     ]
   },
   "overrides": [
@@ -79,7 +85,11 @@
           {
             "argsIgnorePattern": "^_"
           }
-        ]
+        ],
+        "react/no-unstable-nested-components": "off",
+        "react/no-array-index-key": "off",
+        "no-return-assign": "off",
+        "eslint-disable-next-line react/no-unstable-nested-components": "off"
       }
     },
     // Configuration for testing

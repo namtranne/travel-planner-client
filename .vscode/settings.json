@@ -23,7 +23,7 @@
   },
   "prettier.ignorePath": ".gitignore",
   "[typescriptreact]": {
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "cSpell.words": [
     "daterange"

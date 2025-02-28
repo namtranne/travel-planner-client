@@ -1,5 +1,4 @@
 import { Image, ScrollView, Text, View } from 'react-native';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import Iconify from 'react-native-iconify';
 
 import { DaLat, Hanoi, NhaTrang, VungTau } from '@/assets';

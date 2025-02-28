@@ -1,6 +1,6 @@
 import type React from 'react';
 import type { ImageSourcePropType } from 'react-native';
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import tw from 'tailwind-react-native-classnames';
 
 import { TravelTips1, TravelTips2, TravelTips3, TravelTips4, TravelTips5, TravelTips6 } from '@/assets';
@@ -62,7 +62,7 @@ const TravelTipsScreen: React.FC = () => {
     );
 
     return (
-        <View className="flex-1 bg-white p-4 px-6 pt-12">
+        <SafeAreaView className="flex-1 bg-white p-4 px-6 pt-12">
             <BackButton />
             <View className="mt-2">
                 <HeaderComponent title="Travel tips" subtitle="Be well prepared for every trips" />
@@ -74,7 +74,7 @@ const TravelTipsScreen: React.FC = () => {
                     contentContainerStyle={tw`pb-4`}
                 />
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
