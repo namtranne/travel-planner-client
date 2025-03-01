@@ -3,6 +3,9 @@ import { Alert, Image, SafeAreaView, ScrollView, Text, View } from 'react-native
 import HeaderComponent from '@/src/components/ui/HeaderComponent';
 import OptionItem from '@/src/components/ui/OptionItem';
 import { useLogout } from '@/src/hooks/use-authenticate';
+import authAxios from '@/src/utils/axios';
+
+import { storage } from '.';
 
 const AccountScreen = ({ navigation }: any) => {
     const { logout, isPending } = useLogout();
@@ -22,8 +25,8 @@ const AccountScreen = ({ navigation }: any) => {
                     onPress: async () => {
                         try {
                             logout();
-                            // await AsyncStorage.removeItem('token');
-                            // authAxios.defaults.headers.common.Authorization = null;
+                            storage.delete('token');
+                            authAxios.defaults.headers.common.Authorization = null;
                             navigation.navigate('Welcome');
                         } catch (error: unknown) {
                             Alert.alert('Logout Failed', (error as Error)?.message, [

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@/app';
 
 import authAxios from '../utils/axios';
 import type {
@@ -13,7 +13,7 @@ export const login = async ({ username, password }: { username: string; password
     const data = await authAxios
         .post('/auth/login', { username, password })
         .then((response) => {
-            AsyncStorage.setItem('token', JSON.stringify(response.data.data.accessToken));
+            storage.set('token', JSON.stringify(response.data.data.accessToken));
         })
         .catch((err) => {
             throw new Error(err.response.data.message);
