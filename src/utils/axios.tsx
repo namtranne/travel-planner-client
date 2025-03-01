@@ -1,11 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AxiosError, AxiosInstance, AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 import Constants from 'expo-constants';
 
+import { storage } from '@/app';
+
 export const getToken = async (): Promise<string> => {
     try {
-        const token = await AsyncStorage.getItem('token');
+        const token = await storage.getString('token');
         return token ? JSON.parse(token) : '';
     } catch (error) {
         console.error('Error getting token from AsyncStorage:', error);
@@ -39,7 +40,7 @@ authAxios.interceptors.response.use(
     async (error: AxiosError) => {
         if (error.response?.status === 401) {
             try {
-                await AsyncStorage.removeItem('token');
+                return await Promise.resolve('');
                 authAxios.defaults.headers.common.Authorization = null;
             } catch (storageError) {
                 console.error('Error removing token from AsyncStorage:', storageError);

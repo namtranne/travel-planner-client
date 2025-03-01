@@ -14,4 +14,5 @@ export const TravelTips3 = require('./travel-tips/travel-tips-3.png');
 export const TravelTips4 = require('./travel-tips/travel-tips-4.png');
 export const TravelTips5 = require('./travel-tips/travel-tips-5.png');
 export const TravelTips6 = require('./travel-tips/travel-tips-6.png');
+export const GoogleIcon = require('./google-icon.png');
 /* eslint-enable global-require */

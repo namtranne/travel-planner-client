@@ -55,7 +55,15 @@ module.exports = (api) => {
                         'devicon:facebook',
                         'skill-icons:instagram',
                         'mdi-light:comment',
-                        'carbon:password'
+                        'carbon:password',
+                        'mingcute:down-line',
+                        'mingcute:up-line',
+                        'fontisto:map-marker',
+                        'mdi:information-outline',
+                        'material-symbols:star',
+                        'mdi:clock-outline',
+                        'ic:baseline-phone',
+                        'material-symbols:map'
                     ]
                 }
             ]
