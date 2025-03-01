@@ -1,4 +1,5 @@
-import { storage } from '@/app';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as SecureStore from 'expo-secure-store';
 
 import authAxios from '../utils/axios';
 import type {
@@ -12,8 +13,8 @@ import type {
 export const login = async ({ username, password }: { username: string; password: string }) => {
     const data = await authAxios
         .post('/auth/login', { username, password })
-        .then((response) => {
-            storage.set('token', JSON.stringify(response.data.data.accessToken));
+        .then(async (response) => {
+            await SecureStore.setItemAsync('token', JSON.stringify(response.data.data.accessToken));
         })
         .catch((err) => {
             throw new Error(err.response.data.message);

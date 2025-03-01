@@ -12,7 +12,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, hasBackButton 
     const navigation = useNavigation();
 
     return (
-        <View className="flex-row items-center justify-between px-4 shadow">
+        <View className="flex-row items-center justify-between px-4">
             {hasBackButton && (
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Iconify color="black" icon="lets-icons:back-light" width="30" height="30" />

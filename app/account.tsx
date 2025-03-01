@@ -1,11 +1,11 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as SecureStore from 'expo-secure-store';
 import { Alert, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import HeaderComponent from '@/src/components/ui/HeaderComponent';
 import OptionItem from '@/src/components/ui/OptionItem';
 import { useLogout } from '@/src/hooks/use-authenticate';
 import authAxios from '@/src/utils/axios';
-
-import { storage } from '.';
 
 const AccountScreen = ({ navigation }: any) => {
     const { logout, isPending } = useLogout();
@@ -25,7 +25,7 @@ const AccountScreen = ({ navigation }: any) => {
                     onPress: async () => {
                         try {
                             logout();
-                            storage.delete('token');
+                            await SecureStore.deleteItemAsync('token');
                             authAxios.defaults.headers.common.Authorization = null;
                             navigation.navigate('Welcome');
                         } catch (error: unknown) {

@@ -1,12 +1,12 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import type { AxiosError, AxiosInstance, AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 import Constants from 'expo-constants';
-
-import { storage } from '@/app';
+import * as SecureStore from 'expo-secure-store';
 
 export const getToken = async (): Promise<string> => {
     try {
-        const token = await storage.getString('token');
+        const token = await SecureStore.getItemAsync('token');
         return token ? JSON.parse(token) : '';
     } catch (error) {
         console.error('Error getting token from AsyncStorage:', error);
@@ -40,7 +40,7 @@ authAxios.interceptors.response.use(
     async (error: AxiosError) => {
         if (error.response?.status === 401) {
             try {
-                return await Promise.resolve('');
+                return await SecureStore.deleteItemAsync('token');
                 authAxios.defaults.headers.common.Authorization = null;
             } catch (storageError) {
                 console.error('Error removing token from AsyncStorage:', storageError);
