@@ -27,3 +27,12 @@ export type ChangePasswordREQ = {
     newPassword: string;
     newPasswordConfirm: string;
 };
+
+export type UpdateUserREQ = {
+    name?: string;
+    gender?: string;
+    username?: string;
+    phoneNumber?: string;
+    nationality?: string;
+    avatar?: any;
+};
