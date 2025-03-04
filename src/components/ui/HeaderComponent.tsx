@@ -12,14 +12,13 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, hasBackButton 
     const navigation = useNavigation();
 
     return (
-        <View className="flex-row items-center justify-between px-4 shadow">
+        <View className="relative flex-row items-center justify-center px-4 py-2 shadow">
             {hasBackButton && (
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity onPress={() => navigation.goBack()} className="absolute left-4">
                     <Iconify color="black" icon="lets-icons:back-light" width="30" height="30" />
                 </TouchableOpacity>
             )}
-            <Text className="flex w-full flex-row text-center text-lg font-bold">{title}</Text>
-            <View className="w-8" />
+            <Text className="text-center text-lg font-bold">{title}</Text>
         </View>
     );
 };
