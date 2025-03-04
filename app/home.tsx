@@ -1,8 +1,7 @@
-import { Avatar } from '@rneui/themed';
 import { router } from 'expo-router';
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-import { AirPlane, DefaultUserProfile } from '@/assets';
+import { AirPlane, BrandText, Logo } from '@/assets';
 import DestinationSuggestions from '@/src/components/Home/DestinationSuggestions';
 import HomeButtonGroup from '@/src/components/Home/HomeButtonGroup';
 
@@ -13,14 +12,11 @@ export default function HomeScreen() {
                 <ScrollView showsHorizontalScrollIndicator={false}>
                     <SafeAreaView>
                         <View className="w-full px-6 pt-4">
-                            <Avatar
-                                size="small"
-                                rounded
-                                source={DefaultUserProfile}
-                                avatarStyle={{ width: '100%', height: '100%', resizeMode: 'cover' }}
-                            />
-                            <Text className="mt-2 font-inter text-lg">Hi John,</Text>
-                            <Text className="mt-2 font-inter text-3xl font-bold">Ready to plan your next trip?</Text>
+                            <View className="flex flex-row items-center">
+                                <Image source={Logo} className="h-[30px] w-[30px]" />
+                                <Image source={BrandText} className="h-[12px] w-[120px]" />
+                            </View>
+                            <Text className="mt-10 font-inter text-3xl font-bold">Ready to plan your next trip?</Text>
                             <TouchableOpacity
                                 className="mt-6 flex-row rounded-3xl bg-[#CCE4FF] px-4 py-6"
                                 onPress={() => router.push('planning')}

@@ -95,7 +95,6 @@ const OTPVerification = ({ navigation, route }: { navigation: any; route: any })
 
     const handleVerifyOTP = () => {
         const enteredOTP = otp.join('');
-        console.log('Check enteredOTP: ', enteredOTP);
         if (enteredOTP.length !== 6) {
             Alert.alert('Invalid OTP', 'Please enter a 6-digit OTP.');
             return;
