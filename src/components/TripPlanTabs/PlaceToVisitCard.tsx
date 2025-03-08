@@ -33,7 +33,7 @@ const PlaceToVisitCard = ({
             </View>
         );
     }
-
+    console.log('Place', placeToVisit);
     return (
         <TouchableOpacity onPress={() => setExpanded(true)} className="border-t border-gray-200 py-4 shadow-md">
             <View className={`${expanded ? 'rounded-xl bg-gray-200 p-2' : ''}`}>
@@ -117,51 +117,65 @@ const PlaceToVisitCard = ({
                     </View>
 
                     {/* Description */}
-                    <View className="mt-3 flex-row items-start">
-                        <Iconify
-                            className="text-gray-500"
-                            icon="material-symbols:info"
-                            width={20}
-                            height={20}
-                            color="gray"
-                        />
-                        <Text className="ml-2 text-gray-600">{placeToVisit?.place.description || 'NA'}</Text>
-                    </View>
+                    {placeToVisit?.place.description && (
+                        <View className="mt-3 flex-row items-start">
+                            <Iconify
+                                className="text-gray-500"
+                                icon="material-symbols:info"
+                                width={20}
+                                height={20}
+                                color="gray"
+                            />
+                            <Text className="ml-2 text-gray-600">{placeToVisit?.place.description || 'NA'}</Text>
+                        </View>
+                    )}
 
                     {/* Opening Hours */}
-                    <View className="mt-3 flex-row items-center">
-                        <Iconify className="text-gray-500" icon="mdi:clock" width={20} height={20} color="gray" />
-                        <Text className="ml-2 text-gray-600">
-                            {!placeToVisit?.place.closed
-                                ? getOpeningPeriodsText(placeToVisit?.place.placeOpeningPeriods)
-                                : 'Closed'}
-                        </Text>
-                        {/* <TouchableOpacity>
+                    {getOpeningPeriodsText(placeToVisit?.place.placeOpeningPeriods) && (
+                        <View className="mt-3 flex-row items-center">
+                            <Iconify className="text-gray-500" icon="mdi:clock" width={20} height={20} color="gray" />
+                            <Text className="ml-2 text-gray-600">
+                                {getOpeningPeriodsText(placeToVisit?.place.placeOpeningPeriods)}
+                            </Text>
+                            {/* <TouchableOpacity>
                             <Text className="ml-2 text-blue-500">Show other days</Text>
                         </TouchableOpacity> */}
-                    </View>
+                        </View>
+                    )}
 
                     {/* Address */}
-                    <View className="mt-3 flex-row items-center">
-                        <Iconify className="text-gray-500" icon="mdi:map-marker" width={20} height={20} color="gray" />
-                        <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.address)}>
-                            <Text className="ml-2 text-blue-500">{placeToVisit?.place.address}</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {placeToVisit?.place.address && (
+                        <View className="mt-3 flex-row items-center">
+                            <Iconify
+                                className="text-gray-500"
+                                icon="mdi:map-marker"
+                                width={20}
+                                height={20}
+                                color="gray"
+                            />
+                            <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.address)}>
+                                <Text className="ml-2 text-blue-500">{placeToVisit?.place.address}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
 
                     {/* Website */}
-                    <View className="mt-3 flex-row items-center">
-                        <Iconify className="text-gray-500" icon="mdi:world" width={20} height={20} color="gray" />
-                        <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.website)}>
-                            <Text className="ml-2 text-blue-500">{placeToVisit?.place.website}</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {placeToVisit?.place.website && (
+                        <View className="mt-3 flex-row items-center">
+                            <Iconify className="text-gray-500" icon="mdi:world" width={20} height={20} color="gray" />
+                            <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.website)}>
+                                <Text className="ml-2 text-blue-500">{placeToVisit?.place.website}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
 
                     {/* Phone */}
-                    <View className="mt-3 flex-row items-center">
-                        <Iconify className="text-gray-500" icon="mdi:phone" width={20} height={20} color="gray" />
-                        <Text className="ml-2 text-blue-500">{placeToVisit?.place.hotline}</Text>
-                    </View>
+                    {placeToVisit?.place.hotline && (
+                        <View className="mt-3 flex-row items-center">
+                            <Iconify className="text-gray-500" icon="mdi:phone" width={20} height={20} color="gray" />
+                            <Text className="ml-2 text-blue-500">{placeToVisit?.place.hotline}</Text>
+                        </View>
+                    )}
 
                     {/* Buttons */}
                     <View className="mt-4 flex-row items-center justify-between">

@@ -11,7 +11,6 @@ export default function LinearProgressBar({
 }) {
     // Ensure progress is between 0 and 1
     const progressWidth = Math.min(Math.max(progress, 0), 1) * 100 || 1;
-    console.log(progressWidth);
     return (
         <View className="w-full bg-gray-200">
             {/* eslint-disable-next-line tailwindcss/classnames-order */}

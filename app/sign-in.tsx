@@ -22,7 +22,7 @@ export default function SignIn() {
             { username, password },
             {
                 onSuccess: () => {
-                    router.navigate('home-tabs/home');
+                    router.navigate('user-survey');
                 },
                 onError: (error) => {
                     Alert.alert('Login Failed', error.message, [

@@ -29,7 +29,7 @@ export default function GoogleSigninButton() {
                 await fetchUserInfo(authentication?.accessToken);
                 loginGoogle(authentication?.idToken || '', {
                     onSuccess: () => {
-                        router.navigate('home-tabs/home');
+                        router.navigate('user-survey');
                     },
                     onError: (error) => {
                         Alert.alert('Login Failed', error.message, [

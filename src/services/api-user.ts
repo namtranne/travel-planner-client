@@ -38,3 +38,7 @@ export const updateCurrentUser = async (profile: UpdateUserREQ) => {
         throw new Error(error.response.data.message);
     }
 };
+
+export const submitUserPreferences = async (tags: string[]) => {
+    return authAxios.post('/users/preferences', { tags });
+};

@@ -6,10 +6,12 @@ import { useUser } from '@/src/hooks/use-authenticate';
 
 export default function ProtectedRoute({ children }: { children: JSX.Element }) {
     const { user, isLoading } = useUser();
-
     useEffect(() => {
         if (!user && !isLoading) {
             router.navigate('/welcome');
+        }
+        if (user && !user.preferences && !isLoading) {
+            router.navigate('/user-survey');
         }
     }, [user, isLoading]);
 
@@ -21,6 +23,6 @@ export default function ProtectedRoute({ children }: { children: JSX.Element }) 
         );
     }
 
-    if (user) return children;
+    if (user && user.preferences) return children;
     return null;
 }

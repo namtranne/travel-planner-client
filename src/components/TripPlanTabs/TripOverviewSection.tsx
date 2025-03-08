@@ -62,7 +62,6 @@ const TripOverviewSection = ({
 
     const { isPending: isPendingDeleteTripOverviewSection, deleteTripOverviewSection } = useDeleteTripOverviewSection();
     const { updateTripOverviewSection } = useUpdateTripOverviewSection();
-
     const options = useMemo(
         () => [
             {
@@ -234,7 +233,7 @@ const TripOverviewSection = ({
                         <PlaceToVisitCard
                             key={placeToVisit.id}
                             tripId={tripId}
-                            sectionId={tripId}
+                            sectionId={placeToVisit.sectionId}
                             placeToVisitId={placeToVisit.id}
                             order={index + 1}
                             onDelete={() =>

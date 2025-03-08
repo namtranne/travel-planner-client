@@ -59,6 +59,7 @@ export default function TripScreen() {
     const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
     const { isPending: isPendingDeleteTrip, deleteTrip } = useDeleteTrip();
     const { isLoading, trip } = useTripDetails(Number(tripId));
+
     const tripTitleRef = useRef<TextInput>(null);
 
     // Bottom Sheet Management

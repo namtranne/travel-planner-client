@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { TextInput, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Iconify from 'react-native-iconify';
+import RenderHTML from 'react-native-render-html';
+
+import RichTextInput from '../ui/RichTextInput';
 
 const Note = ({
     initialNote,
@@ -13,6 +16,8 @@ const Note = ({
 }) => {
     const [expanded, setExpanded] = useState(false);
     const [note, setNote] = useState(initialNote);
+    const { width } = useWindowDimensions();
+
     return (
         <View className="border-t border-gray-200 py-3">
             <View className={`rounded-lg ${expanded ? 'bg-gray-100' : ''} p-3`}>
@@ -20,19 +25,28 @@ const Note = ({
                     <View className="h-6 w-6 items-center justify-center rounded-full bg-gray-300">
                         <Iconify className="text-white" icon="fluent:note-48-filled" size={16} color="white" />
                     </View>
-                    <TextInput
-                        className="ml-3 flex-1 italic text-gray-500"
-                        style={{ textAlignVertical: 'top' }}
-                        placeholder="Add your notes here"
-                        onFocus={() => {
-                            console.log('123');
-                            setExpanded(true);
-                        }}
-                        value={note}
-                        onChangeText={(text) => setNote(text)}
-                        onBlur={() => handleUpdateNote(note)}
-                        onPress={() => setExpanded(true)}
-                    />
+                    {expanded ? (
+                        <RichTextInput initialContent={note} onChange={(text) => setNote(text)} />
+                    ) : (
+                        <TouchableOpacity className="ml-3 flex-1" onPress={() => setExpanded(true)}>
+                            <RenderHTML
+                                source={{ html: note || 'Add your notes here' }}
+                                contentWidth={width - 50}
+                                baseStyle={{
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    color: '#6b7280',
+                                    fontStyle: 'italic',
+                                    lineHeight: 24
+                                }}
+                                tagsStyles={{
+                                    p: { marginBottom: 8 },
+                                    strong: { fontWeight: 'bold' },
+                                    em: { fontStyle: 'italic' }
+                                }}
+                            />
+                        </TouchableOpacity>
+                    )}
                 </View>
                 {expanded && (
                     <View className="mt-4 flex-row items-center justify-end gap-3">

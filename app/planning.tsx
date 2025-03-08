@@ -20,13 +20,11 @@ import { convertDateStringFormat } from '@/src/utils/DateTimeUtil';
 
 export default function Planning() {
     const [destination, setDestination] = useState({ id: -1, name: '' });
-    const [numberOfPeople, setNumberOfPeople] = useState('0');
     const [budget, setBudget] = useState('0');
     const [date, setDate] = useState({
         startDate: moment(),
         endDate: moment()
     });
-    const [onEnteringNumberOfPeople, setOnEnteringNumberOfPeople] = useState(false);
     const [onEnteringBudget, setOnEnteringBudget] = useState(false);
     const [onEnteringDate, setOnEnteringDate] = useState(false);
 
@@ -53,27 +51,6 @@ export default function Planning() {
                             setValue={setDestination}
                             additionalStyle="mb-8"
                         />
-
-                        <View className="mb-8">
-                            <Text className="mb-2 font-inter text-xs font-light text-black">How many people?</Text>
-                            <View
-                                className={`h-[54px] flex-row items-center rounded-lg border border-[#E4E4E4] bg-white px-3 py-2 ${onEnteringNumberOfPeople && 'border-[#60ABEF]'}`}
-                            >
-                                <TextInput
-                                    className="flex-1 font-inter text-xs"
-                                    placeholder=""
-                                    value={numberOfPeople.toString()}
-                                    onChangeText={(value) => setNumberOfPeople(value)}
-                                    onFocus={() => setOnEnteringNumberOfPeople(true)}
-                                    onBlur={() => {
-                                        setOnEnteringNumberOfPeople(false);
-                                        Keyboard.dismiss(); // Dismiss the keyboard when input loses focus
-                                    }}
-                                    autoCapitalize="none"
-                                    keyboardType="numeric"
-                                />
-                            </View>
-                        </View>
 
                         <View className="mb-8">
                             <Text className="mb-2 font-inter text-xs font-light text-black">Date?</Text>
