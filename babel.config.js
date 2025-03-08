@@ -53,7 +53,11 @@ module.exports = (api) => {
                         'solar:shield-line-duotone',
                         'akar-icons:file',
                         'devicon:facebook',
-                        'skill-icons:instagram'
+                        'skill-icons:instagram',
+                        'mingcute:down-line',
+                        'fontisto:map-marker',
+                        'material-symbols:map',
+                        'mdi:clock-outline'
                     ]
                 }
             ]
