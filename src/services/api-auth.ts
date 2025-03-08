@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as SecureStore from 'expo-secure-store';
 
 import authAxios from '../utils/axios';

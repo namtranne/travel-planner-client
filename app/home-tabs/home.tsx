@@ -19,7 +19,7 @@ export default function HomeScreen() {
                             <Text className="mt-10 font-inter text-3xl font-bold">Ready to plan your next trip?</Text>
                             <TouchableOpacity
                                 className="mt-6 flex-row rounded-3xl bg-[#CCE4FF] px-4 py-6"
-                                onPress={() => router.push('planning')}
+                                onPress={() => router.navigate('/trip-plan')}
                             >
                                 <View className="flex-1 pr-[2px]">
                                     <Text className="font-inter text-sm font-bold">Start planning now!</Text>

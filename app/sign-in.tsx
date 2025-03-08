@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
@@ -7,7 +8,7 @@ import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
 import { useLogin } from '@/src/hooks/use-authenticate';
 
-export default function SignIn({ navigation }: any) {
+export default function SignIn() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const { login, isPending } = useLogin();
@@ -21,7 +22,7 @@ export default function SignIn({ navigation }: any) {
             { username, password },
             {
                 onSuccess: () => {
-                    navigation.navigate('MainScreen');
+                    router.navigate('home-tabs/home');
                 },
                 onError: (error) => {
                     Alert.alert('Login Failed', error.message, [
@@ -57,7 +58,7 @@ export default function SignIn({ navigation }: any) {
                     />
                     <TouchableOpacity
                         className="mb-6 w-full text-right"
-                        onPress={() => navigation.navigate('ForgotPassword')}
+                        onPress={() => router.navigate('/forgot-password')}
                     >
                         <Text className="text-right font-inter text-xs text-[#60ABEF]">Forgot your password?</Text>
                     </TouchableOpacity>
@@ -68,7 +69,7 @@ export default function SignIn({ navigation }: any) {
                         isPending={isPending}
                     />
                     <View />
-                    <TouchableOpacity className="mt-4" onPress={() => navigation.navigate('SignUp')}>
+                    <TouchableOpacity className="mt-4" onPress={() => router.navigate('/sign-up')}>
                         <Text className="text-center font-inter text-xs">
                             Don&apos;t have an account? <Text className="text-[#60ABEF]">Sign Up</Text>
                         </Text>

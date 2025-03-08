@@ -3,7 +3,8 @@ import type { UpdateUserREQ } from './types';
 
 export const getCurrentUser = async () => {
     try {
-        if (!getToken()) return null;
+        const token = await getToken();
+        if (!token) return null;
         const { data } = await authAxios.get('/users');
         return data.data;
     } catch (error: any) {

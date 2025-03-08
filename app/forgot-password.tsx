@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Image, Keyboard, SafeAreaView, Text, TouchableWithoutFeedback, View } from 'react-native';
 
@@ -9,9 +10,10 @@ import { useForgotPassword } from '@/src/hooks/use-authenticate';
 
 import { OtpVerificationPurpose } from './otp-verification';
 
-export default function ForgotPassword({ navigation }: any) {
+export default function ForgotPassword() {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const { forgotPassword, isPending } = useForgotPassword();
+    const router = useRouter();
 
     const handleForgotPassword = () => {
         // Validation
@@ -29,9 +31,12 @@ export default function ForgotPassword({ navigation }: any) {
 
         forgotPassword(usernameOrEmail, {
             onSuccess: () => {
-                navigation.navigate('OtpVerification', {
-                    usernameOrEmail,
-                    purpose: OtpVerificationPurpose.ResetPassword
+                router.navigate({
+                    pathname: '/otp-verification',
+                    params: {
+                        usernameOrEmail,
+                        purpose: OtpVerificationPurpose.ResetPassword
+                    }
                 });
             },
             onError: (error: { message: string }) => {

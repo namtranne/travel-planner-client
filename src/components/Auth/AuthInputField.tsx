@@ -1,7 +1,7 @@
 import { Input } from '@rneui/base';
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import Iconify from 'react-native-iconify';
+import { Iconify } from 'react-native-iconify';
 
 export default function AuthInputField({
     placeholder,

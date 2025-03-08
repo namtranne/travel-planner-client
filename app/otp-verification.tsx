@@ -1,3 +1,5 @@
+import { useRouter } from 'expo-router';
+import { useSearchParams } from 'expo-router/build/hooks';
 import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -27,8 +29,11 @@ export enum OtpVerificationPurpose {
     ResetPassword = 'ResetPassword'
 }
 
-const OTPVerification = ({ navigation, route }: { navigation: any; route: any }) => {
-    const { usernameOrEmail, purpose } = route.params;
+const OTPVerification = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const usernameOrEmail = searchParams.get('usernameOrEmail') || '';
+    const purpose = searchParams.get('purpose') || OtpVerificationPurpose.VerifyEmail;
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [timer, setTimer] = useState(300);
     const inputsRef = useRef<(TextInput | null)[]>([]);
@@ -106,7 +111,7 @@ const OTPVerification = ({ navigation, route }: { navigation: any; route: any })
                 {
                     onSuccess: () => {
                         Alert.alert('OTP Verified', 'Your account has been verified!');
-                        navigation.navigate('SignIn');
+                        router.navigate('/sign-in');
                     },
                     onError: (error: { message: string }) => {
                         Alert.alert('Verification Failed', error.message, [
@@ -121,7 +126,7 @@ const OTPVerification = ({ navigation, route }: { navigation: any; route: any })
                 { usernameOrEmail, otp: enteredOTP },
                 {
                     onSuccess: () => {
-                        navigation.navigate('ResetPassword', { usernameOrEmail });
+                        router.navigate({ pathname: '/reset-password', params: { usernameOrEmail } });
                     },
                     onError: (error: { message: string }) => {
                         Alert.alert('Verification Failed', error.message, [

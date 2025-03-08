@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -6,13 +6,12 @@ import { useUser } from '@/src/hooks/use-authenticate';
 
 export default function ProtectedRoute({ children }: { children: JSX.Element }) {
     const { user, isLoading } = useUser();
-    const navigation = useNavigation();
 
     useEffect(() => {
         if (!user && !isLoading) {
-            navigation.navigate('Welcome' as never);
+            router.navigate('/welcome');
         }
-    }, [user, isLoading, navigation]);
+    }, [user, isLoading]);
 
     if (isLoading) {
         return (

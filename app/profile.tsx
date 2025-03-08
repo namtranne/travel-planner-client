@@ -130,7 +130,7 @@ export default function ProfileScreen() {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <ScrollView className="flex-1 bg-gray-50">
                 <SafeAreaView>
-                    <HeaderComponent title="Profile" hasBackButton />
+                    <HeaderComponent title="Profile" hasBackButton backPath="/home-tabs/account" />
                     <View className="w-full px-6 pt-4">
                         <View className="relative mt-6 items-center">
                             <Avatar

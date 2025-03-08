@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import React from 'react';
 import { Alert, Image, SafeAreaView, Text, View } from 'react-native';
 
@@ -10,7 +10,7 @@ import { useSignUp } from '@/src/hooks/use-authenticate';
 
 import { OtpVerificationPurpose } from './otp-verification';
 
-export default function SignUp({ navigation }: any) {
+export default function SignUp() {
     const [username, setUsername] = React.useState('');
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
@@ -38,9 +38,12 @@ export default function SignUp({ navigation }: any) {
             { username, password, passwordConfirm, name, email },
             {
                 onSuccess: () => {
-                    navigation.navigate('OtpVerification', {
-                        usernameOrEmail: email,
-                        purpose: OtpVerificationPurpose.VerifyEmail
+                    router.navigate({
+                        pathname: '/otp-verification',
+                        params: {
+                            usernameOrEmail: email,
+                            purpose: OtpVerificationPurpose.VerifyEmail
+                        }
                     });
                 },
                 onError: (error: { message: string }) => {

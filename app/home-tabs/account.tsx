@@ -1,3 +1,5 @@
+import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import HeaderComponent from '@/src/components/ui/HeaderComponent';
@@ -5,7 +7,7 @@ import OptionItem from '@/src/components/ui/OptionItem';
 import { useLogout, useUser } from '@/src/hooks/use-authenticate';
 import authAxios from '@/src/utils/axios';
 
-const AccountScreen = ({ navigation }: any) => {
+const AccountScreen = () => {
     const { logout, isPending } = useLogout();
     const { user, isLoading } = useUser();
     if (isLoading) {
@@ -33,7 +35,7 @@ const AccountScreen = ({ navigation }: any) => {
                             logout();
                             await SecureStore.deleteItemAsync('token');
                             authAxios.defaults.headers.common.Authorization = null;
-                            navigation.navigate('Welcome');
+                            router.navigate('../../welcome');
                         } catch (error: unknown) {
                             Alert.alert('Logout Failed', (error as Error)?.message, [
                                 { text: 'Try Again', onPress: () => console.log('User retries log out') },
@@ -70,17 +72,17 @@ const AccountScreen = ({ navigation }: any) => {
                             <OptionItem
                                 icon="mdi:account"
                                 title="Personal Information"
-                                handlePress={() => navigation.push('Profile')}
+                                handlePress={() => router.navigate('/profile')}
                             />
                             <OptionItem
                                 icon="material-symbols:settings-outline"
                                 title="Settings"
-                                handlePress={() => navigation.navigate('Settings')}
+                                handlePress={() => router.push('/settings')}
                             />
                             <OptionItem
                                 icon="tabler:trash-off"
                                 title="Delete Account"
-                                handlePress={() => navigation.navigate('Profile')}
+                                handlePress={() => router.push('/profile')}
                             />
                             <OptionItem
                                 icon="pepicons-pencil:leave"

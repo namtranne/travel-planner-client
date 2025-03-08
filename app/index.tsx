@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Redirect } from 'expo-router';
 
-import App from './app';
+import ProtectedRoute from '@/src/components/Auth/ProtectedRoute';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -14,7 +15,9 @@ const queryClient = new QueryClient({
 export default function Index() {
     return (
         <QueryClientProvider client={queryClient}>
-            <App />
+            <ProtectedRoute>
+                <Redirect href="home-tabs" />
+            </ProtectedRoute>
         </QueryClientProvider>
     );
 }
