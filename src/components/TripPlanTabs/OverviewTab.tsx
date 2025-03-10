@@ -1,10 +1,26 @@
-import { Text, View } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 
-export default function OverviewTab() {
+import TripOverviewSection from './TripOverviewSection';
+
+export default function OverviewTab({
+    openSheet,
+    closeSheet,
+    setBottomSheetContent
+}: {
+    openSheet: () => void;
+    closeSheet: () => void;
+    setBottomSheetContent: (content: React.ReactNode) => void;
+}) {
     return (
-        <View className="p-4">
-            <Text className="text-lg font-semibold">Overview Content</Text>
-            <Text>This is the overview of your trip.</Text>
-        </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View className="py-4">
+                <TripOverviewSection
+                    titleSection="Notes"
+                    openSheet={openSheet}
+                    closeSheet={closeSheet}
+                    setBottomSheetContent={setBottomSheetContent}
+                />
+            </View>
+        </TouchableWithoutFeedback>
     );
 }

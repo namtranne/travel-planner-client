@@ -21,6 +21,18 @@ export const login = async ({ username, password }: { username: string; password
     return data;
 };
 
+export const loginGoogle = async (idToken: string) => {
+    const data = await authAxios
+        .post('/auth/login/google', { idToken })
+        .then(async (response) => {
+            await SecureStore.setItemAsync('token', JSON.stringify(response.data.data.accessToken));
+        })
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+};
+
 export const signUp = async (signUpReq: SignupREQ) => {
     const data = await authAxios
         .post('/auth/register', signUpReq)

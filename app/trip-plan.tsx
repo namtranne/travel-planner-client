@@ -1,7 +1,11 @@
-import { useState } from 'react';
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import moment from 'moment';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
 
+import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
 import BudgetTab from '@/src/components/TripPlanTabs/BudgetTab';
 import ExploreTab from '@/src/components/TripPlanTabs/ExploreTab';
 import ItineraryTab from '@/src/components/TripPlanTabs/ItineraryTab';
@@ -10,7 +14,7 @@ import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
 
 const TripPlanTabs = ['Overview', 'Itinerary', 'Explore', 'Budget'];
-const TabComponents: { [key: string]: React.ComponentType } = {
+const TabComponents: { [key: string]: React.ComponentType<any> } = {
     Overview: OverviewTab,
     Itinerary: ItineraryTab,
     Explore: ExploreTab,
@@ -19,68 +23,136 @@ const TabComponents: { [key: string]: React.ComponentType } = {
 export default function TripScreen() {
     const [selectedTab, setSelectedTab] = useState(TripPlanTabs[0] || 'Overview');
     const TabContent = TabComponents[selectedTab] || OverviewTab;
+    const [date, setDate] = useState({
+        startDate: moment(),
+        endDate: moment()
+    });
+    const [onEnteringDate, setOnEnteringDate] = useState(false);
+
+    // Bottom Sheet Management
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const [bottomSheetContent, setBottomSheetContent] = useState<React.ReactNode>(null);
+    const openSheet = useCallback(() => {
+        bottomSheetRef.current?.expand();
+    }, []);
+    const closeSheet = useCallback(() => {
+        bottomSheetRef.current?.close();
+    }, []);
+    const handleSheetChanges = useCallback((index: number) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+
+    useEffect(() => {
+        bottomSheetRef.current?.close();
+    }, []);
 
     return (
-        <View className="flex-1 bg-gray-100">
-            {/* Fixed Header & Tabs */}
-            <SafeAreaView className="bg-blue-400">
-                <View className="rounded-b-3xl bg-blue-400">
-                    <BackButton color="white" />
-                    <View className="px-6">
-                        <Text className="mt-2 text-2xl font-bold text-white">Summer trip</Text>
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-row items-center gap-2">
-                                <Iconify icon="solar:calendar-linear" color="white" size={16} />
-                                <Text className="text-xs text-white">12 Jan - 20 Jan</Text>
-                            </View>
-                            <View className="flex-row">
-                                <View className="-ml-2 flex-row items-center justify-center">
-                                    {[...Array(3)].map((_, index) => (
-                                        <Image
-                                            key={index}
-                                            source={{
-                                                uri: 'https://cdn.pixabay.com/photo/2014/09/17/20/03/profile-449912__340.jpg'
-                                            }}
-                                            className="h-8 w-8 rounded-full border-2 border-white"
-                                            style={{ marginLeft: -36 / 3 }}
-                                        />
-                                    ))}
-                                    <View
-                                        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e3f2fd]"
-                                        style={{ marginLeft: -36 / 3 }}
-                                    >
-                                        <Text className="text-xs font-bold text-[#60ABEF]">+2</Text>
+        <GestureHandlerRootView
+            style={{
+                flex: 1
+            }}
+        >
+            <TouchableWithoutFeedback onPress={closeSheet}>
+                <View style={{ flex: 1 }}>
+                    <View className="flex-1 bg-gray-100">
+                        {/* Fixed Header & Tabs */}
+                        <SafeAreaView className="bg-blue-400">
+                            <View className="rounded-b-3xl bg-blue-400">
+                                <BackButton color="white" />
+                                <View className="px-6">
+                                    <Text className="mt-2 text-2xl font-bold text-white">Summer trip</Text>
+                                    <View className="flex-row items-center justify-between">
+                                        <View className="flex-row items-center gap-2">
+                                            <TouchableOpacity
+                                                className="flex-row items-center text-center font-inter text-xs"
+                                                onPress={() => setOnEnteringDate(true)}
+                                            >
+                                                <Iconify icon="solar:calendar-linear" size={16} color="white" />
+                                                <Text className="ml-2 text-xs text-white">12 Jan - 20 Jan</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View className="flex-row">
+                                            <View className="-ml-2 flex-row items-center justify-center">
+                                                {[...Array(3)].map((_, index) => (
+                                                    <Image
+                                                        key={index}
+                                                        source={{
+                                                            uri: 'https://cdn.pixabay.com/photo/2014/09/17/20/03/profile-449912__340.jpg'
+                                                        }}
+                                                        className="h-8 w-8 rounded-full border-2 border-white"
+                                                        style={{ marginLeft: -36 / 3 }}
+                                                    />
+                                                ))}
+                                                <View
+                                                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e3f2fd]"
+                                                    style={{ marginLeft: -36 / 3 }}
+                                                >
+                                                    <Text className="text-xs font-bold text-[#60ABEF]">+2</Text>
+                                                </View>
+                                            </View>
+                                            <Button
+                                                text="Share"
+                                                onPress={() => {}}
+                                                additionalStyle="bg-black px-4 py-2 ml-3"
+                                            />
+                                        </View>
                                     </View>
                                 </View>
-                                <Button text="Share" onPress={() => {}} additionalStyle="bg-black px-4 py-2 ml-3" />
                             </View>
-                        </View>
-                    </View>
-                </View>
-                <View className="mt-4 flex-row justify-between">
-                    {TripPlanTabs.map((tab, index) => {
-                        const isActive = selectedTab === tab;
-                        return (
-                            <TouchableOpacity
-                                key={index}
-                                onPress={() => setSelectedTab(tab)}
-                                className={`flex-1 items-center py-3 ${
-                                    isActive ? 'bg-white' : 'bg-transparent'
-                                } rounded-t-xl`}
-                            >
-                                <Text className={`font-semibold ${isActive ? 'text-[#60ABEF]' : 'text-white'}`}>
-                                    {tab}
-                                </Text>
-                            </TouchableOpacity>
-                        );
-                    })}
-                </View>
-            </SafeAreaView>
+                            <View className="mt-4 flex-row justify-between">
+                                {TripPlanTabs.map((tab, index) => {
+                                    const isActive = selectedTab === tab;
+                                    return (
+                                        <TouchableOpacity
+                                            key={index}
+                                            onPress={() => setSelectedTab(tab)}
+                                            className={`flex-1 items-center py-3 ${
+                                                isActive ? 'bg-white' : 'bg-transparent'
+                                            } rounded-t-xl`}
+                                        >
+                                            <Text
+                                                className={`font-semibold ${isActive ? 'text-[#60ABEF]' : 'text-white'}`}
+                                            >
+                                                {tab}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </SafeAreaView>
 
-            {/* Tab content */}
-            <ScrollView contentContainerStyle={{ paddingTop: 10 }}>
-                <TabContent />
-            </ScrollView>
-        </View>
+                        {/* Tab content */}
+                        <ScrollView contentContainerStyle={{ paddingTop: 10 }}>
+                            <TabContent
+                                openSheet={openSheet}
+                                closeSheet={closeSheet}
+                                setBottomSheetContent={setBottomSheetContent}
+                            />
+                        </ScrollView>
+
+                        <DateRangePicker
+                            displayedDate={date.startDate}
+                            startDate={date.startDate}
+                            endDate={date.endDate}
+                            onChange={(data: any) => {
+                                setDate({ ...date, ...data });
+                            }}
+                            open={onEnteringDate}
+                            setOpen={setOnEnteringDate}
+                            range
+                        />
+                    </View>
+                    <BottomSheet
+                        ref={bottomSheetRef}
+                        index={-1}
+                        snapPoints={['40%']}
+                        enablePanDownToClose
+                        onChange={handleSheetChanges}
+                    >
+                        <BottomSheetView>{bottomSheetContent}</BottomSheetView>
+                    </BottomSheet>
+                </View>
+            </TouchableWithoutFeedback>
+        </GestureHandlerRootView>
     );
 }

@@ -4,6 +4,7 @@ import {
     changePassword as changePasswordApi,
     forgotPassword as forgotPasswordApi,
     login as loginApi,
+    loginGoogle as loginGoogleApi,
     logout as logoutApi,
     resendOtpEmail as resendOtpEmailApi,
     resendOtpResetPassword as resendOtpResetPasswordApi,
@@ -35,6 +36,21 @@ export function useLogin() {
 
     return { login, isPending };
 }
+
+export function useLoginGoogle() {
+    const { mutate: loginGoogle, isPending } = useMutation({
+        mutationFn: (idToken: string) => loginGoogleApi(idToken),
+        onSuccess: () => {
+            console.log('Sign in with Google successfully!');
+        },
+        onError: (err) => {
+            console.error(err.message);
+        }
+    });
+
+    return { loginGoogle, isPending };
+}
+
 export function useSignUp() {
     const { mutate: signUp, isPending } = useMutation({
         mutationFn: (signUpReq: SignupREQ) => signUpApi(signUpReq),
