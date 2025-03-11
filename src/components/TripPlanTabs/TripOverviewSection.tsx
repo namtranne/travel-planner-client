@@ -117,7 +117,7 @@ const TripOverviewSection = ({ titleSection, openSheet, setBottomSheetContent }:
 
     const options = [
         { icon: 'mdi:pencil', label: 'Edit section heading', action: () => {} },
-        { icon: 'mdi:trash-can', label: 'Delete section', action: () => {}, color: 'red' },
+        { icon: 'mdi:trash-can', label: 'Delete section', action: () => {} },
         { icon: 'mdi:dots-grid', label: 'Reorder sections', action: () => {} }
     ];
 
@@ -140,14 +140,14 @@ const TripOverviewSection = ({ titleSection, openSheet, setBottomSheetContent }:
                     onPress={() => {
                         setBottomSheetContent(
                             <View className="rounded-t-3xl bg-white p-4">
-                                {options.map(({ icon, label, action, color }, index) => (
+                                {options.map(({ icon, label, action }, index) => (
                                     <TouchableOpacity
                                         key={index}
                                         className="flex-row items-center gap-2 p-3"
                                         onPress={() => action()}
                                     >
-                                        <Iconify icon={icon} size={20} color={color || 'black'} />
-                                        <Text className={`text-base ${color ? 'text-red-500' : ''}`}>{label}</Text>
+                                        <Iconify icon={icon} size={20} color="black" />
+                                        <Text className="text-base">{label}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
