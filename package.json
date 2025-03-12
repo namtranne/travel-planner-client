@@ -27,6 +27,7 @@
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@dev-plugins/react-query": "^0.1.0",
+    "@gorhom/bottom-sheet": "^5.1.2",
     "@react-native-google-signin/google-signin": "^13.1.0",
     "@rneui/base": "^4.0.0-rc.8",
     "@rneui/themed": "^4.0.0-rc.8",
@@ -63,6 +64,7 @@
     "react-native-svg": "^15.10.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.6",
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "tailwind-react-native-classnames": "^3.0.1",
     "undefined": "expo-auth-session/providers/google"
   },

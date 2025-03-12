@@ -57,7 +57,21 @@ module.exports = (api) => {
                         'mingcute:down-line',
                         'fontisto:map-marker',
                         'material-symbols:map',
-                        'mdi:clock-outline'
+                        'mdi:clock-outline',
+                        'skill-icons:instagram',
+                        'mdi:chevron-down',
+                        'mdi:chevron-right',
+                        'bi:three-dots',
+                        'mdi:pencil',
+                        'mdi:trash-can',
+                        'mdi:dots-grid',
+                        'mdi-light:map-marker',
+                        'mdi-light:note',
+                        'material-symbols-light:checklist',
+                        'mdi:view-grid-outline',
+                        'mdi:chevron-up',
+                        'mdi:briefcase-outline',
+                        'fluent:note-48-filled'
                     ]
                 }
             ]
