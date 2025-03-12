@@ -1,5 +1,6 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import moment from 'moment';
+import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
@@ -23,7 +24,6 @@ import OverviewTab from '@/src/components/TripPlanTabs/OverviewTab';
 import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
 import { useTripDetails, useUpdateTrip } from '@/src/hooks/use-trip';
-import { convertDateFormat } from '@/src/utils/DateUtil';
 
 const TripPlanTabs = ['Overview', 'Itinerary', 'Explore', 'Budget'];
 const TabComponents: { [key: string]: React.ComponentType<any> } = {
@@ -32,13 +32,14 @@ const TabComponents: { [key: string]: React.ComponentType<any> } = {
     Explore: ExploreTab,
     Budget: BudgetTab
 };
+
 export default function TripScreen() {
     const [selectedTab, setSelectedTab] = useState(TripPlanTabs[0] || 'Overview');
     const TabContent = TabComponents[selectedTab] || OverviewTab;
     const [tripState, setTripState] = useState({
         title: '',
-        startDate: '',
-        endDate: ''
+        startDate: moment(),
+        endDate: moment()
     });
     const [onEnteringDate, setOnEnteringDate] = useState(false);
     const { isLoading, trip } = useTripDetails(1);
@@ -59,18 +60,34 @@ export default function TripScreen() {
     }, []);
 
     useEffect(() => {
-        bottomSheetRef.current?.close();
-    }, []);
-
-    useEffect(() => {
         if (trip) {
             setTripState({
                 title: trip.title,
-                startDate: convertDateFormat(trip.startDate),
-                endDate: convertDateFormat(trip.endDate)
+                startDate: moment(trip.startDate),
+                endDate: moment(trip.endDate)
             });
         }
     }, [trip]);
+
+    const handleDateChange = (data: any) => {
+        if (data.startDate && data.endDate) {
+            setTripState((prev) => ({
+                ...prev,
+                startDate: data.startDate,
+                endDate: data.endDate
+            }));
+        } else if (data.startDate) {
+            setTripState((prev) => ({
+                ...prev,
+                startDate: data.startDate
+            }));
+        } else if (data.endDate) {
+            setTripState((prev) => ({
+                ...prev,
+                endDate: data.endDate
+            }));
+        }
+    };
 
     if (isLoading) {
         return (
@@ -94,11 +111,7 @@ export default function TripScreen() {
     ];
 
     return (
-        <GestureHandlerRootView
-            style={{
-                flex: 1
-            }}
-        >
+        <GestureHandlerRootView style={{ flex: 1 }}>
             <TouchableWithoutFeedback onPress={closeSheet}>
                 <View style={{ flex: 1 }}>
                     <View className="flex-1 bg-gray-100">
@@ -126,7 +139,8 @@ export default function TripScreen() {
                                             >
                                                 <Iconify icon="solar:calendar-linear" size={16} color="white" />
                                                 <Text className="ml-2 text-xs text-white">
-                                                    {tripState.startDate} - {tripState.endDate}
+                                                    {tripState.startDate.format('DD MMM')} -{' '}
+                                                    {tripState.endDate.format('DD MMM')}
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
@@ -208,6 +222,7 @@ export default function TripScreen() {
                         {/* Tab content */}
                         <ScrollView contentContainerStyle={{ paddingTop: 10 }}>
                             <TabContent
+                                trip={trip}
                                 openSheet={openSheet}
                                 closeSheet={closeSheet}
                                 setBottomSheetContent={setBottomSheetContent}
@@ -215,12 +230,21 @@ export default function TripScreen() {
                         </ScrollView>
 
                         <DateRangePicker
-                            displayedDate={moment(tripState.startDate)}
-                            startDate={moment(tripState.startDate)}
-                            endDate={moment(tripState.endDate)}
-                            onChange={(data: any) => {}}
+                            displayedDate={tripState.startDate}
+                            startDate={tripState.startDate}
+                            endDate={tripState.endDate}
+                            onChange={handleDateChange}
                             open={onEnteringDate}
                             setOpen={setOnEnteringDate}
+                            handleClose={() =>
+                                updateTrip({
+                                    tripId: 1,
+                                    updateTripReq: {
+                                        startDate: tripState.startDate.format('YYYY-MM-DD'),
+                                        endDate: tripState.endDate.format('YYYY-MM-DD')
+                                    }
+                                })
+                            }
                             range
                         />
                     </View>

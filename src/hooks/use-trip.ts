@@ -5,9 +5,12 @@ import {
     deleteTrip as deleteTripApi,
     getMyTrips,
     getTripDetails,
+    getTripOverviewSectionDetails,
     updateTrip as updateTripApi
 } from '../services/api-trip';
+import type { UpdateTripREQ } from '../services/types';
 
+// Trip
 export function useMyTrips() {
     const { data, isLoading, error } = useQuery({
         queryKey: ['trips'],
@@ -59,7 +62,8 @@ export function useUpdateTrip() {
         isPending,
         error
     } = useMutation({
-        mutationFn: (data: { tripId: number; updateTripReq: any }) => updateTripApi(data.tripId, data.updateTripReq),
+        mutationFn: (data: { tripId: number; updateTripReq: UpdateTripREQ }) =>
+            updateTripApi(data.tripId, data.updateTripReq),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['trips'] });
         },
@@ -86,3 +90,19 @@ export function useDeleteTrip() {
 
     return { isPending, deleteTrip, error };
 }
+
+// Trip Overview Section
+export function useTripOverviewSectionDetails(tripId: number, sectionId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['trip-overview-section', { tripId, sectionId }],
+        queryFn: () => getTripOverviewSectionDetails(tripId, sectionId),
+        retry: false
+    });
+    if (error) {
+        console.log('error', error);
+    }
+
+    return { isLoading, tripOverviewSection: data, error };
+}
+
+// Note
