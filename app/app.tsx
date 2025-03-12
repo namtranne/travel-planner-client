@@ -30,7 +30,7 @@ const App = () => {
                 </View>
                 <View>
                     <TouchableOpacity
-                        onPress={() => router.navigate('./planning')}
+                        onPress={() => router.navigate('./trip-plan')}
                         className="mt-5 flex h-[41px] w-[312px] flex-row items-center justify-center rounded-xl bg-black"
                     >
                         <Text className="font-inter text-xs font-semibold text-white">Home</Text>
