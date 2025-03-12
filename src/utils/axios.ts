@@ -40,7 +40,7 @@ authAxios.interceptors.response.use(
         if (error.response?.status === 401) {
             try {
                 authAxios.defaults.headers.common.Authorization = null;
-                // return await SecureStore.deleteItemAsync('token');
+                return await SecureStore.deleteItemAsync('token');
             } catch (storageError) {
                 console.error('Error removing token from SecureStore:', storageError);
             }

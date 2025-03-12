@@ -36,3 +36,72 @@ export type UpdateUserREQ = {
     nationality?: string;
     avatar?: any;
 };
+
+export type CreateTripREQ = {
+    whereTo: string;
+    startDate?: string;
+    endDate?: string;
+};
+
+export type UpdateTripREQ = {
+    title?: string;
+    startDate?: string;
+    endDate?: string;
+};
+
+export type CreateTripOverviewSectionREQ = {
+    title: string;
+    description?: string;
+    sectionType: SectionType;
+};
+
+export enum SectionType {
+    COMMON = 'COMMON',
+    RESERVATION = 'RESERVATION',
+    ATTACHMENT = 'ATTACHMENT'
+}
+
+export type UpdateTripOverviewSectionREQ = {
+    title?: string;
+    description?: string;
+};
+
+export type CreatePlaceToVisitREQ = {
+    placeId: number;
+    sectionId: number;
+    startDate?: string;
+    endDate?: string;
+    expense?: number;
+};
+
+export type UpdatePlaceToVisitREQ = {
+    startDate?: string;
+    endDate?: string;
+    expense?: number;
+};
+
+export type CreateNoteREQ = {
+    content: string;
+};
+
+export type UpdateNoteREQ = {
+    content?: string;
+};
+
+export type CreateCheckListREQ = {
+    title: string;
+};
+
+export type UpdateCheckListREQ = {
+    title?: string;
+};
+
+export type CreateCheckListItemREQ = {
+    title: string;
+    isChecked?: boolean;
+};
+
+export type UpdateCheckListItemREQ = {
+    title?: string;
+    isChecked?: boolean;
+};

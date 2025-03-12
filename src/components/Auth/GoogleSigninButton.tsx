@@ -1,12 +1,10 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
+import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { GoogleIcon } from '@/assets';
-
-WebBrowser.maybeCompleteAuthSession();
+import { useLoginGoogle } from '@/src/hooks/use-authenticate';
 
 export default function GoogleSigninButton() {
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -14,6 +12,8 @@ export default function GoogleSigninButton() {
         iosClientId: '745261753786-7j5ku10504k63vo2erv5i034bun7lrtp.apps.googleusercontent.com',
         redirectUri: 'com.anonymous.reactnativeboilerplate:/oauthredirect'
     });
+    const { loginGoogle, isPending } = useLoginGoogle();
+
     async function fetchUserInfo(token: any) {
         const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
             headers: { Authorization: `Bearer ${token}` }
@@ -23,18 +23,30 @@ export default function GoogleSigninButton() {
     }
 
     useEffect(() => {
-        // console.log(JSON.stringify(response));
-        if (response?.type === 'success') {
-            // console.log(JSON.stringify(response.params.id_token));
-            const { authentication } = response;
-            fetchUserInfo(authentication?.accessToken);
+        async function fetchData() {
+            if (response?.type === 'success') {
+                const { authentication } = response;
+                await fetchUserInfo(authentication?.accessToken);
+                loginGoogle(authentication?.idToken || '', {
+                    onSuccess: () => {
+                        router.navigate('home-tabs/home');
+                    },
+                    onError: (error) => {
+                        Alert.alert('Login Failed', error.message, [
+                            { text: 'Try Again', onPress: () => console.log('User retries login by Google') },
+                            { text: 'Cancel', style: 'cancel' }
+                        ]);
+                    }
+                });
+            }
         }
-    }, [response]);
+        fetchData();
+    }, [response, loginGoogle]);
 
     return (
         <View>
             <TouchableOpacity
-                disabled={!request}
+                disabled={!request || isPending}
                 onPress={() => promptAsync()}
                 className="mt-5 flex h-[41px] w-[312px] flex-row items-center justify-center rounded-xl bg-black"
             >
