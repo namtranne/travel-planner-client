@@ -12,3 +12,10 @@ export const fetchLocations = async (search?: string) => {
         subtitle: item.stateName ? `${item.stateName}, ${item.countryName}` : item.countryName // Handle missing stateName
     }));
 };
+
+export const fetchExplorePage = async (locationId: number) => {
+    if (!locationId) throw new Error('Location ID is required');
+
+    const response = await authAxios.get(`location/${locationId}/explore`);
+    return response.data.data;
+};
