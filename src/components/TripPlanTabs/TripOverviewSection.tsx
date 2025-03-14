@@ -1,12 +1,25 @@
 import { CheckBox } from '@rneui/base';
 import type React from 'react';
-import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
-import { useTripOverviewSectionDetails } from '@/src/hooks/use-trip';
+import {
+    useCreateChecklist,
+    useCreateChecklistItem,
+    useCreateNote,
+    useDeleteChecklist,
+    useDeleteChecklistItem,
+    useDeleteNote,
+    useDeleteTripOverviewSection,
+    useTripOverviewSectionDetails,
+    useUpdateChecklist,
+    useUpdateChecklistItem,
+    useUpdateNote,
+    useUpdateTripOverviewSection
+} from '@/src/hooks/use-trip';
 
-import Button from '../ui/CommonButton';
+import SearchPlaceModal from './SearchPlaceSheet';
 
 interface TripOverviewSectionProps {
     tripId: number;
@@ -16,9 +29,18 @@ interface TripOverviewSectionProps {
     // eslint-disable-next-line react/no-unused-prop-types
     closeSheet: () => void;
     setBottomSheetContent: (content: React.ReactNode) => void;
+    setSnapPoints: (points: string[]) => void;
 }
 
-const Note = ({ initialNote, handleUpdateNote }: { initialNote: string; handleUpdateNote: () => void }) => {
+const Note = ({
+    initialNote,
+    handleUpdateNote,
+    handleDeleteNote
+}: {
+    initialNote: string;
+    handleUpdateNote: (note: string) => void;
+    handleDeleteNote: () => void;
+}) => {
     const [expanded, setExpanded] = useState(false);
     const [note, setNote] = useState(initialNote);
     return (
@@ -35,13 +57,18 @@ const Note = ({ initialNote, handleUpdateNote }: { initialNote: string; handleUp
                         onFocus={() => setExpanded(true)}
                         value={note}
                         onChangeText={(text) => setNote(text)}
-                        onBlur={() => handleUpdateNote()}
+                        onBlur={() => handleUpdateNote(note)}
                     />
                 </View>
                 {expanded && (
                     <View className="mt-4 flex-row items-center justify-end gap-3">
                         <TouchableOpacity>
-                            <Iconify icon="mdi:trash-can" size={24} color="#6b7280" />
+                            <Iconify
+                                icon="mdi:trash-can"
+                                size={24}
+                                color="#6b7280"
+                                onPress={() => handleDeleteNote()}
+                            />
                         </TouchableOpacity>
                         <TouchableOpacity>
                             <Iconify icon="mdi:view-grid-outline" size={24} color="#6b7280" />
@@ -56,23 +83,50 @@ const Note = ({ initialNote, handleUpdateNote }: { initialNote: string; handleUp
     );
 };
 
-const ChecklistItem = ({ handleFocus }: { handleFocus: () => void }) => {
+const ChecklistItem = ({
+    initialTitle,
+    isChecked,
+    handleFocus,
+    handleUpdateChecklistItem,
+    handleDeleteChecklistItem
+}: {
+    initialTitle: string;
+    isChecked: boolean;
+    handleFocus: () => void;
+    handleUpdateChecklistItem: (title: string, isChecked: boolean) => void;
+    handleDeleteChecklistItem: () => void;
+}) => {
+    const [title, setTitle] = useState(initialTitle);
+    const [checked, setChecked] = useState(isChecked);
     return (
-        <View className="mb-3 flex-row items-center">
-            <CheckBox
-                checked={false}
-                checkedIcon="dot-circle-o"
-                uncheckedIcon="circle-o"
-                checkedColor="#000"
-                uncheckedColor="#000"
-                containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
-            />
-            <TextInput
-                placeholder="Add some items"
-                placeholderTextColor="#6c757d"
-                className="flex-1 text-base text-gray-800"
-                onFocus={handleFocus}
-            />
+        <View className="flex-row items-center justify-between pr-2">
+            <View className="flex-row items-center">
+                <CheckBox
+                    checked={checked}
+                    iconType="material-community"
+                    checkedIcon="checkbox-marked"
+                    uncheckedIcon="checkbox-blank-outline"
+                    checkedColor="#60ABEF"
+                    uncheckedColor="#000"
+                    containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                    onPress={() => {
+                        setChecked(!checked);
+                        handleUpdateChecklistItem(title, !checked);
+                    }}
+                />
+                <TextInput
+                    placeholder="Add some items"
+                    placeholderTextColor="#6c757d"
+                    className={`flex-1 text-gray-800 ${checked ? 'line-through' : ''}`}
+                    onFocus={handleFocus}
+                    value={title}
+                    onChangeText={(text) => setTitle(text)}
+                    onBlur={() => handleUpdateChecklistItem(title, checked)}
+                />
+            </View>
+            <TouchableOpacity onPress={() => handleDeleteChecklistItem()}>
+                <Text className="text-sm text-red-500">X</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -80,11 +134,19 @@ const ChecklistItem = ({ handleFocus }: { handleFocus: () => void }) => {
 const Checklist = ({
     initialTitle,
     items,
-    handleUpdateChecklist
+    handleUpdateChecklist,
+    handleDeleteChecklist,
+    handleCreateChecklistItem,
+    handleUpdateChecklistItem,
+    handleDeleteChecklistItem
 }: {
     initialTitle: string;
     items: any;
-    handleUpdateChecklist: () => void;
+    handleUpdateChecklist: (title: string) => void;
+    handleDeleteChecklist: () => void;
+    handleCreateChecklistItem: () => void;
+    handleUpdateChecklistItem: (checklistItemId: number, title: string, isChecked: boolean) => void;
+    handleDeleteChecklistItem: (checklistItemId: number) => void;
 }) => {
     const [expanded, setExpanded] = useState(false);
     const [title, setTitle] = useState(initialTitle);
@@ -93,18 +155,19 @@ const Checklist = ({
             <View className="rounded-xl bg-gray-100 p-3">
                 <TextInput
                     placeholder="Add a title"
-                    placeholderTextColor="#333"
-                    className="mb-2 text-base font-bold text-gray-800"
+                    placeholderTextColor="#a3a1a1"
+                    className="mb-2 text-base font-bold text-gray-600"
                     onFocus={() => setExpanded(true)}
                     value={title}
                     onChangeText={(text) => setTitle(text)}
-                    onBlur={() => handleUpdateChecklist()}
+                    onBlur={() => handleUpdateChecklist(title)}
                 />
-                <TouchableOpacity className="mb-3 flex-row items-center" onPress={() => {}}>
+                <TouchableOpacity className="flex-row items-center" onPress={() => handleCreateChecklistItem()}>
                     <CheckBox
                         checked={false}
-                        checkedIcon="dot-circle-o"
-                        uncheckedIcon="circle-o"
+                        iconType="material-community"
+                        checkedIcon="checkbox-marked"
+                        uncheckedIcon="checkbox-blank-outline"
                         checkedColor="#4c4c4c"
                         uncheckedColor="#585656"
                         containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
@@ -113,7 +176,16 @@ const Checklist = ({
                 </TouchableOpacity>
                 {/* Checklist items */}
                 {items.map((item: any, index: number) => (
-                    <ChecklistItem handleFocus={() => setExpanded(true)} key={index} />
+                    <ChecklistItem
+                        initialTitle={item.title}
+                        isChecked={item.isChecked}
+                        handleFocus={() => setExpanded(true)}
+                        handleUpdateChecklistItem={(itemTitle, isChecked) =>
+                            handleUpdateChecklistItem(item.id, itemTitle, isChecked)
+                        }
+                        handleDeleteChecklistItem={() => handleDeleteChecklistItem(item.id)}
+                        key={index}
+                    />
                 ))}
                 {/* Options */}
                 {expanded && (
@@ -124,7 +196,12 @@ const Checklist = ({
                         </View>
                         <View className="mt-2 flex-row justify-end gap-3">
                             <TouchableOpacity>
-                                <Iconify icon="mdi:trash-can" size={24} color="#6c757d" />
+                                <Iconify
+                                    icon="mdi:trash-can"
+                                    size={24}
+                                    color="#6c757d"
+                                    onPress={() => handleDeleteChecklist()}
+                                />
                             </TouchableOpacity>
                             <TouchableOpacity>
                                 <Iconify icon="mdi:view-grid-outline" size={24} color="#6c757d" />
@@ -145,19 +222,48 @@ const TripOverviewSection = ({
     sectionId,
     titleSection,
     openSheet,
-    setBottomSheetContent
+    closeSheet,
+    setBottomSheetContent,
+    setSnapPoints
 }: TripOverviewSectionProps) => {
     const [expanded, setExpanded] = useState(false);
     const [title, setTitle] = useState(titleSection);
+    const inputTitleRef = useRef<TextInput>(null);
+
     const { isLoading, tripOverviewSection } = useTripOverviewSectionDetails(tripId, sectionId);
+    const { isPending: isPendingCreateNote, createNote } = useCreateNote();
+    const { isPending: isPendingUpdateNote, updateNote } = useUpdateNote();
+    const { isPending: isPendingDeleteNote, deleteNote } = useDeleteNote();
+    const { isPending: isPendingCreateChecklist, createChecklist } = useCreateChecklist();
+    const { isPending: isPendingUpdateChecklist, updateChecklist } = useUpdateChecklist();
+    const { isPending: isPendingDeleteChecklist, deleteChecklist } = useDeleteChecklist();
+    const { isPending: isPendingCreateChecklistItem, createChecklistItem } = useCreateChecklistItem();
+    const { isPending: isPendingUpdateChecklistItem, updateChecklistItem } = useUpdateChecklistItem();
+    const { isPending: isPendingDeleteChecklistItem, deleteChecklistItem } = useDeleteChecklistItem();
+
+    const { isPending: isPendingDeleteTripOverviewSection, deleteTripOverviewSection } = useDeleteTripOverviewSection();
+    const { updateTripOverviewSection } = useUpdateTripOverviewSection();
 
     const options = useMemo(
         () => [
-            { icon: 'mdi:pencil', label: 'Edit section heading', action: () => {} },
-            { icon: 'mdi:trash-can', label: 'Delete section', action: () => {} },
+            {
+                icon: 'mdi:pencil',
+                label: 'Edit section heading',
+                action: () => {
+                    closeSheet();
+                    setExpanded(true);
+                    setTimeout(() => inputTitleRef.current?.focus(), 100);
+                }
+            },
+            {
+                icon: 'mdi:trash-can',
+                label: 'Delete section',
+                action: () => deleteTripOverviewSection({ tripId, sectionId }),
+                disabled: isPendingDeleteTripOverviewSection
+            },
             { icon: 'mdi:dots-grid', label: 'Reorder sections', action: () => {} }
         ],
-        []
+        [isPendingDeleteTripOverviewSection, deleteTripOverviewSection, sectionId, tripId, closeSheet]
     );
 
     if (isLoading) {
@@ -175,6 +281,7 @@ const TripOverviewSection = ({
                     <Iconify icon={expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'} color="black" size={36} />
                 </TouchableOpacity>
                 <TextInput
+                    ref={inputTitleRef}
                     value={title}
                     onChangeText={setTitle}
                     className="h-[60px] flex-1 rounded-lg p-2 text-lg font-semibold focus:bg-gray-200"
@@ -182,16 +289,22 @@ const TripOverviewSection = ({
                     style={{ textAlignVertical: 'top' }}
                     multiline
                     numberOfLines={1}
+                    onFocus={() => setExpanded(true)}
+                    onBlur={() =>
+                        updateTripOverviewSection({ tripId, sectionId, updateTripOverviewSectionReq: { title } })
+                    }
                 />
                 <TouchableOpacity
                     onPress={() => {
+                        setSnapPoints(['40%']);
                         setBottomSheetContent(
                             <View className="rounded-t-3xl bg-white p-4">
-                                {options.map(({ icon, label, action }, index) => (
+                                {options.map(({ icon, label, action, disabled }, index) => (
                                     <TouchableOpacity
                                         key={index}
                                         className="flex-row items-center gap-2 p-3"
                                         onPress={() => action()}
+                                        disabled={disabled}
                                     >
                                         <Iconify icon={icon} size={20} color="black" />
                                         <Text className="text-base">{label}</Text>
@@ -209,14 +322,83 @@ const TripOverviewSection = ({
                 <View className="mt-2">
                     {/* Notes */}
                     {tripOverviewSection?.notes.map((note: any, index: number) => (
-                        <Note initialNote={note.content} handleUpdateNote={() => {}} key={index} />
+                        <Note
+                            initialNote={note.content}
+                            handleUpdateNote={(updatedNote) =>
+                                updateNote({
+                                    tripId,
+                                    sectionId,
+                                    noteId: note.id,
+                                    updateNoteReq: { content: updatedNote }
+                                })
+                            }
+                            handleDeleteNote={() =>
+                                deleteNote(
+                                    { tripId, sectionId, noteId: note.id },
+                                    {
+                                        onSuccess: () =>
+                                            Alert.alert('Success', 'Note deleted.', [
+                                                {
+                                                    text: 'OK'
+                                                }
+                                            ])
+                                    }
+                                )
+                            }
+                            key={index}
+                        />
                     ))}
                     {/* Checklists */}
                     {tripOverviewSection?.checkLists.map((checklist: any, index: number) => (
                         <Checklist
                             initialTitle={checklist.title}
                             items={checklist.items}
-                            handleUpdateChecklist={() => {}}
+                            handleUpdateChecklist={(updatedTitle) =>
+                                updateChecklist({
+                                    tripId,
+                                    sectionId,
+                                    checklistId: checklist.id,
+                                    updateCheckListReq: { title: updatedTitle }
+                                })
+                            }
+                            handleDeleteChecklist={() =>
+                                deleteChecklist(
+                                    { tripId, sectionId, checklistId: checklist.id },
+                                    {
+                                        onSuccess: () =>
+                                            Alert.alert('Success', 'Checklist deleted.', [
+                                                {
+                                                    text: 'OK'
+                                                }
+                                            ])
+                                    }
+                                )
+                            }
+                            handleCreateChecklistItem={() =>
+                                createChecklistItem({
+                                    tripId,
+                                    sectionId,
+                                    checklistId: checklist.id,
+                                    createCheckListItemReq: { title: 'Add item title' }
+                                })
+                            }
+                            handleUpdateChecklistItem={(checklistItemId, itemTitle, isChecked) => {
+                                updateChecklistItem({
+                                    tripId,
+                                    sectionId,
+                                    checklistId: checklist.id,
+                                    checklistItemId,
+                                    updateCheckListItemReq: { title: itemTitle, isChecked }
+                                });
+                            }}
+                            handleDeleteChecklistItem={(checklistItemId) =>
+                                deleteChecklistItem({
+                                    tripId,
+                                    sectionId,
+                                    checklistId: checklist.id,
+                                    checklistItemId
+                                })
+                            }
                             key={index}
                         />
                     ))}
@@ -224,41 +406,37 @@ const TripOverviewSection = ({
                         <TouchableOpacity
                             className="flex-1 flex-row items-center rounded-lg bg-gray-100 p-3"
                             onPress={() => {
-                                setBottomSheetContent(
-                                    <View className="px-5 pb-6 pt-2">
-                                        <Text className="text-center text-base font-bold">Add a place</Text>
-                                        <View className="mt-4 flex-row items-center rounded-lg bg-gray-100 px-4 py-2">
-                                            <TextInput
-                                                placeholder="Search by name or address"
-                                                className="flex-1 text-gray-600"
-                                            />
-                                            <TouchableOpacity
-                                                className="h-6 w-6 items-center justify-center rounded-full bg-gray-300"
-                                                onPress={() => {}}
-                                            >
-                                                <Text className="text-gray-500">X</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View className="mt-12 items-center">
-                                            <Text className="text-center text-gray-500">Need more ideas?</Text>
-                                            <Button
-                                                text="Explore guides and blogs"
-                                                onPress={() => {}}
-                                                additionalStyle="mt-2 bg-[#60ABEF] w-[250px] rounded-xl"
-                                            />
-                                        </View>
-                                    </View>
-                                );
+                                setSnapPoints(['70%']);
+                                setBottomSheetContent(<SearchPlaceModal />);
                                 openSheet();
                             }}
                         >
                             <Iconify icon="mdi-light:map-marker" size={20} color="black" />
                             <Text className="ml-2 text-gray-500">Add a place</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity className="mx-2 rounded-lg bg-gray-100 p-3" onPress={() => {}}>
+                        <TouchableOpacity
+                            className="mx-2 rounded-lg bg-gray-100 p-3"
+                            onPress={() =>
+                                createNote({ tripId, sectionId, createNoteReq: { content: 'Add your notes here' } })
+                            }
+                            disabled={isPendingCreateNote || isPendingUpdateNote || isPendingDeleteNote}
+                        >
                             <Iconify icon="mdi-light:note" size={20} color="black" />
                         </TouchableOpacity>
-                        <TouchableOpacity className="rounded-lg bg-gray-100 p-3" onPress={() => {}}>
+                        <TouchableOpacity
+                            className="rounded-lg bg-gray-100 p-3"
+                            onPress={() =>
+                                createChecklist({ tripId, sectionId, createCheckListReq: { title: 'Add a title' } })
+                            }
+                            disabled={
+                                isPendingCreateChecklist ||
+                                isPendingUpdateChecklist ||
+                                isPendingDeleteChecklist ||
+                                isPendingCreateChecklistItem ||
+                                isPendingUpdateChecklistItem ||
+                                isPendingDeleteChecklistItem
+                            }
+                        >
                             <Iconify icon="material-symbols-light:checklist" size={20} color="black" />
                         </TouchableOpacity>
                     </View>

@@ -66,7 +66,12 @@ module.exports = (api) => {
                         'mdi:view-grid-outline',
                         'mdi:chevron-up',
                         'mdi:briefcase-outline',
-                        'fluent:note-48-filled'
+                        'fluent:note-48-filled',
+                        'mdi:map-marker-outline',
+                        'mdi:magnify',
+                        'mdi:pencil-outline',
+                        'mdi:close',
+                        'ic:baseline-plus'
                     ]
                 }
             ]
