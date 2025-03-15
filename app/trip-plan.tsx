@@ -2,7 +2,7 @@ import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import moment from 'moment';
 import type React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Image,
@@ -26,7 +26,7 @@ import ItineraryTab from '@/src/components/TripPlanTabs/ItineraryTab';
 import OverviewTab from '@/src/components/TripPlanTabs/OverviewTab';
 import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
-import { useTripDetails, useUpdateTrip } from '@/src/hooks/use-trip';
+import { useDeleteTrip, useTripDetails, useUpdateTrip } from '@/src/hooks/use-trip';
 
 const TripPlanTabs = ['Overview', 'Itinerary', 'Explore', 'Budget'];
 interface TabContentProps {
@@ -54,7 +54,8 @@ export default function TripScreen() {
     });
     const [onEnteringDate, setOnEnteringDate] = useState(false);
     const { isLoading, trip } = useTripDetails(1);
-    const { isPending, updateTrip } = useUpdateTrip();
+    const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
+    const { isPending: isPendingDeleteTrip, deleteTrip } = useDeleteTrip();
     const tripTitleRef = useRef<TextInput>(null);
 
     // Bottom Sheet Management
@@ -113,6 +114,22 @@ export default function TripScreen() {
         }
     };
 
+    const options = useMemo(
+        () => [
+            {
+                icon: 'mdi:pencil',
+                label: 'Edit title',
+                action: () => {
+                    tripTitleRef.current?.focus();
+                    closeSheet();
+                }
+            },
+            { icon: 'weui:share-outlined', label: 'Share', action: () => {} },
+            { icon: 'mdi:trash-can', label: 'Delete this trip', action: () => deleteTrip({ tripId: 1 }) }
+        ],
+        [closeSheet, deleteTrip]
+    );
+
     if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -120,19 +137,6 @@ export default function TripScreen() {
             </View>
         );
     }
-
-    const options = [
-        {
-            icon: 'mdi:pencil',
-            label: 'Edit title',
-            action: () => {
-                tripTitleRef.current?.focus();
-                closeSheet();
-            }
-        },
-        { icon: 'weui:share-outlined', label: 'Share', action: () => {} },
-        { icon: 'mdi:trash-can', label: 'Delete this trip', action: () => {} }
-    ];
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -150,7 +154,8 @@ export default function TripScreen() {
                                             className="mt-2 text-2xl font-bold text-white"
                                             value={tripState.title}
                                             onChangeText={(text) => {
-                                                if (!isPending) setTripState((prev) => ({ ...prev, title: text }));
+                                                if (!isPendingUpdateTrip && !isPendingDeleteTrip)
+                                                    setTripState((prev) => ({ ...prev, title: text }));
                                             }}
                                             onBlur={() =>
                                                 updateTrip({ tripId: 1, updateTripReq: { title: tripState.title } })

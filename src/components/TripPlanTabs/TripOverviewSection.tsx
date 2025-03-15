@@ -19,6 +19,7 @@ import {
     useUpdateTripOverviewSection
 } from '@/src/hooks/use-trip';
 
+import PlaceToVisitCard from './PlaceToVisitCard';
 import SearchPlaceModal from './SearchPlaceSheet';
 
 interface TripOverviewSectionProps {
@@ -175,7 +176,7 @@ const Checklist = ({
                     <Text className="flex-1 text-sm text-gray-500">Add some items</Text>
                 </TouchableOpacity>
                 {/* Checklist items */}
-                {items.map((item: any, index: number) => (
+                {items.map((item: any) => (
                     <ChecklistItem
                         initialTitle={item.title}
                         isChecked={item.isChecked}
@@ -184,7 +185,7 @@ const Checklist = ({
                             handleUpdateChecklistItem(item.id, itemTitle, isChecked)
                         }
                         handleDeleteChecklistItem={() => handleDeleteChecklistItem(item.id)}
-                        key={index}
+                        key={item.id}
                     />
                 ))}
                 {/* Options */}
@@ -258,7 +259,10 @@ const TripOverviewSection = ({
             {
                 icon: 'mdi:trash-can',
                 label: 'Delete section',
-                action: () => deleteTripOverviewSection({ tripId, sectionId }),
+                action: () => {
+                    closeSheet();
+                    deleteTripOverviewSection({ tripId, sectionId });
+                },
                 disabled: isPendingDeleteTripOverviewSection
             },
             { icon: 'mdi:dots-grid', label: 'Reorder sections', action: () => {} }
@@ -321,7 +325,7 @@ const TripOverviewSection = ({
             {expanded && (
                 <View className="mt-2">
                     {/* Notes */}
-                    {tripOverviewSection?.notes.map((note: any, index: number) => (
+                    {tripOverviewSection?.notes.map((note: any) => (
                         <Note
                             initialNote={note.content}
                             handleUpdateNote={(updatedNote) =>
@@ -345,11 +349,11 @@ const TripOverviewSection = ({
                                     }
                                 )
                             }
-                            key={index}
+                            key={note.id}
                         />
                     ))}
                     {/* Checklists */}
-                    {tripOverviewSection?.checkLists.map((checklist: any, index: number) => (
+                    {tripOverviewSection?.checkLists.map((checklist: any) => (
                         <Checklist
                             initialTitle={checklist.title}
                             items={checklist.items}
@@ -399,9 +403,11 @@ const TripOverviewSection = ({
                                     checklistItemId
                                 })
                             }
-                            key={index}
+                            key={checklist.id}
                         />
                     ))}
+                    {/* Place to visits */}
+                    <PlaceToVisitCard />
                     <View className="mt-2 flex-row items-center justify-between">
                         <TouchableOpacity
                             className="flex-1 flex-row items-center rounded-lg bg-gray-100 p-3"

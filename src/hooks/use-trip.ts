@@ -102,9 +102,10 @@ export function useDeleteTrip() {
         isPending,
         error
     } = useMutation({
-        mutationFn: (tripId: number) => deleteTripApi(tripId),
-        onSuccess: () => {
+        mutationFn: (data: { tripId: number }) => deleteTripApi(data.tripId),
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['trips'] });
+            queryClient.removeQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
         onError: (err) => console.error(err.message)
     });
@@ -181,6 +182,7 @@ export function useDeleteTripOverviewSection() {
             deleteTripOverviewSectionApi(data.tripId, data.sectionId),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+            queryClient.removeQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
         onError: (err) => console.error(err.message)
     });

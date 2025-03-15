@@ -71,7 +71,29 @@ module.exports = (api) => {
                         'mdi:magnify',
                         'mdi:pencil-outline',
                         'mdi:close',
-                        'ic:baseline-plus'
+                        'ic:baseline-plus',
+                        'mdi:airplane',
+                        'mdi:bed',
+                        'mdi:car',
+                        'mdi:silverware-fork-knife',
+                        'mdi:paperclip',
+                        'mdi:dots-horizontal',
+                        'mdi:train',
+                        'mdi:bus',
+                        'mdi:ferry',
+                        'mdi:ship-wheel',
+                        'mdi:star',
+                        'fa-solid:map-marker',
+                        'mdi:clock-outline',
+                        'mdi:currency-usd',
+                        'devicon:google',
+                        'mdi:map-marker',
+                        'mdi:link',
+                        'mdi:phone',
+                        'mdi:info',
+                        'mdi:clock',
+                        'mdi:world',
+                        'material-symbols:info'
                     ]
                 }
             ]
