@@ -20,7 +20,7 @@ import {
 } from '@/src/hooks/use-trip';
 
 import PlaceToVisitCard from './PlaceToVisitCard';
-import SearchPlaceModal from './SearchPlaceSheet';
+import SearchPlaceSheet from './SearchPlaceSheet';
 
 interface TripOverviewSectionProps {
     tripId: number;
@@ -412,8 +412,8 @@ const TripOverviewSection = ({
                         <TouchableOpacity
                             className="flex-1 flex-row items-center rounded-lg bg-gray-100 p-3"
                             onPress={() => {
-                                setSnapPoints(['70%']);
-                                setBottomSheetContent(<SearchPlaceModal />);
+                                setSnapPoints(['80%']);
+                                setBottomSheetContent(<SearchPlaceSheet />);
                                 openSheet();
                             }}
                         >

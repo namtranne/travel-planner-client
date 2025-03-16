@@ -1,39 +1,33 @@
-import { useState } from 'react';
-import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
+
+import { useSearchPlaces } from '@/src/hooks/use-place';
 
 import Button from '../ui/CommonButton';
 
 const SearchPlaceModal = () => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [results, setResults] = useState<{ type: string; name: string; location?: string }[]>([]);
+    const [debouncedQuery, setDebouncedQuery] = useState('');
+    const { searchPlaces, data: results, isPending, error } = useSearchPlaces();
 
-    // Mock data - Replace with API call
-    const mockSearchResults = (query: string) => {
-        return [
-            { type: 'location', name: 'Grand Palais', location: 'Paris, France' },
-            { type: 'location', name: 'Gulf of Mexico', location: '(Gulf of America)' },
-            { type: 'search', name: `Search for: ${query}` },
-            { type: 'location', name: 'Galeries Lafayette Haussmann', location: 'Boulevard Haussmann, Paris, France' },
-            { type: 'location', name: 'Guadalajara', location: 'Jalisco, Mexico' },
-            { type: 'search', name: `Search for: ${query}` },
-            { type: 'note', name: `Add note for: ${query}` }
-        ];
-    };
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+        }, 300);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchQuery]);
+    useEffect(() => {
+        if (debouncedQuery) {
+            searchPlaces(debouncedQuery);
+        }
+    }, [debouncedQuery, searchPlaces]);
 
     const handleSearch = (text: string) => {
         setSearchQuery(text);
-        if (text.length === 0) {
-            setResults([]);
-            return;
-        }
-
-        setLoading(true);
-        setTimeout(() => {
-            setResults(mockSearchResults(text)); // Simulate API response
-            setLoading(false);
-        }, 1000);
     };
 
     const getIcon = (type: string) => {
@@ -52,7 +46,6 @@ const SearchPlaceModal = () => {
     return (
         <View className="px-5 pb-6 pt-2">
             <Text className="text-center text-base font-bold">Add a place</Text>
-
             {/* Search Input */}
             <View className="mt-4 flex-row items-center rounded-lg bg-gray-100 px-4">
                 <TextInput
@@ -66,40 +59,50 @@ const SearchPlaceModal = () => {
                         className="h-6 w-6 items-center justify-center rounded-full bg-gray-300"
                         onPress={() => {
                             setSearchQuery('');
-                            setResults([]);
+                            setDebouncedQuery('');
                         }}
                     >
                         <Iconify icon="mdi:close" width={18} height={18} color="#555" />
                     </TouchableOpacity>
                 ) : null}
             </View>
-
             {/* Loading Indicator */}
-            {loading && (
+            {isPending && (
                 <View className="mt-4 flex items-center">
                     <ActivityIndicator size="small" color="#60ABEF" />
                 </View>
             )}
+            {/* Error Message */}
+            {error && (
+                <View className="mt-4 flex items-center">
+                    <Text className="text-red-500">Error: {error.message}</Text>
+                </View>
+            )}
 
-            {!loading && results.length > 0 && (
-                <FlatList
-                    data={results}
-                    keyExtractor={(item, index) => index.toString()}
-                    className="mt-4"
-                    renderItem={({ item }) => (
-                        <View className="flex-row items-center px-2 py-3">
-                            {getIcon(item.type)}
+            {/* Search Results */}
+            {!isPending && results && results.length > 0 && searchQuery && (
+                <ScrollView className="my-4 max-h-[500px]" keyboardShouldPersistTaps="always">
+                    {results.map((item: any) => (
+                        <View key={item.id} className="mb-4 flex-row items-center px-2">
+                            {getIcon('location')}
                             <View className="ml-3 flex-1">
-                                <Text className="text-gray-900">{item.name}</Text>
-                                {item.location && <Text className="text-gray-500">{item.location}</Text>}
+                                <Text className="text-gray-900">{item.placeName}</Text>
+                                {item.categoryPlaces && (
+                                    <Text className="text-gray-500">
+                                        {item.address} {'- '}
+                                        {item.categoryPlaces.length > 0
+                                            ? item?.categoryPlaces[0].category.locationName
+                                            : ''}
+                                    </Text>
+                                )}
                             </View>
                         </View>
-                    )}
-                />
+                    ))}
+                </ScrollView>
             )}
 
             {/* "Explore Guides" Button */}
-            {results.length === 0 && !loading && (
+            {!isPending && !searchQuery && (
                 <View className="mt-12 items-center">
                     <Text className="text-center text-gray-500">Need more ideas?</Text>
                     <Button
