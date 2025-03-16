@@ -38,7 +38,7 @@ export type UpdateUserREQ = {
 };
 
 export type CreateTripREQ = {
-    whereTo: string;
+    locationId: number;
     startDate?: string;
     endDate?: string;
 };

@@ -87,7 +87,7 @@ const DateRangePicker = ({
   const _onClose = () => {
     setOpen(false);
     setIsOpen(false);
-    handleClose();
+    // handleClose();
   };
 
   const onOpen = () => {

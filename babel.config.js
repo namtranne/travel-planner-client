@@ -3,6 +3,7 @@ module.exports = (api) => {
     return {
         presets: ['babel-preset-expo'],
         plugins: [
+            'react-native-reanimated/plugin',
             'nativewind/babel',
             [
                 'module-resolver',
@@ -53,6 +54,11 @@ module.exports = (api) => {
                         'solar:shield-line-duotone',
                         'akar-icons:file',
                         'devicon:facebook',
+                        'skill-icons:instagram',
+                        'mingcute:down-line',
+                        'fontisto:map-marker',
+                        'material-symbols:map',
+                        'mdi:clock-outline',
                         'skill-icons:instagram',
                         'mdi:chevron-down',
                         'mdi:chevron-right',

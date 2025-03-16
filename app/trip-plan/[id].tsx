@@ -1,5 +1,6 @@
 import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -46,6 +47,7 @@ const TabComponents: { [key: string]: React.ComponentType<TabContentProps> } = {
 
 export default function TripScreen() {
     const [selectedTab, setSelectedTab] = useState(TripPlanTabs[0] || 'Overview');
+    const { id } = useLocalSearchParams();
     const TabContent = TabComponents[selectedTab] || OverviewTab;
     const [tripState, setTripState] = useState({
         title: '',
@@ -53,9 +55,9 @@ export default function TripScreen() {
         endDate: moment()
     });
     const [onEnteringDate, setOnEnteringDate] = useState(false);
-    const { isLoading, trip } = useTripDetails(1);
     const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
     const { isPending: isPendingDeleteTrip, deleteTrip } = useDeleteTrip();
+    const { isLoading, trip } = useTripDetails(id);
     const tripTitleRef = useRef<TextInput>(null);
 
     // Bottom Sheet Management

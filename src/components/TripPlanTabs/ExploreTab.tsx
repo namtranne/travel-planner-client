@@ -1,10 +1,5 @@
-import { Text, View } from 'react-native';
+import Explore from '@/app/explore';
 
-export default function ExploreTab() {
-    return (
-        <View className="p-4">
-            <Text className="text-lg font-semibold">Explore Content</Text>
-            <Text>Discover exciting places to visit.</Text>
-        </View>
-    );
+export default function ExploreTab({ trip }: any) {
+    return <Explore locationId={trip.locationId} />;
 }

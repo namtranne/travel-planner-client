@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
+import { fetchLocations } from '@/src/services';
+
 export interface SearchItem {
     id: number | string;
     title: string;
@@ -10,45 +12,41 @@ export interface SearchItem {
 
 export default function SearchBar({
     title,
-    data,
     value,
     setValue,
-    onItemPress,
     additionalStyle
 }: {
     title: string;
-    data: SearchItem[];
-    value: string;
-    setValue: (value: string) => void;
-    onItemPress: (item: SearchItem) => void;
+    value: { id: number; name: string };
+    setValue: (value: { id: number; name: string }) => void;
     additionalStyle: string;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredData, setFilteredData] = useState(data);
+    const [data, setData] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        if (!isSearching) return;
         setIsLoading(true);
-        const timeoutId = setTimeout(() => {
-            const filtered = data.filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()));
-            setFilteredData(filtered);
+        const fetchData = async () => {
+            const res = await fetchLocations(searchQuery);
+            setData(res);
             setIsLoading(false);
-        }, 300); // Debounce search for better performance
-
-        return () => clearTimeout(timeoutId);
-    }, [searchQuery, data]);
+        };
+        fetchData();
+    }, [searchQuery, isSearching]);
 
     const handlePressItem = (item: SearchItem) => {
-        console.log(item);
+        setIsSearching(false);
         setSearchQuery(item.title);
-        onItemPress(item);
+        setValue({ id: parseInt(`${item.id}`, 10), name: item.title });
     };
 
     const clearSearch = () => {
         setSearchQuery('');
-        setFilteredData(data);
-        setValue('');
+        setData([]);
+        setValue({ id: -1, name: '' });
     };
 
     return (
@@ -62,7 +60,7 @@ export default function SearchBar({
                     <TextInput
                         className="flex-1 font-inter text-xs"
                         placeholder="Search..."
-                        value={isSearching ? searchQuery : value}
+                        value={isSearching ? searchQuery : value.name}
                         onChangeText={setSearchQuery}
                         onFocus={() => setIsSearching(true)}
                         onBlur={() => setIsSearching(false)}
@@ -83,14 +81,14 @@ export default function SearchBar({
                 </View>
             ) : (
                 isSearching && (
-                    <View>
-                        {filteredData.length > 0 ? (
+                    <View className="absolute top-full z-10 w-full bg-white">
+                        {data.length > 0 ? (
                             <ScrollView
-                                className="h-60 w-full"
+                                className="max-h-60 w-full"
                                 contentContainerStyle={{ paddingBottom: 10 }}
                                 keyboardShouldPersistTaps="handled"
                             >
-                                {filteredData.map((item) => {
+                                {data.map((item: any) => {
                                     return (
                                         <TouchableOpacity
                                             className="border-b border-gray-100 p-4"

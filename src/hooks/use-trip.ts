@@ -41,7 +41,7 @@ export function useMyTrips() {
         console.log('error', error);
     }
 
-    return { isLoading, user: data, error };
+    return { isLoading, data, error };
 }
 
 export function useTripDetails(tripId: number) {
