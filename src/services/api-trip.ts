@@ -38,7 +38,9 @@ export async function getTripDetails(tripId: number) {
 export async function createTrip(createTripReq: CreateTripREQ) {
     const data = await authAxios
         .post('/trips', createTripReq)
-        .then((response) => response.data.data)
+        .then((response) => {
+            return response.data.data;
+        })
         .catch((err) => {
             throw new Error(err.response.data.message);
         });

@@ -14,6 +14,15 @@ export default function HomeLayout() {
                 }}
             />
             <Tabs.Screen
+                name="trips"
+                options={{
+                    title: 'Trips',
+                    tabBarIcon: ({ color, size }) => (
+                        <Iconify icon="material-symbols:calendar-month" size={size} color={color} />
+                    )
+                }}
+            />
+            <Tabs.Screen
                 name="account"
                 options={{
                     title: 'Account',

@@ -8,15 +8,16 @@ import { useExplorePage } from '@/src/hooks/use-location';
 
 export default function Explore({ locationId = 174 }: { locationId: number }) {
     const { data, isLoading, error } = useExplorePage(locationId);
+    console.log(data);
     if (isLoading) {
         return (
             <SafeAreaView>
                 <View className="px-4 py-6">
-                    <View className="mb-4 flex-row items-center justify-between">
-                        <TouchableOpacity>{/* <ArrowLeftIcon size={24} color="black" /> */}</TouchableOpacity>
+                    {/* <View className="mb-4 flex-row items-center justify-between">
+                        <TouchableOpacity><ArrowLeftIcon size={24} color="black" /></TouchableOpacity>
                         <Text className="text-lg font-bold">Explore</Text>
-                        <TouchableOpacity>{/* <MagnifyingGlassIcon size={24} color="black" /> */}</TouchableOpacity>
-                    </View>
+                        <TouchableOpacity><MagnifyingGlassIcon size={24} color="black" /></TouchableOpacity>
+                    </View> */}
                     <View className="mt-4">
                         <Skeleton height="40" width="120" />
                     </View>
@@ -36,11 +37,11 @@ export default function Explore({ locationId = 174 }: { locationId: number }) {
     return (
         <SafeAreaView>
             <View className="px-4 py-6">
-                <View className="mb-4 flex-row items-center justify-between">
-                    <TouchableOpacity>{/* <ArrowLeftIcon size={24} color="black" /> */}</TouchableOpacity>
-                    <Text className="text-lg font-bold">Explore</Text>
-                    <TouchableOpacity>{/* <MagnifyingGlassIcon size={24} color="black" /> */}</TouchableOpacity>
-                </View>
+                {/* <View className="mb-4 flex-row items-center justify-between"> */}
+                <TouchableOpacity>{/* <ArrowLeftIcon size={24} color="black" /> */}</TouchableOpacity>
+                {/* <Text className="text-lg font-bold">Explore</Text> */}
+                <TouchableOpacity>{/* <MagnifyingGlassIcon size={24} color="black" /> */}</TouchableOpacity>
+                {/* </View> */}
 
                 {/* Title & Description */}
                 <Text className="mb-2 font-inter text-3xl font-bold">{data.name}</Text>

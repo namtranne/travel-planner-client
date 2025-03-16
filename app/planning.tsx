@@ -1,16 +1,16 @@
+import { router } from 'expo-router';
 import moment from 'moment';
 import { useState } from 'react';
 import { Keyboard, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
-import { destinations } from '@/assets/data/destinations';
 import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
-import type { SearchItem } from '@/src/components/Planning/SearchBar';
 import SearchBar from '@/src/components/Planning/SearchBar';
 import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
+import { createTrip } from '@/src/services/api-trip';
 
 export default function Planning() {
-    const [destination, setDestination] = useState('');
+    const [destination, setDestination] = useState({ id: -1, name: '' });
     const [numberOfPeople, setNumberOfPeople] = useState('0');
     const [budget, setBudget] = useState('0');
     const [date, setDate] = useState({
@@ -20,6 +20,15 @@ export default function Planning() {
     const [onEnteringNumberOfPeople, setOnEnteringNumberOfPeople] = useState(false);
     const [onEnteringBudget, setOnEnteringBudget] = useState(false);
     const [onEnteringDate, setOnEnteringDate] = useState(false);
+
+    const handleCreateTrip = async () => {
+        const res = await createTrip({
+            locationId: destination.id,
+            startDate: date.startDate.toISOString(),
+            endDate: date.endDate.toISOString()
+        });
+        router.replace(`/trip-plan/${res.id}`);
+    };
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View>
@@ -32,10 +41,8 @@ export default function Planning() {
                     <View className="mt-12">
                         <SearchBar
                             title="Where do you wanna go?"
-                            data={destinations}
                             value={destination}
                             setValue={setDestination}
-                            onItemPress={(item: SearchItem) => setDestination(item.title)}
                             additionalStyle="mb-8"
                         />
 
@@ -93,7 +100,7 @@ export default function Planning() {
                         <View>
                             <Button
                                 text="Continue"
-                                onPress={() => console.log('Press')}
+                                onPress={() => handleCreateTrip()}
                                 additionalStyle="bg-[#60ABEF] w-full"
                             />
                         </View>

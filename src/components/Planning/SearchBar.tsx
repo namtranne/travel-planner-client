@@ -14,13 +14,11 @@ export default function SearchBar({
     title,
     value,
     setValue,
-    onItemPress,
     additionalStyle
 }: {
     title: string;
-    value: string;
-    setValue: (value: string) => void;
-    onItemPress: (item: SearchItem) => void;
+    value: { id: number; name: string };
+    setValue: (value: { id: number; name: string }) => void;
     additionalStyle: string;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -42,13 +40,13 @@ export default function SearchBar({
     const handlePressItem = (item: SearchItem) => {
         setIsSearching(false);
         setSearchQuery(item.title);
-        onItemPress(item);
+        setValue({ id: parseInt(`${item.id}`, 10), name: item.title });
     };
 
     const clearSearch = () => {
         setSearchQuery('');
         setData([]);
-        setValue('');
+        setValue({ id: -1, name: '' });
     };
 
     return (
@@ -62,7 +60,7 @@ export default function SearchBar({
                     <TextInput
                         className="flex-1 font-inter text-xs"
                         placeholder="Search..."
-                        value={isSearching ? searchQuery : value}
+                        value={isSearching ? searchQuery : value.name}
                         onChangeText={setSearchQuery}
                         onFocus={() => setIsSearching(true)}
                         onBlur={() => setIsSearching(false)}

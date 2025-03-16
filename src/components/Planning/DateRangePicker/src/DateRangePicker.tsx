@@ -1,19 +1,18 @@
 import momentDefault from "moment";
-import PropTypes from "prop-types";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  Image,
 } from "react-native";
+import { chevronL, chevronR } from "./assets";
 import Button from "./components/Button";
 import Day from "./components/Day";
 import Header from "./components/Header";
 import { height, width } from "./components/util";
-import { chevronL, chevronR } from "./assets";
 
 const DateRangePicker = ({
   moment,
@@ -47,6 +46,7 @@ const DateRangePicker = ({
   presetButtons,
   open,
   setOpen,
+  handleClose
 } : any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [weeks, setWeeks] = useState<any>([]);
@@ -87,6 +87,7 @@ const DateRangePicker = ({
   const _onClose = () => {
     setOpen(false);
     setIsOpen(false);
+    // handleClose();
   };
 
   const onOpen = () => {

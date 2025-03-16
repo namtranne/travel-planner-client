@@ -1,20 +1,26 @@
 import { CheckBox } from '@rneui/base';
 import type React from 'react';
-import { useState } from 'react';
-import { Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { ActivityIndicator, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
+
+import { useTripOverviewSectionDetails } from '@/src/hooks/use-trip';
 
 import Button from '../ui/CommonButton';
 
 interface TripOverviewSectionProps {
+    tripId: number;
+    sectionId: number;
     titleSection: string;
     openSheet: () => void;
+    // eslint-disable-next-line react/no-unused-prop-types
     closeSheet: () => void;
     setBottomSheetContent: (content: React.ReactNode) => void;
 }
 
-const Note = () => {
+const Note = ({ initialNote, handleUpdateNote }: { initialNote: string; handleUpdateNote: () => void }) => {
     const [expanded, setExpanded] = useState(false);
+    const [note, setNote] = useState(initialNote);
     return (
         <View className="border-t border-gray-200 py-3">
             <View className={`rounded-lg ${expanded ? 'bg-gray-100' : ''} p-3`}>
@@ -23,9 +29,13 @@ const Note = () => {
                         <Iconify icon="fluent:note-48-filled" size={16} color="white" />
                     </View>
                     <TextInput
-                        className="ml-3 flex-1 text-base italic text-gray-500"
+                        className="ml-3 flex-1 italic text-gray-500"
+                        style={{ textAlignVertical: 'top' }}
                         placeholder="Add your notes here"
                         onFocus={() => setExpanded(true)}
+                        value={note}
+                        onChangeText={(text) => setNote(text)}
+                        onBlur={() => handleUpdateNote()}
                     />
                 </View>
                 {expanded && (
@@ -46,11 +56,7 @@ const Note = () => {
     );
 };
 
-interface ChecklistItemProps {
-    handleFocus: () => void;
-}
-
-const ChecklistItem = ({ handleFocus }: ChecklistItemProps) => {
+const ChecklistItem = ({ handleFocus }: { handleFocus: () => void }) => {
     return (
         <View className="mb-3 flex-row items-center">
             <CheckBox
@@ -71,8 +77,17 @@ const ChecklistItem = ({ handleFocus }: ChecklistItemProps) => {
     );
 };
 
-const Checklist = () => {
+const Checklist = ({
+    initialTitle,
+    items,
+    handleUpdateChecklist
+}: {
+    initialTitle: string;
+    items: any;
+    handleUpdateChecklist: () => void;
+}) => {
     const [expanded, setExpanded] = useState(false);
+    const [title, setTitle] = useState(initialTitle);
     return (
         <Pressable className="border-t border-gray-200 py-3" onPress={() => setExpanded(true)}>
             <View className="rounded-xl bg-gray-100 p-3">
@@ -81,9 +96,25 @@ const Checklist = () => {
                     placeholderTextColor="#333"
                     className="mb-2 text-base font-bold text-gray-800"
                     onFocus={() => setExpanded(true)}
+                    value={title}
+                    onChangeText={(text) => setTitle(text)}
+                    onBlur={() => handleUpdateChecklist()}
                 />
+                <TouchableOpacity className="mb-3 flex-row items-center" onPress={() => {}}>
+                    <CheckBox
+                        checked={false}
+                        checkedIcon="dot-circle-o"
+                        uncheckedIcon="circle-o"
+                        checkedColor="#4c4c4c"
+                        uncheckedColor="#585656"
+                        containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                    />
+                    <Text className="flex-1 text-sm text-gray-500">Add some items</Text>
+                </TouchableOpacity>
                 {/* Checklist items */}
-                <ChecklistItem handleFocus={() => setExpanded(true)} />
+                {items.map((item: any, index: number) => (
+                    <ChecklistItem handleFocus={() => setExpanded(true)} key={index} />
+                ))}
                 {/* Options */}
                 {expanded && (
                     <>
@@ -109,20 +140,36 @@ const Checklist = () => {
     );
 };
 
-const TripOverviewSection = ({ titleSection, openSheet, setBottomSheetContent }: TripOverviewSectionProps) => {
-    const [expanded, setExpanded] = useState(true);
+const TripOverviewSection = ({
+    tripId,
+    sectionId,
+    titleSection,
+    openSheet,
+    setBottomSheetContent
+}: TripOverviewSectionProps) => {
+    const [expanded, setExpanded] = useState(false);
     const [title, setTitle] = useState(titleSection);
-    const [showNoteInput, setShowNoteInput] = useState(false);
-    const [showChecklistInput, setShowChecklistInput] = useState(false);
+    const { isLoading, tripOverviewSection } = useTripOverviewSectionDetails(tripId, sectionId);
 
-    const options = [
-        { icon: 'mdi:pencil', label: 'Edit section heading', action: () => {} },
-        { icon: 'mdi:trash-can', label: 'Delete section', action: () => {} },
-        { icon: 'mdi:dots-grid', label: 'Reorder sections', action: () => {} }
-    ];
+    const options = useMemo(
+        () => [
+            { icon: 'mdi:pencil', label: 'Edit section heading', action: () => {} },
+            { icon: 'mdi:trash-can', label: 'Delete section', action: () => {} },
+            { icon: 'mdi:dots-grid', label: 'Reorder sections', action: () => {} }
+        ],
+        []
+    );
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
 
     return (
-        <View className="h-full rounded-lg bg-white p-4 pb-6 shadow">
+        <View className="mb-4 rounded-lg bg-white p-4 pb-6 shadow">
             <View className="flex-row items-center justify-between gap-x-2">
                 <TouchableOpacity onPress={() => setExpanded(!expanded)}>
                     <Iconify icon={expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'} color="black" size={36} />
@@ -155,13 +202,24 @@ const TripOverviewSection = ({ titleSection, openSheet, setBottomSheetContent }:
                         openSheet();
                     }}
                 >
-                    <Iconify icon="bi:three-dots" size={24} />
+                    <Iconify icon="bi:three-dots" size={24} color="black" />
                 </TouchableOpacity>
             </View>
             {expanded && (
                 <View className="mt-2">
-                    {showNoteInput && <Note />}
-                    {showChecklistInput && <Checklist />}
+                    {/* Notes */}
+                    {tripOverviewSection?.notes.map((note: any, index: number) => (
+                        <Note initialNote={note.content} handleUpdateNote={() => {}} key={index} />
+                    ))}
+                    {/* Checklists */}
+                    {tripOverviewSection?.checkLists.map((checklist: any, index: number) => (
+                        <Checklist
+                            initialTitle={checklist.title}
+                            items={checklist.items}
+                            handleUpdateChecklist={() => {}}
+                            key={index}
+                        />
+                    ))}
                     <View className="mt-2 flex-row items-center justify-between">
                         <TouchableOpacity
                             className="flex-1 flex-row items-center rounded-lg bg-gray-100 p-3"
@@ -197,16 +255,10 @@ const TripOverviewSection = ({ titleSection, openSheet, setBottomSheetContent }:
                             <Iconify icon="mdi-light:map-marker" size={20} color="black" />
                             <Text className="ml-2 text-gray-500">Add a place</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            className="mx-2 rounded-lg bg-gray-100 p-3"
-                            onPress={() => setShowNoteInput((prevShowNoteInput) => !prevShowNoteInput)}
-                        >
+                        <TouchableOpacity className="mx-2 rounded-lg bg-gray-100 p-3" onPress={() => {}}>
                             <Iconify icon="mdi-light:note" size={20} color="black" />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            className="rounded-lg bg-gray-100 p-3"
-                            onPress={() => setShowChecklistInput(true)}
-                        >
+                        <TouchableOpacity className="rounded-lg bg-gray-100 p-3" onPress={() => {}}>
                             <Iconify icon="material-symbols-light:checklist" size={20} color="black" />
                         </TouchableOpacity>
                     </View>
