@@ -68,7 +68,6 @@ export type UpdateTripOverviewSectionREQ = {
 
 export type CreatePlaceToVisitREQ = {
     placeId: number;
-    sectionId: number;
     startDate?: string;
     endDate?: string;
     expense?: number;

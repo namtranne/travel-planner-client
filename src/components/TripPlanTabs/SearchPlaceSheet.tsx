@@ -3,13 +3,23 @@ import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View 
 import Iconify from 'react-native-iconify';
 
 import { useSearchPlaces } from '@/src/hooks/use-place';
+import { useCreatePlaceToVisit } from '@/src/hooks/use-trip';
 
 import Button from '../ui/CommonButton';
 
-const SearchPlaceModal = () => {
+const SearchPlaceSheet = ({
+    tripId,
+    sectionId,
+    closeSheet
+}: {
+    tripId: number;
+    sectionId: number;
+    closeSheet: () => void;
+}) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
-    const { searchPlaces, data: results, isPending, error } = useSearchPlaces();
+    const { searchPlaces, data: results, isPending: isLoadingSearchedPlaces, error } = useSearchPlaces();
+    const { isPending: isPendingCreatePlaceToVisit, createPlaceToVisit } = useCreatePlaceToVisit();
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -67,7 +77,7 @@ const SearchPlaceModal = () => {
                 ) : null}
             </View>
             {/* Loading Indicator */}
-            {isPending && (
+            {isLoadingSearchedPlaces && (
                 <View className="mt-4 flex items-center">
                     <ActivityIndicator size="small" color="#60ABEF" />
                 </View>
@@ -80,10 +90,20 @@ const SearchPlaceModal = () => {
             )}
 
             {/* Search Results */}
-            {!isPending && results && results.length > 0 && searchQuery && (
+            {!isLoadingSearchedPlaces && results && results.length > 0 && searchQuery && (
                 <ScrollView className="my-4 max-h-[500px]" keyboardShouldPersistTaps="always">
                     {results.map((item: any) => (
-                        <View key={item.id} className="mb-4 flex-row items-center px-2">
+                        <TouchableOpacity
+                            key={item.id}
+                            className="mb-4 flex-row items-center px-2"
+                            onPress={() => {
+                                createPlaceToVisit(
+                                    { tripId, sectionId, createPlaceToVisitReq: { placeId: item.id } },
+                                    { onSuccess: () => closeSheet() }
+                                );
+                            }}
+                            disabled={isPendingCreatePlaceToVisit}
+                        >
                             {getIcon('location')}
                             <View className="ml-3 flex-1">
                                 <Text className="text-gray-900">{item.placeName}</Text>
@@ -96,13 +116,13 @@ const SearchPlaceModal = () => {
                                     </Text>
                                 )}
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </ScrollView>
             )}
 
             {/* "Explore Guides" Button */}
-            {!isPending && !searchQuery && (
+            {!isLoadingSearchedPlaces && !searchQuery && (
                 <View className="mt-12 items-center">
                     <Text className="text-center text-gray-500">Need more ideas?</Text>
                     <Button
@@ -116,4 +136,4 @@ const SearchPlaceModal = () => {
     );
 };
 
-export default SearchPlaceModal;
+export default SearchPlaceSheet;

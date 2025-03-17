@@ -1,34 +1,62 @@
 import { useState } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
-const PlaceToVisitCard = () => {
+import { useGetPlaceToVisitDetails } from '@/src/hooks/use-trip';
+import { getOpeningPeriodsText } from '@/src/utils/DateTimeUtil';
+
+const PlaceToVisitCard = ({
+    tripId,
+    sectionId,
+    placeToVisitId,
+    order,
+    onDelete
+}: {
+    tripId: number;
+    sectionId: number;
+    placeToVisitId: number;
+    order: number;
+    onDelete: () => void;
+}) => {
     const [expanded, setExpanded] = useState(false);
+    const { isLoading, data: placeToVisit } = useGetPlaceToVisitDetails(tripId, sectionId, placeToVisitId);
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
 
     return (
-        <TouchableOpacity onPress={() => setExpanded(!expanded)} className="border-t border-gray-200 py-4 shadow-md">
+        <TouchableOpacity onPress={() => setExpanded(true)} className="border-t border-gray-200 py-4 shadow-md">
             <View className={`${expanded ? 'rounded-xl bg-gray-200 p-2' : ''}`}>
                 <View className="flex-row items-center justify-between ">
                     <View className="w-[70%]">
-                        <View className="flex-row items-center justify-start">
+                        <View className="flex-row items-center justify-start space-x-2">
                             <View className="relative flex h-8 w-8 items-center justify-center">
                                 <Iconify icon="fa-solid:map-marker" size={30} color="#ef4444" />
-                                <Text className="absolute text-[10px] font-bold text-white">1</Text>
+                                <Text className="absolute text-[10px] font-bold text-white">{order}</Text>
                             </View>
                             <Text className="w-10/12 text-sm font-bold leading-4">
-                                Basilica Cathedral of Saint Denis
+                                {placeToVisit?.place.name || ''}
                             </Text>
                         </View>
                         {!expanded && (
                             <Text className="mt-4 flex-wrap text-[14px] leading-4 text-gray-400">
-                                The Basilica Cathedral of Saint Denis is an impressive Gothic cathedral...
+                                {placeToVisit?.place.shortDescription ||
+                                    `${placeToVisit?.place.description.slice(0, 100)}...`}
                             </Text>
                         )}
                     </View>
                     <View className="w-[30%] flex-row justify-end">
                         <Image
                             source={{
-                                uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Saint-Denis_-_Fa%C3%A7ade.jpg/330px-Saint-Denis_-_Fa%C3%A7ade.jpg'
+                                uri:
+                                    placeToVisit?.place?.images && placeToVisit?.place.images.length > 0
+                                        ? `https://itin-dev.wanderlogstatic.com/freeImage/${placeToVisit?.place.images[0].imageKey}`
+                                        : 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg'
                             }}
                             className="h-[80px] w-2/3 rounded-lg"
                         />
@@ -50,63 +78,61 @@ const PlaceToVisitCard = () => {
             {expanded && (
                 <View className="mt-4 px-2">
                     <View className="flex-row flex-wrap items-center space-x-1">
-                        <View className="my-2 rounded-lg bg-gray-200 px-2 py-1">
-                            <Text className="text-[11px] font-bold text-gray-600">Bascilia</Text>
-                        </View>
-                        <View className="my-2 rounded-lg bg-gray-200 px-2 py-1">
-                            <Text className="text-[11px] font-bold text-gray-600">Sights & Landmarks</Text>
-                        </View>
-                        <View className="my-2 rounded-lg bg-gray-200 px-2 py-1">
-                            <Text className="text-[11px] font-bold text-gray-600">Cathedral</Text>
-                        </View>
-                        <TouchableOpacity>
+                        {placeToVisit?.place.placeTags.map((tag: string) => (
+                            <View key={tag} className="my-2 rounded-lg bg-gray-200 px-2 py-1">
+                                <Text className="text-[11px] font-bold text-gray-600">{tag}</Text>
+                            </View>
+                        ))}
+                        {/* <TouchableOpacity>
                             <Text className="my-2 text-[11px] font-bold text-gray-600">See more</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                     <View className="mt-4 flex-row items-center space-x-1">
                         <Iconify icon="mdi:star" width={16} height={16} color="orange" />
-                        <Text className="text-xs font-bold text-orange-400">4.6</Text>
-                        <Text className="text-xs text-gray-500">(6638)</Text>
+                        <Text className="text-xs font-bold text-orange-400">{placeToVisit?.place.rating || 'NA'}</Text>
+                        <Text className="text-xs text-gray-500">({placeToVisit?.place.numRatings || 'NA'})</Text>
                         <Iconify icon="devicon:google" width={16} height={16} />
                     </View>
 
                     {/* Description */}
                     <View className="mt-3 flex-row items-start">
                         <Iconify icon="material-symbols:info" width={20} height={20} color="gray" />
-                        <Text className="ml-2 text-gray-600">
-                            The Basilica Cathedral of Saint Denis is an impressive Gothic cathedral known for its
-                            intricate 12th-century stained-glass windows and numerous reclining statues. It serves as
-                            the burial place for most of the Kings of France, making it a significant historical site.
-                        </Text>
+                        <Text className="ml-2 text-gray-600">{placeToVisit?.place.description || 'NA'}</Text>
                     </View>
 
                     {/* Opening Hours */}
                     <View className="mt-3 flex-row items-center">
                         <Iconify icon="mdi:clock" width={20} height={20} color="gray" />
-                        <Text className="ml-2 text-gray-600">Saturday: 10–17:15</Text>
-                        <TouchableOpacity>
+                        <Text className="ml-2 text-gray-600">
+                            {!placeToVisit?.place.closed
+                                ? getOpeningPeriodsText(placeToVisit?.place.placeOpeningPeriods)
+                                : 'Closed'}
+                        </Text>
+                        {/* <TouchableOpacity>
                             <Text className="ml-2 text-blue-500">Show other days</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
 
                     {/* Address */}
                     <View className="mt-3 flex-row items-center">
                         <Iconify icon="mdi:map-marker" width={20} height={20} color="gray" />
-                        <Text className="ml-2 text-blue-500">
-                            1 Rue de la Légion d&apos;Honneur, 93200 Saint-Denis, France
-                        </Text>
+                        <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.address)}>
+                            <Text className="ml-2 text-blue-500">{placeToVisit?.place.address}</Text>
+                        </TouchableOpacity>
                     </View>
 
                     {/* Website */}
                     <View className="mt-3 flex-row items-center">
                         <Iconify icon="mdi:world" width={20} height={20} color="gray" />
-                        <Text className="ml-2 text-blue-500">https://www.saint-denis-basilique.fr/</Text>
+                        <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.website)}>
+                            <Text className="ml-2 text-blue-500">{placeToVisit?.place.website}</Text>
+                        </TouchableOpacity>
                     </View>
 
                     {/* Phone */}
                     <View className="mt-3 flex-row items-center">
                         <Iconify icon="mdi:phone" width={20} height={20} color="gray" />
-                        <Text className="ml-2 text-blue-500">+33 1 48 09 83 54</Text>
+                        <Text className="ml-2 text-blue-500">{placeToVisit?.place.hotline}</Text>
                     </View>
 
                     {/* Buttons */}
@@ -120,7 +146,7 @@ const PlaceToVisitCard = () => {
                             </TouchableOpacity>
                         </View>
                         <View className="flex-row items-center space-x-3">
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={onDelete}>
                                 <Iconify icon="mdi:trash-can" size={24} color="#6c757d" />
                             </TouchableOpacity>
                             <TouchableOpacity>

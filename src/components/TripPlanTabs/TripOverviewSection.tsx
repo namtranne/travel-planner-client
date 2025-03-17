@@ -11,6 +11,7 @@ import {
     useDeleteChecklist,
     useDeleteChecklistItem,
     useDeleteNote,
+    useDeletePlaceToVisit,
     useDeleteTripOverviewSection,
     useTripOverviewSectionDetails,
     useUpdateChecklist,
@@ -241,6 +242,7 @@ const TripOverviewSection = ({
     const { isPending: isPendingCreateChecklistItem, createChecklistItem } = useCreateChecklistItem();
     const { isPending: isPendingUpdateChecklistItem, updateChecklistItem } = useUpdateChecklistItem();
     const { isPending: isPendingDeleteChecklistItem, deleteChecklistItem } = useDeleteChecklistItem();
+    const { isPending: isPendingDeletePlaceToVisit, deletePlaceToVisit } = useDeletePlaceToVisit();
 
     const { isPending: isPendingDeleteTripOverviewSection, deleteTripOverviewSection } = useDeleteTripOverviewSection();
     const { updateTripOverviewSection } = useUpdateTripOverviewSection();
@@ -407,13 +409,24 @@ const TripOverviewSection = ({
                         />
                     ))}
                     {/* Place to visits */}
-                    <PlaceToVisitCard />
+                    {tripOverviewSection?.placeToVisits.map((placeToVisit: any, index: number) => (
+                        <PlaceToVisitCard
+                            key={placeToVisit.id}
+                            tripId={tripId}
+                            sectionId={tripId}
+                            placeToVisitId={placeToVisit.id}
+                            order={index + 1}
+                            onDelete={() => deletePlaceToVisit({ tripId, sectionId, placeToVisitId: placeToVisit.id })}
+                        />
+                    ))}
                     <View className="mt-2 flex-row items-center justify-between">
                         <TouchableOpacity
                             className="flex-1 flex-row items-center rounded-lg bg-gray-100 p-3"
                             onPress={() => {
                                 setSnapPoints(['80%']);
-                                setBottomSheetContent(<SearchPlaceSheet />);
+                                setBottomSheetContent(
+                                    <SearchPlaceSheet tripId={tripId} sectionId={sectionId} closeSheet={closeSheet} />
+                                );
                                 openSheet();
                             }}
                         >
@@ -440,7 +453,8 @@ const TripOverviewSection = ({
                                 isPendingDeleteChecklist ||
                                 isPendingCreateChecklistItem ||
                                 isPendingUpdateChecklistItem ||
-                                isPendingDeleteChecklistItem
+                                isPendingDeleteChecklistItem ||
+                                isPendingDeletePlaceToVisit
                             }
                         >
                             <Iconify icon="material-symbols-light:checklist" size={20} color="black" />

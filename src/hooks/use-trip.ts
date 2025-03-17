@@ -4,19 +4,23 @@ import {
     createChecklist as createChecklistApi,
     createChecklistItem as createChecklistItemApi,
     createNote as createNoteApi,
+    createPlaceToVisit as createPlaceToVisitApi,
     createTrip as createTripApi,
     createTripOverviewSection as createTripOverviewSectionApi,
     deleteChecklist as deleteChecklistApi,
     deleteChecklistItem as deleteChecklistItemApi,
     deleteNote as deleteNoteApi,
+    deletePlaceToVisit as deletePlaceToVisitApi,
     deleteTrip as deleteTripApi,
     deleteTripOverviewSection as deleteTripOverviewSectionApi,
     getMyTrips,
+    getPlaceToVisitDetails as getPlaceToVisitDetailsApi,
     getTripDetails,
     getTripOverviewSectionDetails,
     updateChecklist as updateChecklistApi,
     updateChecklistItem as updateChecklistItemApi,
     updateNote as updateNoteApi,
+    updatePlaceToVisit as updatePlaceToVisitApi,
     updateTrip as updateTripApi,
     updateTripOverviewSection as updateTripOverviewSectionApi
 } from '../services/api-trip';
@@ -24,9 +28,11 @@ import type {
     CreateCheckListItemREQ,
     CreateCheckListREQ,
     CreateNoteREQ,
+    CreatePlaceToVisitREQ,
     CreateTripOverviewSectionREQ,
     UpdateCheckListREQ,
     UpdateNoteREQ,
+    UpdatePlaceToVisitREQ,
     UpdateTripOverviewSectionREQ,
     UpdateTripREQ
 } from '../services/types';
@@ -188,6 +194,80 @@ export function useDeleteTripOverviewSection() {
     });
 
     return { isPending, deleteTripOverviewSection, error };
+}
+
+// Place to visit
+export function useGetPlaceToVisitDetails(tripId: number, sectionId: number, placeToVisitId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`place-to-visit-${placeToVisitId}`],
+        queryFn: () => getPlaceToVisitDetailsApi(tripId, sectionId, placeToVisitId)
+    });
+    if (error) {
+        console.log('error', error);
+    }
+
+    return { isLoading, data, error };
+}
+
+export function useCreatePlaceToVisit() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createPlaceToVisit,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; sectionId: number; createPlaceToVisitReq: CreatePlaceToVisitREQ }) =>
+            createPlaceToVisitApi(data.tripId, data.sectionId, data.createPlaceToVisitReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, createPlaceToVisit, error };
+}
+
+export function useUpdatePlaceToVisit() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: updatePlaceToVisit,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: {
+            tripId: number;
+            sectionId: number;
+            placeToVisitId: number;
+            updatePlaceToVisitReq: UpdatePlaceToVisitREQ;
+        }) => updatePlaceToVisitApi(data.tripId, data.sectionId, data.placeToVisitId, data.updatePlaceToVisitReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, updatePlaceToVisit, error };
+}
+
+export function useDeletePlaceToVisit() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deletePlaceToVisit,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; sectionId: number; placeToVisitId: number }) =>
+            deletePlaceToVisitApi(data.tripId, data.sectionId, data.placeToVisitId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, deletePlaceToVisit, error };
 }
 
 // Note
