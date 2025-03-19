@@ -99,7 +99,10 @@ module.exports = (api) => {
                         'mdi:info',
                         'mdi:clock',
                         'mdi:world',
-                        'material-symbols:info'
+                        'material-symbols:info',
+                        'mdi:calendar-edit',
+                        'mdi:magic-wand',
+                        'fa-solid:route'
                     ]
                 }
             ]

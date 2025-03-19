@@ -251,7 +251,7 @@ export default function TripScreen() {
                         </SafeAreaView>
 
                         {/* Tab content */}
-                        <ScrollView contentContainerStyle={{ paddingTop: 10 }}>
+                        <ScrollView>
                             <TabContent
                                 trip={trip}
                                 openSheet={openSheet}

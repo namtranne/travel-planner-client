@@ -60,7 +60,8 @@ export default function OverviewTab({
                                                     >
                                                         <Iconify
                                                             icon={innerItem.icon}
-                                                            className="mr-4 text-xl text-black"
+                                                            className="mr-4 text-xl"
+                                                            color="black"
                                                         />
                                                         <Text className="flex-1 text-sm">{innerItem.name}</Text>
                                                     </TouchableOpacity>
