@@ -17,7 +17,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, hasBackButton 
                     <Iconify color="black" icon="lets-icons:back-light" width="30" height="30" />
                 </TouchableOpacity>
             )}
-            <Text className="text-center text-lg font-bold">{title}</Text>
+            <Text className="text-center font-inter text-lg font-bold">{title}</Text>
         </View>
     );
 };

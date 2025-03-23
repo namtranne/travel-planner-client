@@ -13,7 +13,9 @@ const days = [
 ];
 
 export default function ItineraryScreen() {
-    const [selected, setSelected] = useState(days[0]?.date || '');
+    const [selectedDate, setSelectedDate] = useState('Wed 3/5');
+    const [notes, setNotes] = useState('');
+    // const router = useRouter();
 
     return (
         <View className="flex-1 py-4 pt-0">
