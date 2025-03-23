@@ -6,28 +6,34 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import BrowseCategories from '@/src/components/Explore/BrowseCategories';
 import { useExplorePage } from '@/src/hooks/use-location';
 
-export default function Explore({ locationId = 174 }: { locationId: number }) {
-    const { data, isLoading, error } = useExplorePage(locationId);
-    console.log(data);
+export default function Explore({
+    locationId = 174,
+    showFullPage = false
+}: {
+    locationId: number;
+    showFullPage?: boolean;
+}) {
+    // const
+    const { data, isLoading } = useExplorePage(locationId);
     if (isLoading) {
         return (
             <SafeAreaView>
-                <View className="px-4 py-6">
+                <View className={showFullPage ? 'px-4 py-6' : 'px-4'}>
                     {/* <View className="mb-4 flex-row items-center justify-between">
                         <TouchableOpacity><ArrowLeftIcon size={24} color="black" /></TouchableOpacity>
                         <Text className="text-lg font-bold">Explore</Text>
                         <TouchableOpacity><MagnifyingGlassIcon size={24} color="black" /></TouchableOpacity>
                     </View> */}
                     <View className="mt-4">
-                        <Skeleton height="40" width="120" />
+                        <Skeleton height={40} width={120} />
                     </View>
                     <View className="my-4">
-                        <Skeleton height="300" />
+                        <Skeleton height={300} />
                     </View>
 
                     <View className="flex-row flex-wrap justify-between gap-2">
                         {[...Array(10)].map((item, index) => {
-                            return <Skeleton key={index} height="40" width="47%" />;
+                            return <Skeleton key={index} height={40} width="47%" />;
                         })}
                     </View>
                 </View>
@@ -36,7 +42,7 @@ export default function Explore({ locationId = 174 }: { locationId: number }) {
     }
     return (
         <SafeAreaView>
-            <View className="px-4 py-6">
+            <View className={showFullPage ? 'px-4 py-6' : 'px-4'}>
                 {/* <View className="mb-4 flex-row items-center justify-between"> */}
                 <TouchableOpacity>{/* <ArrowLeftIcon size={24} color="black" /> */}</TouchableOpacity>
                 {/* <Text className="text-lg font-bold">Explore</Text> */}
@@ -44,8 +50,12 @@ export default function Explore({ locationId = 174 }: { locationId: number }) {
                 {/* </View> */}
 
                 {/* Title & Description */}
-                <Text className="mb-2 font-inter text-3xl font-bold">{data.name}</Text>
-                <Text className="mb-4 font-inter text-gray-600">{data.description.replace(/""/g, '"')}</Text>
+                {showFullPage && (
+                    <View>
+                        <Text className="mb-2 font-inter text-3xl font-bold">{data.name}</Text>
+                        <Text className="mb-4 font-inter text-gray-600">{data.description.replace(/""/g, '"')}</Text>
+                    </View>
+                )}
 
                 {/* Categories */}
                 <View className="mb-4 flex-row items-center justify-between">

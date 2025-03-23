@@ -1,5 +1,5 @@
 import { Skeleton } from '@rneui/themed';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,8 +10,8 @@ import authAxios from '@/src/utils/axios';
 
 export default function Category() {
     const { id } = useLocalSearchParams();
-    const [data, setData] = useState({});
-    const router = useRouter();
+    const [data, setData]: any = useState(null);
+    // const router = useRouter();
     useEffect(() => {
         const fetchData = async () => {
             const res = await authAxios.get(`location/category/${id}`);
@@ -41,11 +41,11 @@ export default function Category() {
             <View className="flex-1 p-4">
                 {/* Category Title & Description */}
                 <View>
-                    <Text className="text-2xl font-bold">{data.title}</Text>
-                    <Text className="mt-2 text-gray-600">{data.topBlurb}</Text>
+                    <Text className="font-inter text-2xl font-bold">{data.title}</Text>
+                    <Text className="mt-2 font-inter text-gray-600">{data.topBlurb}</Text>
                 </View>
 
-                {data?.places?.map((item) => {
+                {data?.places?.map((item: any) => {
                     return <PlaceCard key={item.id} item={item} />;
                 })}
             </View>

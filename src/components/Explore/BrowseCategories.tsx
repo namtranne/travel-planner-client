@@ -50,7 +50,7 @@ export default function BrowseCategories({ categories }: any) {
                                         <TouchableOpacity
                                             className="flex-row items-center py-3"
                                             onPress={() => {
-                                                router.push(`/category/${item.name.toLowerCase()}`);
+                                                router.push(`/category/${item.id}`);
                                                 setModalVisible(false);
                                             }}
                                         >

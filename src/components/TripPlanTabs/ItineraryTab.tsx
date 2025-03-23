@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -20,7 +19,7 @@ const recommendedPlaces = [
 export default function ItineraryScreen() {
     const [selectedDate, setSelectedDate] = useState('Wed 3/5');
     const [notes, setNotes] = useState('');
-    const router = useRouter();
+    // const router = useRouter();
 
     const dates = ['Wed 3/5', 'Thu 3/6', 'Fri 3/7', 'Sat 3/8'];
 

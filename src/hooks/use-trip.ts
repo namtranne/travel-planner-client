@@ -44,7 +44,7 @@ export function useMyTrips() {
     return { isLoading, data, error };
 }
 
-export function useTripDetails(tripId: number) {
+export function useTripDetails(tripId: any) {
     const { data, isLoading, error } = useQuery({
         queryKey: [`trip-${tripId}`, tripId],
         queryFn: () => getTripDetails(tripId),
