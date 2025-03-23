@@ -14,7 +14,7 @@ export default function Category() {
     // const router = useRouter();
     useEffect(() => {
         const fetchData = async () => {
-            const res = await authAxios.get(`location/category/${id}`);
+            const res = await authAxios.get(`locations/category/${id}`);
             setData(res.data.data);
         };
         fetchData();

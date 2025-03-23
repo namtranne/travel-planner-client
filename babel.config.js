@@ -31,6 +31,7 @@ module.exports = (api) => {
                         'hugeicons:location-favourite-01',
                         'lets-icons:home',
                         'material-symbols:calendar-month',
+                        'mdi:magic',
                         'iconamoon:profile-fill',
                         'material-symbols:search',
                         'material-symbols:close',
