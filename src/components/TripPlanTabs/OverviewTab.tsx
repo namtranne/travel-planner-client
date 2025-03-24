@@ -60,7 +60,7 @@ export default function OverviewTab({
                                                     >
                                                         <Iconify
                                                             icon={innerItem.icon}
-                                                            className="mr-4 text-xl"
+                                                            className="mr-4 text-xl text-black"
                                                             color="black"
                                                         />
                                                         <Text className="flex-1 text-sm">{innerItem.name}</Text>
@@ -71,7 +71,12 @@ export default function OverviewTab({
                                     openSheet();
                                 }}
                             >
-                                <Iconify icon={item.icon} size={24} color="black" className="font-extrabold" />
+                                <Iconify
+                                    icon={item.icon}
+                                    size={24}
+                                    color="black"
+                                    className="font-extrabold text-black"
+                                />
                                 <Text className="mt-1 text-[10px]">{item.name}</Text>
                             </TouchableOpacity>
                         ))}

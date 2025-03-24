@@ -38,7 +38,7 @@ const Trips = () => {
     const renderTripCard = ({ item }: any) => (
         <TouchableOpacity
             className="m-2 rounded-lg bg-white shadow-md"
-            onPress={() => router.push(`/trip-plan/${item.id}`)}
+            onPress={() => router.navigate(`/trip-plan/${item.id}`)}
         >
             {item.image && <Image source={{ uri: item.image }} className="h-40 w-full rounded-t-lg" />}
             <View className="p-4">

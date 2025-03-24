@@ -104,3 +104,9 @@ export type UpdateCheckListItemREQ = {
     title?: string;
     isChecked?: boolean;
 };
+
+export class UpdateTripItineraryDayREQ {
+    subHeading?: string;
+
+    description?: string;
+}

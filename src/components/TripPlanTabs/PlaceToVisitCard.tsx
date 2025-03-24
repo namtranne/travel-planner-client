@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
-import { useGetPlaceToVisitDetails } from '@/src/hooks/use-trip';
+import { useGetPlaceToVisitDetailsOverview } from '@/src/hooks/use-trip';
 import { getOpeningPeriodsText } from '@/src/utils/DateTimeUtil';
 
 const PlaceToVisitCard = ({
@@ -19,7 +19,7 @@ const PlaceToVisitCard = ({
     onDelete: () => void;
 }) => {
     const [expanded, setExpanded] = useState(false);
-    const { isLoading, data: placeToVisit } = useGetPlaceToVisitDetails(tripId, sectionId, placeToVisitId);
+    const { isLoading, data: placeToVisit } = useGetPlaceToVisitDetailsOverview(tripId, sectionId, placeToVisitId);
 
     if (isLoading) {
         return (

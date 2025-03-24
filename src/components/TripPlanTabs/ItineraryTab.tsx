@@ -4,16 +4,20 @@ import Iconify from 'react-native-iconify';
 
 import ItineraryCard from './ItineraryCard';
 
-const days = [
-    { label: 'Tue', date: '3/4' },
-    { label: 'Wed', date: '3/5' },
-    { label: 'Thu', date: '3/6' },
-    { label: 'Fri', date: '3/7' },
-    { label: 'Sat', date: '3/8' }
-];
-
-export default function ItineraryScreen() {
-    const [selected, setSelected] = useState(days[0]?.date || '');
+export default function ItineraryScreen({
+    trip,
+    openSheet,
+    closeSheet,
+    setBottomSheetContent,
+    setSnapPoints
+}: {
+    trip: any;
+    openSheet: () => void;
+    closeSheet: () => void;
+    setBottomSheetContent: (content: React.ReactNode) => void;
+    setSnapPoints: (points: string[]) => void;
+}) {
+    const [selectedDayId, setSelectedDayId] = useState(trip?.tripItinerary?.days[0].id);
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleAIFill = () => {
@@ -23,28 +27,50 @@ export default function ItineraryScreen() {
     };
 
     return (
-        <View className="flex-1 py-4 pt-0">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4 bg-white px-2 py-4">
-                <View className="mr-2 rounded-full bg-black p-2">
-                    <Iconify icon="mdi:calendar-edit" color="white" width="24" height="24" />
-                </View>
-                <TouchableOpacity className="mr-2 rounded-full bg-[#ffaaec] p-2" onPress={() => setModalVisible(true)}>
-                    <Iconify icon="mdi:magic" color="white" width="24" height="24" />
-                </TouchableOpacity>
-                {days.map((day) => (
+        <View className="flex-1">
+            {/* Itinerary tabs */}
+            <View className="bg-white px-2 py-4">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="fixed ">
+                    <View className="mr-2 rounded-full bg-black p-2">
+                        <Iconify className="text-white" icon="mdi:calendar-edit" width="24" height="24" />
+                    </View>
                     <TouchableOpacity
-                        key={day.date}
-                        className={`mx-2 rounded-lg px-4 py-2 ${selected === day.date ? 'bg-gray-400' : 'bg-gray-100'}`}
-                        onPress={() => setSelected(day.date)}
+                        className="mr-2 rounded-full bg-[#ffaaec] p-2"
+                        onPress={() => setModalVisible(true)}
                     >
-                        <Text className={`font-semibold ${selected === day.date ? 'text-black' : 'text-gray-500'}`}>
-                            {day.label} {day.date}
-                        </Text>
+                        <Iconify className="text-white" icon="mdi:magic" width="24" height="24" />
                     </TouchableOpacity>
+                    {trip?.tripItinerary?.days.map((day: any) => (
+                        <TouchableOpacity
+                            key={day.id}
+                            className={`mx-2 rounded-lg px-4 py-2 ${selectedDayId === day.id ? 'bg-gray-400' : 'bg-gray-100'}`}
+                            onPress={() => setSelectedDayId(day.id)}
+                        >
+                            <Text
+                                className={`font-semibold ${selectedDayId === day.id ? 'text-black' : 'text-gray-500'}`}
+                            >
+                                {day.title}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+
+            {/* Itinerary cards */}
+            <ScrollView>
+                {trip?.tripItinerary?.days.map((day: any) => (
+                    <ItineraryCard
+                        key={day.id}
+                        tripId={trip.id}
+                        dayId={day.id}
+                        subHeading={day.subHeading}
+                        openSheet={openSheet}
+                        closeSheet={closeSheet}
+                        setBottomSheetContent={setBottomSheetContent}
+                        setSnapPoints={setSnapPoints}
+                    />
                 ))}
             </ScrollView>
-
-            <ItineraryCard />
 
             {/* Confirmation Modal */}
             <Modal
