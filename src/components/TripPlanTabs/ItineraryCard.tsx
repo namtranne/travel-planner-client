@@ -27,6 +27,7 @@ import SearchPlaceSheet from './SearchPlaceSheet';
 interface ItineraryCardProps {
     tripId: number;
     dayId: number;
+    dayTitle: string;
     subHeading: string;
     openSheet: () => void;
     // eslint-disable-next-line react/no-unused-prop-types
@@ -38,6 +39,7 @@ interface ItineraryCardProps {
 const ItineraryCard = ({
     tripId,
     dayId,
+    dayTitle,
     subHeading,
     openSheet,
     closeSheet,
@@ -110,7 +112,7 @@ const ItineraryCard = ({
             {/* Header */}
             <View className="flex-row items-center justify-between space-x-2">
                 <TouchableOpacity onPress={() => setExpanded(false)}>
-                    <Text className="text-3xl font-bold">{tripItineraryDay.title}</Text>
+                    <Text className="text-3xl font-bold">{dayTitle}</Text>
                 </TouchableOpacity>
                 <TextInput
                     ref={inputHeadingRef}

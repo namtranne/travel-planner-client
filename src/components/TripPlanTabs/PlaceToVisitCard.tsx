@@ -36,7 +36,12 @@ const PlaceToVisitCard = ({
                     <View className="w-[70%]">
                         <View className="flex-row items-center justify-start space-x-2">
                             <View className="relative flex h-8 w-8 items-center justify-center">
-                                <Iconify icon="fa-solid:map-marker" size={30} color="#ef4444" />
+                                <Iconify
+                                    className="text-[#ef4444]"
+                                    icon="fa-solid:map-marker"
+                                    size={30}
+                                    color="#ef4444"
+                                />
                                 <Text className="absolute text-[10px] font-bold text-white">{order}</Text>
                             </View>
                             <Text className="w-10/12 text-sm font-bold leading-4">
@@ -46,7 +51,7 @@ const PlaceToVisitCard = ({
                         {!expanded && (
                             <Text className="mt-4 flex-wrap text-[14px] leading-4 text-gray-400">
                                 {placeToVisit?.place.shortDescription ||
-                                    `${placeToVisit?.place.description.slice(0, 100)}...`}
+                                    `${placeToVisit?.place?.description?.slice(0, 100) || 'Description unavailable'}...`}
                             </Text>
                         )}
                     </View>
@@ -65,11 +70,23 @@ const PlaceToVisitCard = ({
                 {expanded && (
                     <View className="mt-4 flex-row items-center space-x-4">
                         <TouchableOpacity className="flex-row items-center">
-                            <Iconify icon="mdi:clock-outline" width={20} height={20} color="black" />
+                            <Iconify
+                                className="text-black"
+                                icon="mdi:clock-outline"
+                                width={20}
+                                height={20}
+                                color="black"
+                            />
                             <Text className="text-xs font-bold ">Add time</Text>
                         </TouchableOpacity>
                         <View className="flex-row items-center">
-                            <Iconify icon="mdi:currency-usd" width={20} height={20} color="black" />
+                            <Iconify
+                                className="text-black"
+                                icon="mdi:currency-usd"
+                                width={20}
+                                height={20}
+                                color="black"
+                            />
                             <Text className="text-xs font-bold text-gray-800">Add cost</Text>
                         </View>
                     </View>
@@ -88,7 +105,7 @@ const PlaceToVisitCard = ({
                         </TouchableOpacity> */}
                     </View>
                     <View className="mt-4 flex-row items-center space-x-1">
-                        <Iconify icon="mdi:star" width={16} height={16} color="orange" />
+                        <Iconify className="text-orange-400" icon="mdi:star" width={16} height={16} color="orange" />
                         <Text className="text-xs font-bold text-orange-400">{placeToVisit?.place.rating || 'NA'}</Text>
                         <Text className="text-xs text-gray-500">({placeToVisit?.place.numRatings || 'NA'})</Text>
                         <Iconify icon="devicon:google" width={16} height={16} />
@@ -96,13 +113,19 @@ const PlaceToVisitCard = ({
 
                     {/* Description */}
                     <View className="mt-3 flex-row items-start">
-                        <Iconify icon="material-symbols:info" width={20} height={20} color="gray" />
+                        <Iconify
+                            className="text-gray-500"
+                            icon="material-symbols:info"
+                            width={20}
+                            height={20}
+                            color="gray"
+                        />
                         <Text className="ml-2 text-gray-600">{placeToVisit?.place.description || 'NA'}</Text>
                     </View>
 
                     {/* Opening Hours */}
                     <View className="mt-3 flex-row items-center">
-                        <Iconify icon="mdi:clock" width={20} height={20} color="gray" />
+                        <Iconify className="text-gray-500" icon="mdi:clock" width={20} height={20} color="gray" />
                         <Text className="ml-2 text-gray-600">
                             {!placeToVisit?.place.closed
                                 ? getOpeningPeriodsText(placeToVisit?.place.placeOpeningPeriods)
@@ -115,7 +138,7 @@ const PlaceToVisitCard = ({
 
                     {/* Address */}
                     <View className="mt-3 flex-row items-center">
-                        <Iconify icon="mdi:map-marker" width={20} height={20} color="gray" />
+                        <Iconify className="text-gray-500" icon="mdi:map-marker" width={20} height={20} color="gray" />
                         <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.address)}>
                             <Text className="ml-2 text-blue-500">{placeToVisit?.place.address}</Text>
                         </TouchableOpacity>
@@ -123,7 +146,7 @@ const PlaceToVisitCard = ({
 
                     {/* Website */}
                     <View className="mt-3 flex-row items-center">
-                        <Iconify icon="mdi:world" width={20} height={20} color="gray" />
+                        <Iconify className="text-gray-500" icon="mdi:world" width={20} height={20} color="gray" />
                         <TouchableOpacity onPress={() => Linking.openURL(placeToVisit?.place.website)}>
                             <Text className="ml-2 text-blue-500">{placeToVisit?.place.website}</Text>
                         </TouchableOpacity>
@@ -131,7 +154,7 @@ const PlaceToVisitCard = ({
 
                     {/* Phone */}
                     <View className="mt-3 flex-row items-center">
-                        <Iconify icon="mdi:phone" width={20} height={20} color="gray" />
+                        <Iconify className="text-gray-500" icon="mdi:phone" width={20} height={20} color="gray" />
                         <Text className="ml-2 text-blue-500">{placeToVisit?.place.hotline}</Text>
                     </View>
 

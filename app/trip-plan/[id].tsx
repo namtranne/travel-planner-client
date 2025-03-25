@@ -267,15 +267,15 @@ export default function TripScreen() {
                             onChange={handleDateChange}
                             open={onEnteringDate}
                             setOpen={setOnEnteringDate}
-                            handleClose={() =>
+                            handleClose={() => {
                                 updateTrip({
-                                    tripId: 1,
+                                    tripId: Number(tripId),
                                     updateTripReq: {
                                         startDate: tripState.startDate.format('YYYY-MM-DD'),
                                         endDate: tripState.endDate.format('YYYY-MM-DD')
                                     }
-                                })
-                            }
+                                });
+                            }}
                             range
                         />
                     </View>

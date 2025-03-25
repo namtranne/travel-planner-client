@@ -1,5 +1,6 @@
 import authAxios from '../utils/axios';
 import type {
+    AutofillItineraryREQ,
     CreateCheckListItemREQ,
     CreateCheckListREQ,
     CreateNoteREQ,
@@ -477,4 +478,15 @@ export async function deleteChecklistItemItinerary(tripId: number, dayId: number
         .catch((err) => {
             throw new Error(err.response.data.message);
         });
+}
+
+// Autofill Trip Itinerary
+export async function autofillTripItinerary(tripId: number, autofillItineraryReq: AutofillItineraryREQ) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/itineraries/autofill-itinerary`, autofillItineraryReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
 }

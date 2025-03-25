@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+    autofillTripItinerary as autofillTripItineraryApi,
     createChecklistItemItinerary as createChecklistItemItineraryApi,
     createChecklistItemOverview as createChecklistItemOverviewApi,
     createChecklistItinerary as createChecklistItineraryApi,
@@ -40,6 +41,7 @@ import {
     updateTripOverviewSection as updateTripOverviewSectionApi
 } from '../services/api-trip';
 import type {
+    AutofillItineraryREQ,
     CreateCheckListItemREQ,
     CreateCheckListREQ,
     CreateNoteREQ,
@@ -107,8 +109,9 @@ export function useUpdateTrip() {
     } = useMutation({
         mutationFn: (data: { tripId: number; updateTripReq: UpdateTripREQ }) =>
             updateTripApi(data.tripId, data.updateTripReq),
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['trips'] });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
         onError: (err) => console.error(err.message)
     });
@@ -786,4 +789,24 @@ export function useDeleteChecklistItemItinerary() {
     });
 
     return { isPending, deleteChecklistItemItinerary, error };
+}
+
+// Autofill Trip Itinerary
+export function useAutofillTripItinerary() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: autofillTripItinerary,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; autofillItineraryReq: AutofillItineraryREQ }) =>
+            autofillTripItineraryApi(data.tripId, data.autofillItineraryReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, autofillTripItinerary, error };
 }

@@ -106,7 +106,7 @@ export default function OverviewTab({
                         additionalStyle="flex-row text-base bg-[#60ABEF] w-[150px] rounded-2xl"
                         isPending={isPending}
                     >
-                        <Iconify icon="ic:baseline-plus" color="white" />
+                        <Iconify className="text-white" icon="ic:baseline-plus" color="white" />
                     </Button>
                 </View>
             </View>

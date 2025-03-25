@@ -10,7 +10,9 @@ export default function HomeLayout() {
                 name="home"
                 options={{
                     title: 'Home',
-                    tabBarIcon: ({ color, size }) => <Iconify icon="lets-icons:home" size={size} color={color} />
+                    tabBarIcon: ({ color, size }) => (
+                        <Iconify className={`text-${color}`} icon="lets-icons:home" size={size} color={color} />
+                    )
                 }}
             />
             <Tabs.Screen
@@ -18,7 +20,12 @@ export default function HomeLayout() {
                 options={{
                     title: 'Trips',
                     tabBarIcon: ({ color, size }) => (
-                        <Iconify icon="material-symbols:calendar-month" size={size} color={color} />
+                        <Iconify
+                            className={`text-${color}`}
+                            icon="material-symbols:calendar-month"
+                            size={size}
+                            color={color}
+                        />
                     )
                 }}
             />
@@ -26,7 +33,9 @@ export default function HomeLayout() {
                 name="account"
                 options={{
                     title: 'Account',
-                    tabBarIcon: ({ color, size }) => <Iconify icon="iconamoon:profile-fill" size={size} color={color} />
+                    tabBarIcon: ({ color, size }) => (
+                        <Iconify className={`text-${color}`} icon="iconamoon:profile-fill" size={size} color={color} />
+                    )
                 }}
             />
         </Tabs>
