@@ -100,7 +100,12 @@ const TripOverviewSection = ({
         <View className="mb-4 rounded-lg bg-white p-4 pb-6 shadow">
             <View className="flex-row items-center justify-between gap-x-2">
                 <TouchableOpacity onPress={() => setExpanded(!expanded)}>
-                    <Iconify icon={expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'} color="black" size={36} />
+                    <Iconify
+                        className="text-black"
+                        icon={expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'}
+                        color="black"
+                        size={36}
+                    />
                 </TouchableOpacity>
                 <TextInput
                     ref={inputTitleRef}
@@ -128,7 +133,7 @@ const TripOverviewSection = ({
                                         onPress={() => action()}
                                         disabled={disabled}
                                     >
-                                        <Iconify icon={icon} size={20} color="black" />
+                                        <Iconify className="text-black" icon={icon} size={20} color="black" />
                                         <Text className="text-base">{label}</Text>
                                     </TouchableOpacity>
                                 ))}
@@ -137,7 +142,7 @@ const TripOverviewSection = ({
                         openSheet();
                     }}
                 >
-                    <Iconify icon="bi:three-dots" size={24} color="black" />
+                    <Iconify className="text-black" icon="bi:three-dots" size={24} color="black" />
                 </TouchableOpacity>
             </View>
             {expanded && (
@@ -248,7 +253,7 @@ const TripOverviewSection = ({
                                 openSheet();
                             }}
                         >
-                            <Iconify icon="mdi-light:map-marker" size={20} color="black" />
+                            <Iconify className="text-black" icon="mdi-light:map-marker" size={20} color="black" />
                             <Text className="ml-2 text-gray-500">Add a place</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -262,7 +267,7 @@ const TripOverviewSection = ({
                             }
                             disabled={isPendingCreateNote || isPendingUpdateNote || isPendingDeleteNote}
                         >
-                            <Iconify icon="mdi-light:note" size={20} color="black" />
+                            <Iconify className="text-black" icon="mdi-light:note" size={20} color="black" />
                         </TouchableOpacity>
                         <TouchableOpacity
                             className="rounded-lg bg-gray-100 p-3"
@@ -283,7 +288,12 @@ const TripOverviewSection = ({
                                 isPendingDeletePlaceToVisit
                             }
                         >
-                            <Iconify icon="material-symbols-light:checklist" size={20} color="black" />
+                            <Iconify
+                                className="text-black"
+                                icon="material-symbols-light:checklist"
+                                size={20}
+                                color="black"
+                            />
                         </TouchableOpacity>
                     </View>
                 </View>

@@ -18,16 +18,20 @@ const Note = ({
             <View className={`rounded-lg ${expanded ? 'bg-gray-100' : ''} p-3`}>
                 <View className="flex-1 flex-row items-center justify-center">
                     <View className="h-6 w-6 items-center justify-center rounded-full bg-gray-300">
-                        <Iconify icon="fluent:note-48-filled" size={16} color="white" />
+                        <Iconify className="text-white" icon="fluent:note-48-filled" size={16} color="white" />
                     </View>
                     <TextInput
                         className="ml-3 flex-1 italic text-gray-500"
                         style={{ textAlignVertical: 'top' }}
                         placeholder="Add your notes here"
-                        onFocus={() => setExpanded(true)}
+                        onFocus={() => {
+                            console.log('123');
+                            setExpanded(true);
+                        }}
                         value={note}
                         onChangeText={(text) => setNote(text)}
                         onBlur={() => handleUpdateNote(note)}
+                        onPress={() => setExpanded(true)}
                     />
                 </View>
                 {expanded && (

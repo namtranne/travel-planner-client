@@ -1,4 +1,4 @@
-import { Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
 import { useCreateTripOverviewSection } from '@/src/hooks/use-trip';
@@ -82,33 +82,38 @@ export default function OverviewTab({
                         ))}
                     </View>
                 </View>
-                {trip.tripOverview.sections.map((section: any) => (
-                    <TripOverviewSection
-                        tripId={trip.id}
-                        sectionId={section.id}
-                        key={section.id}
-                        titleSection={section.title}
-                        openSheet={openSheet}
-                        closeSheet={closeSheet}
-                        setBottomSheetContent={setBottomSheetContent}
-                        setSnapPoints={setSnapPoints}
-                    />
-                ))}
-                <View className="px-4">
-                    <Button
-                        text="New section"
-                        onPress={() =>
-                            createTripOverviewSection({
-                                tripId: trip.id,
-                                createTripOverviewSectionReq: { title: 'Add a title', sectionType: SectionType.COMMON }
-                            })
-                        }
-                        additionalStyle="flex-row text-base bg-[#60ABEF] w-[150px] rounded-2xl"
-                        isPending={isPending}
-                    >
-                        <Iconify className="text-white" icon="ic:baseline-plus" color="white" />
-                    </Button>
-                </View>
+                <ScrollView contentContainerStyle={{ paddingBottom: 200 }} keyboardShouldPersistTaps="handled">
+                    {trip.tripOverview.sections.map((section: any) => (
+                        <TripOverviewSection
+                            tripId={trip.id}
+                            sectionId={section.id}
+                            key={section.id}
+                            titleSection={section.title}
+                            openSheet={openSheet}
+                            closeSheet={closeSheet}
+                            setBottomSheetContent={setBottomSheetContent}
+                            setSnapPoints={setSnapPoints}
+                        />
+                    ))}
+                    <View className="px-4">
+                        <Button
+                            text="New section"
+                            onPress={() =>
+                                createTripOverviewSection({
+                                    tripId: trip.id,
+                                    createTripOverviewSectionReq: {
+                                        title: 'Add a title',
+                                        sectionType: SectionType.COMMON
+                                    }
+                                })
+                            }
+                            additionalStyle="flex-row text-base bg-[#60ABEF] w-[150px] rounded-2xl"
+                            isPending={isPending}
+                        >
+                            <Iconify className="text-white" icon="ic:baseline-plus" color="white" />
+                        </Button>
+                    </View>
+                </ScrollView>
             </View>
         </TouchableWithoutFeedback>
     );

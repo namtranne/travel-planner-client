@@ -6,7 +6,7 @@ import Iconify from 'react-native-iconify';
 
 import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
 import { useAutofillTripItinerary, useUpdateTrip } from '@/src/hooks/use-trip';
-import { convertDateToString } from '@/src/utils/DateTimeUtil';
+import { convertStringToDate } from '@/src/utils/DateTimeUtil';
 
 import ItineraryCard from './ItineraryCard';
 
@@ -57,8 +57,8 @@ export default function ItineraryScreen({
         autofillTripItinerary({
             tripId: trip.id,
             autofillItineraryReq: {
-                startDate: convertDateToString(trip.startDate) || '',
-                endDate: convertDateToString(trip.endDate) || ''
+                startDate: convertStringToDate(trip.startDate) || '',
+                endDate: convertStringToDate(trip.endDate) || ''
             }
         });
         setModalVisible(false);
