@@ -3,23 +3,28 @@ import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View 
 import Iconify from 'react-native-iconify';
 
 import { useSearchPlaces } from '@/src/hooks/use-place';
-import { useCreatePlaceToVisit } from '@/src/hooks/use-trip';
+import { useCreatePlaceToVisitItinerary, useCreatePlaceToVisitOverview } from '@/src/hooks/use-trip';
 
 import Button from '../ui/CommonButton';
 
 const SearchPlaceSheet = ({
     tripId,
     sectionId,
+    dayId,
     closeSheet
 }: {
     tripId: number;
-    sectionId: number;
+    sectionId?: number;
+    dayId?: number;
     closeSheet: () => void;
 }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const { searchPlaces, data: results, isPending: isLoadingSearchedPlaces, error } = useSearchPlaces();
-    const { isPending: isPendingCreatePlaceToVisit, createPlaceToVisit } = useCreatePlaceToVisit();
+    const { isPending: isPendingCreatePlaceToVisitOverview, createPlaceToVisitOverview } =
+        useCreatePlaceToVisitOverview();
+    const { isPending: isPendingCreatePlaceToVisitItinerary, createPlaceToVisitItinerary } =
+        useCreatePlaceToVisitItinerary();
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -97,12 +102,19 @@ const SearchPlaceSheet = ({
                             key={item.id}
                             className="mb-4 flex-row items-center px-2"
                             onPress={() => {
-                                createPlaceToVisit(
-                                    { tripId, sectionId, createPlaceToVisitReq: { placeId: item.id } },
-                                    { onSuccess: () => closeSheet() }
-                                );
+                                if (sectionId) {
+                                    createPlaceToVisitOverview(
+                                        { tripId, sectionId, createPlaceToVisitReq: { placeId: item.id } },
+                                        { onSuccess: () => closeSheet() }
+                                    );
+                                } else if (dayId) {
+                                    createPlaceToVisitItinerary(
+                                        { tripId, dayId, createPlaceToVisitReq: { placeId: item.id } },
+                                        { onSuccess: () => closeSheet() }
+                                    );
+                                }
                             }}
-                            disabled={isPendingCreatePlaceToVisit}
+                            disabled={isPendingCreatePlaceToVisitOverview || isPendingCreatePlaceToVisitItinerary}
                         >
                             {getIcon('location')}
                             <View className="ml-3 flex-1">

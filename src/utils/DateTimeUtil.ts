@@ -1,4 +1,5 @@
 export function convertDateFormat(dateString: string) {
+    // DD MMM
     if (!dateString) return '';
     const date = new Date(dateString);
 
@@ -6,6 +7,11 @@ export function convertDateFormat(dateString: string) {
         day: '2-digit',
         month: 'short'
     }).format(date);
+}
+
+export function convertStringToDate(date: string) {
+    // YYYY-MM-DD
+    return new Date(date).toISOString().split('T')[0];
 }
 
 type OpeningPeriod = {

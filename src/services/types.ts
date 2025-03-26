@@ -104,3 +104,13 @@ export type UpdateCheckListItemREQ = {
     title?: string;
     isChecked?: boolean;
 };
+
+export type UpdateTripItineraryDayREQ = {
+    subHeading?: string;
+    description?: string;
+};
+
+export type AutofillItineraryREQ = {
+    startDate: string;
+    endDate: string;
+};

@@ -10,7 +10,6 @@ import {
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
-    ScrollView,
     Text,
     TextInput,
     TouchableOpacity,
@@ -251,7 +250,7 @@ export default function TripScreen() {
                         </SafeAreaView>
 
                         {/* Tab content */}
-                        <ScrollView>
+                        <View className="flex-1 bg-gray-100">
                             <TabContent
                                 trip={trip}
                                 openSheet={openSheet}
@@ -259,7 +258,7 @@ export default function TripScreen() {
                                 setBottomSheetContent={setBottomSheetContent}
                                 setSnapPoints={setSnapPoints}
                             />
-                        </ScrollView>
+                        </View>
 
                         <DateRangePicker
                             displayedDate={tripState.startDate}
@@ -268,15 +267,15 @@ export default function TripScreen() {
                             onChange={handleDateChange}
                             open={onEnteringDate}
                             setOpen={setOnEnteringDate}
-                            handleClose={() =>
+                            handleClose={() => {
                                 updateTrip({
-                                    tripId: 1,
+                                    tripId: Number(tripId),
                                     updateTripReq: {
                                         startDate: tripState.startDate.format('YYYY-MM-DD'),
                                         endDate: tripState.endDate.format('YYYY-MM-DD')
                                     }
-                                })
-                            }
+                                });
+                            }}
                             range
                         />
                     </View>

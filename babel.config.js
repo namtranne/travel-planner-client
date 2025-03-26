@@ -103,7 +103,9 @@ module.exports = (api) => {
                         'material-symbols:info',
                         'mdi:calendar-edit',
                         'mdi:magic-wand',
-                        'fa-solid:route'
+                        'fa-solid:route',
+                        'mdi:magic',
+                        'tabler:calendar-x'
                     ]
                 }
             ]

@@ -1,50 +1,124 @@
+import moment from 'moment';
+import type React from 'react';
 import { useState } from 'react';
-import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
+
+import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
+import { useAutofillTripItinerary, useUpdateTrip } from '@/src/hooks/use-trip';
+import { convertStringToDate } from '@/src/utils/DateTimeUtil';
 
 import ItineraryCard from './ItineraryCard';
 
-const days = [
-    { label: 'Tue', date: '3/4' },
-    { label: 'Wed', date: '3/5' },
-    { label: 'Thu', date: '3/6' },
-    { label: 'Fri', date: '3/7' },
-    { label: 'Sat', date: '3/8' }
-];
-
-export default function ItineraryScreen() {
-    const [selected, setSelected] = useState(days[0]?.date || '');
+export default function ItineraryScreen({
+    trip,
+    openSheet,
+    closeSheet,
+    setBottomSheetContent,
+    setSnapPoints
+}: {
+    trip: any;
+    openSheet: () => void;
+    closeSheet: () => void;
+    setBottomSheetContent: (content: React.ReactNode) => void;
+    setSnapPoints: (points: string[]) => void;
+}) {
+    const [selectedDayId, setSelectedDayId] = useState(trip?.tripItinerary?.days[0].id);
     const [modalVisible, setModalVisible] = useState(false);
+    const [tripState, setTripState] = useState({
+        startDate: trip.startDate ? moment(trip.startDate) : moment(),
+        endDate: trip.endDate ? moment(trip.endDate) : moment()
+    });
+    const [onEnteringDate, setOnEnteringDate] = useState(false);
 
-    const handleAIFill = () => {
-        // Here you'd call your AI itinerary fill logic
-        console.log('AI itinerary filling triggered');
+    const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
+    const { isPending: isPendingAutofillTripItinerary, autofillTripItinerary } = useAutofillTripItinerary();
+    const handleDateChange = (data: any) => {
+        if (data.startDate && data.endDate) {
+            setTripState((prev) => ({
+                ...prev,
+                startDate: data.startDate,
+                endDate: data.endDate
+            }));
+        } else if (data.startDate) {
+            setTripState((prev) => ({
+                ...prev,
+                startDate: data.startDate
+            }));
+        } else if (data.endDate) {
+            setTripState((prev) => ({
+                ...prev,
+                endDate: data.endDate
+            }));
+        }
+    };
+
+    const handleAutoFill = () => {
+        autofillTripItinerary({
+            tripId: trip.id,
+            autofillItineraryReq: {
+                startDate: convertStringToDate(trip.startDate) || '',
+                endDate: convertStringToDate(trip.endDate) || ''
+            }
+        });
         setModalVisible(false);
     };
 
+    if (isPendingAutofillTripItinerary) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
+
     return (
-        <View className="flex-1 py-4 pt-0">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4 bg-white px-2 py-4">
-                <View className="mr-2 rounded-full bg-black p-2">
-                    <Iconify icon="mdi:calendar-edit" color="white" width="24" height="24" />
-                </View>
-                <TouchableOpacity className="mr-2 rounded-full bg-[#ffaaec] p-2" onPress={() => setModalVisible(true)}>
-                    <Iconify icon="mdi:magic" color="white" width="24" height="24" />
-                </TouchableOpacity>
-                {days.map((day) => (
+        <View className="flex-1">
+            {/* Itinerary tabs */}
+            <View className="bg-white px-2 py-4">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="fixed ">
+                    <View className="mr-2 rounded-full bg-black p-2">
+                        <Iconify className="text-white" icon="mdi:calendar-edit" width="24" height="24" />
+                    </View>
                     <TouchableOpacity
-                        key={day.date}
-                        className={`mx-2 rounded-lg px-4 py-2 ${selected === day.date ? 'bg-gray-400' : 'bg-gray-100'}`}
-                        onPress={() => setSelected(day.date)}
+                        className="mr-2 rounded-full bg-[#ffaaec] p-2"
+                        onPress={() => setModalVisible(true)}
+                        disabled={isPendingUpdateTrip}
                     >
-                        <Text className={`font-semibold ${selected === day.date ? 'text-black' : 'text-gray-500'}`}>
-                            {day.label} {day.date}
-                        </Text>
+                        <Iconify className="text-white" icon="mdi:magic" width="24" height="24" />
                     </TouchableOpacity>
+                    {trip?.tripItinerary?.days.map((day: any) => (
+                        <TouchableOpacity
+                            key={day.id}
+                            className={`mx-2 rounded-lg px-4 py-2 ${selectedDayId === day.id ? 'bg-gray-400' : 'bg-gray-100'}`}
+                            onPress={() => setSelectedDayId(day.id)}
+                        >
+                            <Text
+                                className={`font-semibold ${selectedDayId === day.id ? 'text-black' : 'text-gray-500'}`}
+                            >
+                                {day.title}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+
+            {/* Itinerary cards */}
+            <ScrollView>
+                {trip?.tripItinerary?.days.map((day: any) => (
+                    <ItineraryCard
+                        key={day.id}
+                        tripId={trip.id}
+                        dayTitle={day.title}
+                        dayId={day.id}
+                        subHeading={day.subHeading}
+                        openSheet={openSheet}
+                        closeSheet={closeSheet}
+                        setBottomSheetContent={setBottomSheetContent}
+                        setSnapPoints={setSnapPoints}
+                    />
                 ))}
             </ScrollView>
-
-            <ItineraryCard />
 
             {/* Confirmation Modal */}
             <Modal
@@ -61,16 +135,39 @@ export default function ItineraryScreen() {
                             continue?
                         </Text>
                         <View className="flex-row justify-end space-x-3">
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
+                            <TouchableOpacity
+                                onPress={() => setModalVisible(false)}
+                                disabled={isPendingAutofillTripItinerary}
+                            >
                                 <Text className="text-gray-500">Cancel</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={handleAIFill}>
+                            <TouchableOpacity onPress={handleAutoFill} disabled={isPendingAutofillTripItinerary}>
                                 <Text className="font-semibold text-[#ffaaec]">Yes, do it</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
             </Modal>
+
+            {/* Date Range Picker */}
+            <DateRangePicker
+                displayedDate={tripState.startDate}
+                startDate={tripState.startDate}
+                endDate={tripState.endDate}
+                onChange={handleDateChange}
+                open={onEnteringDate}
+                setOpen={setOnEnteringDate}
+                handleClose={() => {
+                    updateTrip({
+                        tripId: trip.id,
+                        updateTripReq: {
+                            startDate: tripState.startDate.format('YYYY-MM-DD'),
+                            endDate: tripState.endDate.format('YYYY-MM-DD')
+                        }
+                    });
+                }}
+                range
+            />
         </View>
     );
 }
