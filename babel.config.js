@@ -21,7 +21,6 @@ module.exports = (api) => {
                         'basil:user-outline',
                         'clarity:email-line',
                         'mdi:password-outline',
-                        'lets-icons:back-light',
                         'fa-solid:place-of-worship',
                         'arcticons:budgetbakers-wallet',
                         'icon-park-solid:tips-one',
@@ -60,7 +59,6 @@ module.exports = (api) => {
                         'fontisto:map-marker',
                         'material-symbols:map',
                         'mdi:clock-outline',
-                        'skill-icons:instagram',
                         'mdi:chevron-down',
                         'mdi:chevron-right',
                         'bi:three-dots',
@@ -91,7 +89,6 @@ module.exports = (api) => {
                         'mdi:ship-wheel',
                         'mdi:star',
                         'fa-solid:map-marker',
-                        'mdi:clock-outline',
                         'mdi:currency-usd',
                         'devicon:google',
                         'mdi:map-marker',
@@ -104,7 +101,6 @@ module.exports = (api) => {
                         'mdi:calendar-edit',
                         'mdi:magic-wand',
                         'fa-solid:route',
-                        'mdi:magic',
                         'tabler:calendar-x'
                     ]
                 }

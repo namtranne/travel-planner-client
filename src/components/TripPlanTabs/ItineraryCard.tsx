@@ -262,9 +262,10 @@ const ItineraryCard = ({
                         <PlaceToVisitCard
                             key={placeToVisit.id}
                             tripId={tripId}
-                            sectionId={tripId}
+                            sectionId={dayId}
                             placeToVisitId={placeToVisit.id}
                             order={index + 1}
+                            tab="itinerary"
                             onDelete={() =>
                                 deletePlaceToVisitItinerary({ tripId, dayId, placeToVisitId: placeToVisit.id })
                             }

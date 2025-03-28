@@ -34,6 +34,7 @@ interface TabContentProps {
     closeSheet: () => void;
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
+    setOnEnteringDate?: (value: boolean) => void;
 }
 
 const TabComponents: { [key: string]: React.ComponentType<TabContentProps> } = {
@@ -257,6 +258,7 @@ export default function TripScreen() {
                                 closeSheet={closeSheet}
                                 setBottomSheetContent={setBottomSheetContent}
                                 setSnapPoints={setSnapPoints}
+                                setOnEnteringDate={setOnEnteringDate}
                             />
                         </View>
 

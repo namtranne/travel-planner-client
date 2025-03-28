@@ -1,13 +1,22 @@
 import { router } from 'expo-router';
 import moment from 'moment';
 import { useState } from 'react';
-import { Keyboard, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import {
+    Keyboard,
+    SafeAreaView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
 
 import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
 import SearchBar from '@/src/components/Planning/SearchBar';
 import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
 import { createTrip } from '@/src/services/api-trip';
+import { convertDateStringFormat } from '@/src/utils/DateTimeUtil';
 
 export default function Planning() {
     const [destination, setDestination] = useState({ id: -1, name: '' });
@@ -24,20 +33,19 @@ export default function Planning() {
     const handleCreateTrip = async () => {
         const res = await createTrip({
             locationId: destination.id,
-            startDate: date.startDate.toISOString(),
-            endDate: date.endDate.toISOString()
+            startDate: convertDateStringFormat(date.startDate.toISOString()),
+            endDate: convertDateStringFormat(date.endDate.toISOString())
         });
         router.replace(`/trip-plan/${res.id}`);
     };
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <View>
-                <View className="px-6 pt-12">
-                    <BackButton />
+            <SafeAreaView>
+                <BackButton />
+                <View className="px-6">
                     <Text className="mt-20 font-inter text-2xl font-semibold">
                         Let’s make your trip unforgettable!{' '}
                     </Text>
-
                     <View className="mt-12">
                         <SearchBar
                             title="Where do you wanna go?"
@@ -117,7 +125,7 @@ export default function Planning() {
                     setOpen={setOnEnteringDate}
                     range
                 />
-            </View>
+            </SafeAreaView>
         </TouchableWithoutFeedback>
     );
 }

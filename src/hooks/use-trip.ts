@@ -24,6 +24,7 @@ import {
     deleteTripItineraryDay as deleteTripItineraryDayApi,
     deleteTripOverviewSection as deleteTripOverviewSectionApi,
     getMyTrips,
+    getPlaceToVisitDetailsItinerary as getPlaceToVisitDetailsItineraryApi,
     getPlaceToVisitDetailsOverview as getPlaceToVisitDetailsOverviewApi,
     getTripDetails,
     getTripItineraryDayDetails as getTripItineraryDayDetailsApi,
@@ -536,6 +537,18 @@ export function useDeleteTripItineraryDay() {
 }
 
 // Place to visit (Itinerary)
+export function useGetPlaceToVisitDetailsItinerary(tripId: number, dayId: number, placeToVisitId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`place-to-visit-${placeToVisitId}`],
+        queryFn: () => getPlaceToVisitDetailsItineraryApi(tripId, dayId, placeToVisitId)
+    });
+    if (error) {
+        console.log('error', error);
+    }
+
+    return { isLoading, data, error };
+}
+
 export function useCreatePlaceToVisitItinerary() {
     const queryClient = useQueryClient();
 
