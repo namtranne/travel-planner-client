@@ -101,7 +101,11 @@ module.exports = (api) => {
                         'mdi:calendar-edit',
                         'mdi:magic-wand',
                         'fa-solid:route',
-                        'tabler:calendar-x'
+                        'tabler:calendar-x',
+                        'streamline:coins-stack',
+                        'mingcute:user-add-fill',
+                        'akar-icons:statistic-up',
+                        'mdi:bank'
                     ]
                 }
             ]

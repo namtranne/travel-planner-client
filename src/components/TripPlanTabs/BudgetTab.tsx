@@ -1,10 +1,136 @@
-import { Text, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from 'react-native-elements';
+import Iconify from 'react-native-iconify';
 
-export default function BudgetTab() {
+import { ExpenseCard } from './ExpenseCard';
+import { SetBudgetSheet } from './SetBudgetSheet';
+
+const expenses = [
+    { id: 1, details: 'Shanghai', type: 'Other', expense: 50000.0, splitType: 'Equal', date: '2025-03-03' },
+    { id: 2, details: 'Eiffel Tower', type: 'Sightseeing', expense: 50000.0, splitType: 'Equal' },
+    { id: 3, details: 'Sightseeing', type: 'Sightseeing', expense: 50000.0, splitType: 'Equal' },
+    { id: 4, details: 'Big Ben', type: 'Sightseeing', expense: 50000.0, splitType: 'Equal' }
+];
+
+const sortTypeList = [
+    { heading: 'Date (newest first)', sortBy: 'date', sortOrder: 'desc' },
+    { heading: 'Date (oldest first)', sortBy: 'date', sortOrder: 'asc' },
+    { heading: 'Amount (highest first)', sortBy: 'expense', sortOrder: 'desc' },
+    { heading: 'Amount (lowest first)', sortBy: 'expense', sortOrder: 'asc' },
+    { heading: 'Category', sortBy: 'tripExpenseType', sortOrder: 'asc' }
+];
+
+export default function BudgetTab({
+    trip,
+    openSheet,
+    closeSheet,
+    setBottomSheetContent,
+    setSnapPoints
+}: {
+    trip: any;
+    openSheet: () => void;
+    closeSheet: () => void;
+    setBottomSheetContent: (content: React.ReactNode) => void;
+    setSnapPoints: (points: string[]) => void;
+}) {
+    const [sortType, setSortType] = useState(sortTypeList[0]);
     return (
-        <View className="p-4">
-            <Text className="text-lg font-semibold">Budget Content</Text>
-            <Text>Manage your trip expenses.</Text>
+        <View className="relative flex-1">
+            {/* Budget Section */}
+            <View className="items-center bg-[#094477] p-4">
+                <Text className="text-3xl font-bold text-white">$150,015.32</Text>
+                <View className="mt-2 h-1 w-1/2 bg-[#5854d6]" />
+                <TouchableOpacity
+                    className="mt-1 flex-row items-center space-x-1"
+                    onPress={() => {
+                        setBottomSheetContent(
+                            <SetBudgetSheet
+                                openSheet={openSheet}
+                                closeSheet={closeSheet}
+                                setBottomSheetContent={setBottomSheetContent}
+                                setSnapPoints={setSnapPoints}
+                            />
+                        );
+                        openSheet();
+                        setSnapPoints(['40%']);
+                    }}
+                >
+                    <Text className="text-xs text-white">Budget: $100,000.00</Text>
+                    <Iconify icon="mdi:pencil" className="text-white" size={12} />
+                </TouchableOpacity>
+                {/* Buttons */}
+                <View className="mt-4 flex-row justify-around space-x-1">
+                    <TouchableOpacity className="flex-row items-center rounded-full border-2 border-white p-2">
+                        <Icon name="person-add-alt" type="material-icons" color="white" size={16} />
+                    </TouchableOpacity>
+                    <TouchableOpacity className="flex-row items-center rounded-full border-2 border-white p-2">
+                        <Icon name="coins" type="font-awesome-5" color="white" size={14} />
+                        <Text className="ml-2 font-bold text-white">Group balances</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity className="flex-row items-center rounded-full border-2 border-white p-2">
+                        <Icon type="font-awesome-5" name="chart-bar" color="white" size={16} />
+                        <Text className="ml-2 font-bold text-white">View breakdown</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            {/* Expenses List */}
+            <View className="flex-1 rounded-t-3xl bg-white p-4">
+                <View className="flex-row items-center justify-between">
+                    <Text className="text-lg font-bold">Expenses</Text>
+                    <TouchableOpacity
+                        className="flex-row items-center"
+                        onPress={() => {
+                            setBottomSheetContent(
+                                <View className="bg-white p-4">
+                                    {sortTypeList.map((type, index) => (
+                                        <TouchableOpacity
+                                            key={index}
+                                            className="mt-2 w-full flex-row items-center justify-between p-2"
+                                            onPress={() => {
+                                                setSortType(type);
+                                                closeSheet();
+                                            }}
+                                        >
+                                            <Text className="text-sm text-gray-700">{type.heading}</Text>
+                                            {sortType?.sortBy === type.sortBy &&
+                                                sortType.sortOrder === type.sortOrder && (
+                                                    <Icon name="check" color="#60ABEF" />
+                                                )}
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            );
+                            openSheet();
+                            setSnapPoints(['40%']);
+                        }}
+                    >
+                        <Text className="text-xs font-extrabold text-black">Sort: </Text>
+                        <Text className="text-xs text-gray-500">{sortType?.heading} </Text>
+                        <Text className="text-sm font-extrabold text-black">▾</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <ScrollView className="mt-3">
+                    {expenses.map((expense) => (
+                        <ExpenseCard
+                            key={expense.id}
+                            expense={expense}
+                            openSheet={openSheet}
+                            setBottomSheetContent={setBottomSheetContent}
+                            setSnapPoints={setSnapPoints}
+                        />
+                    ))}
+                </ScrollView>
+            </View>
+
+            {/* Add Expense Button */}
+            <View className="absolute bottom-7 flex w-full items-center justify-center">
+                <TouchableOpacity className="rounded-full bg-[#60ABEF] px-4 py-2 shadow-lg">
+                    <Text className="text-sm font-bold text-white">+ Add expense</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
