@@ -114,3 +114,45 @@ export type AutofillItineraryREQ = {
     startDate: string;
     endDate: string;
 };
+
+export type UpdateTripBudgetREQ = {
+    budget?: number;
+    currency?: string;
+};
+
+export type CreateTripExpenseREQ = {
+    expense: number;
+    tripExpenseSplitType: TripExpenseSplitType;
+    tripExpenseType: TripExpenseType;
+    payerId: number;
+    details?: string;
+    date?: string;
+    tripExpenseIndividuals?: number[];
+};
+
+export type UpdateTripExpenseREQ = {
+    expense?: number;
+    tripExpenseSplitType?: TripExpenseSplitType;
+    tripExpenseType?: TripExpenseType;
+    payerId?: number;
+    details?: string;
+    date?: string;
+    tripExpenseIndividuals?: number[];
+};
+
+export enum TripExpenseSplitType {
+    INDIVIDUALS = 'INDIVIDUALS',
+    EVERYONE = 'EVERYONE',
+    NONE = 'NONE'
+}
+
+export enum TripExpenseType {
+    TRANSPORTATION = 'TRANSPORTATION',
+    LODGING = 'LODGING',
+    FOOD_AND_DRINK = 'FOOD_AND_DRINK',
+    SIGHTSEEING = 'SIGHTSEEING',
+    ACTIVITIES = 'ACTIVITIES',
+    SHOPPING = 'SHOPPING',
+    GROCERIES = 'GROCERIES',
+    OTHER = 'OTHER'
+}

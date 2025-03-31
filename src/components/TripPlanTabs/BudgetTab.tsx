@@ -1,17 +1,13 @@
 import { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Iconify from 'react-native-iconify';
 
+import { useTripBudgetDetails, useTripExpenses } from '@/src/hooks/use-trip';
+import { formatAmount } from '@/src/utils/AmountUtil';
+
 import { ExpenseCard } from './ExpenseCard';
 import { SetBudgetSheet } from './SetBudgetSheet';
-
-const expenses = [
-    { id: 1, details: 'Shanghai', type: 'Other', expense: 50000.0, splitType: 'Equal', date: '2025-03-03' },
-    { id: 2, details: 'Eiffel Tower', type: 'Sightseeing', expense: 50000.0, splitType: 'Equal' },
-    { id: 3, details: 'Sightseeing', type: 'Sightseeing', expense: 50000.0, splitType: 'Equal' },
-    { id: 4, details: 'Big Ben', type: 'Sightseeing', expense: 50000.0, splitType: 'Equal' }
-];
 
 const sortTypeList = [
     { heading: 'Date (newest first)', sortBy: 'date', sortOrder: 'desc' },
@@ -35,20 +31,39 @@ export default function BudgetTab({
     setSnapPoints: (points: string[]) => void;
 }) {
     const [sortType, setSortType] = useState(sortTypeList[0]);
+    const { isLoading: isLoadingTripBudget, tripBudget } = useTripBudgetDetails(trip.id);
+    const { isLoading: isLoadingTripExpenses, tripExpenses } = useTripExpenses(
+        trip.id,
+        sortType?.sortBy || 'date',
+        sortType?.sortOrder || 'desc'
+    );
+
+    if (isLoadingTripBudget || isLoadingTripExpenses) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
+
     return (
         <View className="relative flex-1">
             {/* Budget Section */}
             <View className="items-center bg-[#094477] p-4">
-                <Text className="text-3xl font-bold text-white">$150,015.32</Text>
+                <Text className="text-3xl font-bold text-white">
+                    {tripBudget.currency}
+                    {formatAmount(tripBudget.totalExpense)}
+                </Text>
                 <View className="mt-2 h-1 w-1/2 bg-[#5854d6]" />
                 <TouchableOpacity
                     className="mt-1 flex-row items-center space-x-1"
                     onPress={() => {
                         setBottomSheetContent(
                             <SetBudgetSheet
-                                openSheet={openSheet}
+                                tripId={trip.id}
+                                initialBudget={tripBudget.budget}
+                                currency={tripBudget.currency}
                                 closeSheet={closeSheet}
-                                setBottomSheetContent={setBottomSheetContent}
                                 setSnapPoints={setSnapPoints}
                             />
                         );
@@ -56,7 +71,10 @@ export default function BudgetTab({
                         setSnapPoints(['40%']);
                     }}
                 >
-                    <Text className="text-xs text-white">Budget: $100,000.00</Text>
+                    <Text className="text-xs text-white">
+                        Budget: {tripBudget.currency}
+                        {formatAmount(tripBudget.budget)}
+                    </Text>
                     <Iconify icon="mdi:pencil" className="text-white" size={12} />
                 </TouchableOpacity>
                 {/* Buttons */}
@@ -113,7 +131,7 @@ export default function BudgetTab({
                 </View>
 
                 <ScrollView className="mt-3">
-                    {expenses.map((expense) => (
+                    {tripExpenses.map((expense: any) => (
                         <ExpenseCard
                             key={expense.id}
                             expense={expense}

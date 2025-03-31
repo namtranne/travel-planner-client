@@ -11,6 +11,7 @@ import {
     createPlaceToVisitItinerary as createPlaceToVisitItineraryApi,
     createPlaceToVisitOverview as createPlaceToVisitOverviewApi,
     createTrip as createTripApi,
+    createTripExpense as createTripExpenseApi,
     createTripOverviewSection as createTripOverviewSectionApi,
     deleteChecklistItemItinerary as deleteChecklistItemItineraryApi,
     deleteChecklistItemOverview as deleteChecklistItemOverviewApi,
@@ -26,7 +27,9 @@ import {
     getMyTrips,
     getPlaceToVisitDetailsItinerary as getPlaceToVisitDetailsItineraryApi,
     getPlaceToVisitDetailsOverview as getPlaceToVisitDetailsOverviewApi,
+    getTripBudgetDetails as getTripBudgetDetailsApi,
     getTripDetails,
+    getTripExpenses as getTripExpensesApi,
     getTripItineraryDayDetails as getTripItineraryDayDetailsApi,
     getTripOverviewSectionDetails,
     updateChecklistItemItinerary as updateChecklistItemItineraryApi,
@@ -38,6 +41,7 @@ import {
     updatePlaceToVisitItinerary as updatePlaceToVisitItineraryApi,
     updatePlaceToVisitOverview as updatePlaceToVisitOverviewApi,
     updateTrip as updateTripApi,
+    updateTripBudget as updateTripBudgetApi,
     updateTripItineraryDay as updateTripItineraryDayApi,
     updateTripOverviewSection as updateTripOverviewSectionApi
 } from '../services/api-trip';
@@ -47,10 +51,12 @@ import type {
     CreateCheckListREQ,
     CreateNoteREQ,
     CreatePlaceToVisitREQ,
+    CreateTripExpenseREQ,
     CreateTripOverviewSectionREQ,
     UpdateCheckListREQ,
     UpdateNoteREQ,
     UpdatePlaceToVisitREQ,
+    UpdateTripBudgetREQ,
     UpdateTripItineraryDayREQ,
     UpdateTripOverviewSectionREQ,
     UpdateTripREQ
@@ -802,6 +808,73 @@ export function useDeleteChecklistItemItinerary() {
     });
 
     return { isPending, deleteChecklistItemItinerary, error };
+}
+
+/* TRIP BUDGET */
+// Trip Budget
+export function useTripBudgetDetails(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-budget-${tripId}`, tripId],
+        queryFn: () => getTripBudgetDetailsApi(tripId)
+    });
+    if (error) {
+        console.log('error', error);
+    }
+
+    return { isLoading, tripBudget: data, error };
+}
+
+export function useUpdateTripBudget() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: updateTripBudget,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; updateTripBudgetReq: UpdateTripBudgetREQ }) =>
+            updateTripBudgetApi(data.tripId, data.updateTripBudgetReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, updateTripBudget, error };
+}
+
+// Trip Budget Expense
+export function useTripExpenses(tripId: number, sortBy: string, sortOrder: string) {
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: [`trip-expenses-${tripId}`, tripId, sortBy, sortOrder],
+        queryFn: () => getTripExpensesApi(tripId, sortBy, sortOrder)
+    });
+    if (error) {
+        console.log('error', error);
+    }
+
+    return { isLoading, tripExpenses: data, error, refetch };
+}
+
+export function useCreateTripExpense() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createTripExpense,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; createTripExpenseReq: CreateTripExpenseREQ }) =>
+            createTripExpenseApi(data.tripId, data.createTripExpenseReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, createTripExpense, error };
 }
 
 // Autofill Trip Itinerary

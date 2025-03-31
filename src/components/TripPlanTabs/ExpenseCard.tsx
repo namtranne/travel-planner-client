@@ -1,18 +1,33 @@
 import type React from 'react';
+import { useCallback } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import Iconify from 'react-native-iconify';
 
 import { formatAmount } from '@/src/utils/AmountUtil';
+import { capitalizeFirstLetter } from '@/src/utils/CommonUtil';
 import { convertDateFormat } from '@/src/utils/DateTimeUtil';
+
+const expenseIcons: Record<string, string> = {
+    TRANSPORTATION: 'mdi:bus',
+    LODGING: 'mdi:bed',
+    FOOD_AND_DRINK: 'mdi:food',
+    SIGHTSEEING: 'mdi:binoculars',
+    ACTIVITIES: 'mdi:run',
+    SHOPPING: 'mdi:shopping',
+    GROCERIES: 'mdi:cart',
+    OTHER: 'mdi:help-circle-outline'
+};
 
 type TripExpense = {
     id: number;
     details: string;
-    type: string;
-    splitType: string;
+    tripExpenseType: string;
+    tripExpenseSplitType: string;
     expense: number;
     date?: string;
+    tripExpenseIndividuals: any[];
+    payer: any;
 };
 
 export const ExpenseCard = ({
@@ -26,22 +41,18 @@ export const ExpenseCard = ({
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
 }) => {
-    const avatars = [
-        { uri: 'https://picsum.photos/200/300', title: 'Avatar 1' },
-        { uri: 'https://picsum.photos/200/300', title: 'Avatar 2' },
-        { uri: 'https://picsum.photos/200/300', title: 'Avatar 3' },
-        { uri: 'https://picsum.photos/200/300', title: 'Avatar 4' },
-        { uri: 'https://picsum.photos/200/300', title: 'Avatar 5' }
-    ];
     const maxAvatars = 3;
-    const displayAvatars = avatars.slice(0, maxAvatars);
-    const extraCount = avatars.length - maxAvatars;
+    const displayExpenseIndividuals = expense.tripExpenseIndividuals.slice(0, maxAvatars);
+    const extraIndividuals = displayExpenseIndividuals.length - maxAvatars;
+    const isDisplayAvatar: boolean =
+        expense.tripExpenseSplitType === 'INDIVIDUALS' || expense.tripExpenseSplitType === 'EVERYONE';
 
+    const getExpenseIcon = useCallback((type: string) => expenseIcons[type] || 'mdi:help-circle-outline', []); // Fallback icon
     return (
         <View className="flex-row items-center justify-between border-b border-gray-200 py-3">
             <View className="flex-row items-center">
                 <View className="rounded-full bg-gray-300 p-2">
-                    <Iconify icon="mdi:bank" className="text-gray-500" size={16} />
+                    <Iconify icon={getExpenseIcon(expense.tripExpenseType)} className="text-gray-500" size={16} />
                 </View>
                 <View className="ml-3">
                     <Text className="text-base font-bold">{expense.details}</Text>
@@ -49,7 +60,7 @@ export const ExpenseCard = ({
                         {expense.date && (
                             <Text className="text-sm text-gray-500">{convertDateFormat(expense.date)} • </Text>
                         )}
-                        <Text className="text-sm text-gray-500">{expense.type}</Text>
+                        <Text className="text-sm text-gray-500">{capitalizeFirstLetter(expense.tripExpenseType)}</Text>
                     </View>
                 </View>
             </View>
@@ -62,13 +73,17 @@ export const ExpenseCard = ({
                             <View className="bg-white p-4">
                                 <Text className="text-center text-base font-bold">Expense split with</Text>
                                 <ScrollView>
-                                    {avatars.map((avatar, index) => (
+                                    {displayExpenseIndividuals.map((expenseIndividual, index) => (
                                         <View key={index} className="mt-2 flex-row items-center">
                                             <Avatar
                                                 rounded
                                                 size={40}
-                                                source={avatar.uri ? { uri: avatar.uri } : undefined}
-                                                title={avatar.title || undefined}
+                                                source={
+                                                    expenseIndividual.individual.avatarUrl
+                                                        ? { uri: expenseIndividual.individual.avatarUrl }
+                                                        : undefined
+                                                }
+                                                title={expenseIndividual.individual.name[0].toUpperCase() || undefined}
                                                 titleStyle={{ fontSize: 12 }}
                                                 containerStyle={{
                                                     borderWidth: 2,
@@ -76,7 +91,9 @@ export const ExpenseCard = ({
                                                     backgroundColor: 'gray'
                                                 }}
                                             />
-                                            <Text className="ml-2 text-base font-semibold">{avatar.title}</Text>
+                                            <Text className="ml-2 text-base font-semibold">
+                                                {expenseIndividual.individual.name}
+                                            </Text>
                                         </View>
                                     ))}
                                 </ScrollView>
@@ -86,27 +103,32 @@ export const ExpenseCard = ({
                         setSnapPoints(['40%']);
                     }}
                 >
-                    {displayAvatars.map((avatar, index) => (
+                    {isDisplayAvatar &&
+                        displayExpenseIndividuals.map((expenseIndividual, index) => (
+                            <Avatar
+                                key={index}
+                                rounded
+                                size={30}
+                                source={
+                                    expenseIndividual.individual.avatarUrl
+                                        ? { uri: expenseIndividual.individual.avatarUrl }
+                                        : undefined
+                                }
+                                title={expenseIndividual.individual.name[0].toUpperCase() || undefined}
+                                titleStyle={{ fontSize: 12 }}
+                                containerStyle={{
+                                    borderWidth: 2,
+                                    borderColor: 'white',
+                                    backgroundColor: 'gray',
+                                    marginLeft: index !== 0 ? -8 : 0
+                                }}
+                            />
+                        ))}
+                    {isDisplayAvatar && extraIndividuals > 0 && (
                         <Avatar
-                            key={index}
                             rounded
                             size={30}
-                            source={avatar.uri ? { uri: avatar.uri } : undefined}
-                            title={avatar.title || undefined}
-                            titleStyle={{ fontSize: 12 }}
-                            containerStyle={{
-                                borderWidth: 2,
-                                borderColor: 'white',
-                                backgroundColor: 'gray',
-                                marginLeft: index !== 0 ? -8 : 0
-                            }}
-                        />
-                    ))}
-                    {extraCount > 0 && (
-                        <Avatar
-                            rounded
-                            size={30}
-                            title={`+${extraCount}`}
+                            title={`+${extraIndividuals}`}
                             titleStyle={{ fontSize: 12 }}
                             containerStyle={{
                                 marginLeft: -8,
