@@ -60,7 +60,9 @@ export const ExpenseCard = ({
                         {expense.date && (
                             <Text className="text-sm text-gray-500">{convertDateFormat(expense.date)} • </Text>
                         )}
-                        <Text className="text-sm text-gray-500">{capitalizeFirstLetter(expense.tripExpenseType)}</Text>
+                        <Text className="text-sm text-gray-500">
+                            {capitalizeFirstLetter(expense.tripExpenseType.split('_')[0] || '')}
+                        </Text>
                     </View>
                 </View>
             </View>

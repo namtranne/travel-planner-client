@@ -146,7 +146,8 @@ module.exports = (api) => {
                         'mdi:run',
                         'mdi:shopping',
                         'mdi:cart',
-                        'mdi:help-circle-outline'
+                        'mdi:help-circle-outline',
+                        'mdi:note-outline'
                     ]
                 }
             ]

@@ -22,6 +22,7 @@ import {
     deletePlaceToVisitItinerary as deletePlaceToVisitItineraryApi,
     deletePlaceToVisitOverview as deletePlaceToVisitOverviewApi,
     deleteTrip as deleteTripApi,
+    deleteTripExpense as deleteTripExpenseApi,
     deleteTripItineraryDay as deleteTripItineraryDayApi,
     deleteTripOverviewSection as deleteTripOverviewSectionApi,
     getMyTrips,
@@ -42,6 +43,7 @@ import {
     updatePlaceToVisitOverview as updatePlaceToVisitOverviewApi,
     updateTrip as updateTripApi,
     updateTripBudget as updateTripBudgetApi,
+    updateTripExpense as updateTripExpenseApi,
     updateTripItineraryDay as updateTripItineraryDayApi,
     updateTripOverviewSection as updateTripOverviewSectionApi
 } from '../services/api-trip';
@@ -57,6 +59,7 @@ import type {
     UpdateNoteREQ,
     UpdatePlaceToVisitREQ,
     UpdateTripBudgetREQ,
+    UpdateTripExpenseREQ,
     UpdateTripItineraryDayREQ,
     UpdateTripOverviewSectionREQ,
     UpdateTripREQ
@@ -875,6 +878,45 @@ export function useCreateTripExpense() {
     });
 
     return { isPending, createTripExpense, error };
+}
+
+export function useUpdateTripExpense() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: updateTripExpense,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; expenseId: number; updateTripExpenseReq: UpdateTripExpenseREQ }) =>
+            updateTripExpenseApi(data.tripId, data.expenseId, data.updateTripExpenseReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, updateTripExpense, error };
+}
+
+export function useDeleteTripExpense() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deleteTripExpense,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; expenseId: number }) => deleteTripExpenseApi(data.tripId, data.expenseId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, deleteTripExpense, error };
 }
 
 // Autofill Trip Itinerary

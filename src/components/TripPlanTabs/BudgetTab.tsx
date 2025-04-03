@@ -5,7 +5,9 @@ import Iconify from 'react-native-iconify';
 
 import { useTripBudgetDetails, useTripExpenses } from '@/src/hooks/use-trip';
 import { formatAmount } from '@/src/utils/AmountUtil';
+import { currencies } from '@/src/utils/constants';
 
+import { AddExpenseSheet } from './AddExpenseSheet';
 import { ExpenseCard } from './ExpenseCard';
 import { SetBudgetSheet } from './SetBudgetSheet';
 
@@ -130,7 +132,7 @@ export default function BudgetTab({
                     </TouchableOpacity>
                 </View>
 
-                <ScrollView className="mt-3">
+                <ScrollView className="mt-3" contentContainerStyle={{ paddingBottom: 200 }}>
                     {tripExpenses.map((expense: any) => (
                         <ExpenseCard
                             key={expense.id}
@@ -145,7 +147,24 @@ export default function BudgetTab({
 
             {/* Add Expense Button */}
             <View className="absolute bottom-7 flex w-full items-center justify-center">
-                <TouchableOpacity className="rounded-full bg-[#60ABEF] px-4 py-2 shadow-lg">
+                <TouchableOpacity
+                    className="rounded-full bg-[#60ABEF] px-4 py-2 shadow-lg"
+                    onPress={() => {
+                        setBottomSheetContent(
+                            <AddExpenseSheet
+                                tripId={trip.id}
+                                currency={tripBudget.currency}
+                                currencyCode={
+                                    currencies.find((currency) => currency.symbol === tripBudget.currency)?.code || ''
+                                }
+                                participants={trip.participants}
+                                closeSheet={closeSheet}
+                            />
+                        );
+                        openSheet();
+                        setSnapPoints(['80%']);
+                    }}
+                >
                     <Text className="text-sm font-bold text-white">+ Add expense</Text>
                 </TouchableOpacity>
             </View>
