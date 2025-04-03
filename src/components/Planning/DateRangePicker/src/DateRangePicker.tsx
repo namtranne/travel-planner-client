@@ -87,7 +87,7 @@ const DateRangePicker = ({
   const _onClose = () => {
     setOpen(false);
     setIsOpen(false);
-    handleClose();
+    if(handleClose) handleClose();
   };
 
   const onOpen = () => {
@@ -175,7 +175,7 @@ const DateRangePicker = ({
 
   const select = useCallback(
     (day : any) => {
-      let _date = _moment(displayedDate);
+      let _date = _moment(displayedDate).utc();
       _date.set("date", day);
       if (range) {
         if (selecting) {

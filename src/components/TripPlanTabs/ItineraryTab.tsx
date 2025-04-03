@@ -1,12 +1,10 @@
-import moment from 'moment';
 import type React from 'react';
 import { useState } from 'react';
 import { ActivityIndicator, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
-import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
-import { useAutofillTripItinerary, useUpdateTrip } from '@/src/hooks/use-trip';
-import { convertStringToDate } from '@/src/utils/DateTimeUtil';
+import { useAutofillTripItinerary } from '@/src/hooks/use-trip';
+import { convertDateStringFormat } from '@/src/utils/DateTimeUtil';
 
 import ItineraryCard from './ItineraryCard';
 
@@ -15,50 +13,27 @@ export default function ItineraryScreen({
     openSheet,
     closeSheet,
     setBottomSheetContent,
-    setSnapPoints
+    setSnapPoints,
+    setOnEnteringDate
 }: {
     trip: any;
     openSheet: () => void;
     closeSheet: () => void;
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
+    setOnEnteringDate?: (value: boolean) => void;
 }) {
     const [selectedDayId, setSelectedDayId] = useState(trip?.tripItinerary?.days[0].id);
     const [modalVisible, setModalVisible] = useState(false);
-    const [tripState, setTripState] = useState({
-        startDate: trip.startDate ? moment(trip.startDate) : moment(),
-        endDate: trip.endDate ? moment(trip.endDate) : moment()
-    });
-    const [onEnteringDate, setOnEnteringDate] = useState(false);
 
-    const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
     const { isPending: isPendingAutofillTripItinerary, autofillTripItinerary } = useAutofillTripItinerary();
-    const handleDateChange = (data: any) => {
-        if (data.startDate && data.endDate) {
-            setTripState((prev) => ({
-                ...prev,
-                startDate: data.startDate,
-                endDate: data.endDate
-            }));
-        } else if (data.startDate) {
-            setTripState((prev) => ({
-                ...prev,
-                startDate: data.startDate
-            }));
-        } else if (data.endDate) {
-            setTripState((prev) => ({
-                ...prev,
-                endDate: data.endDate
-            }));
-        }
-    };
 
     const handleAutoFill = () => {
         autofillTripItinerary({
             tripId: trip.id,
             autofillItineraryReq: {
-                startDate: convertStringToDate(trip.startDate) || '',
-                endDate: convertStringToDate(trip.endDate) || ''
+                startDate: convertDateStringFormat(trip.startDate) || '',
+                endDate: convertDateStringFormat(trip.endDate) || ''
             }
         });
         setModalVisible(false);
@@ -77,13 +52,15 @@ export default function ItineraryScreen({
             {/* Itinerary tabs */}
             <View className="bg-white px-2 py-4">
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} className="fixed ">
-                    <View className="mr-2 rounded-full bg-black p-2">
+                    <TouchableOpacity
+                        className="mr-2 rounded-full bg-black p-2"
+                        onPress={() => setOnEnteringDate && setOnEnteringDate(true)}
+                    >
                         <Iconify className="text-white" icon="mdi:calendar-edit" width="24" height="24" />
-                    </View>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         className="mr-2 rounded-full bg-[#ffaaec] p-2"
                         onPress={() => setModalVisible(true)}
-                        disabled={isPendingUpdateTrip}
                     >
                         <Iconify className="text-white" icon="mdi:magic" width="24" height="24" />
                     </TouchableOpacity>
@@ -148,26 +125,6 @@ export default function ItineraryScreen({
                     </View>
                 </View>
             </Modal>
-
-            {/* Date Range Picker */}
-            <DateRangePicker
-                displayedDate={tripState.startDate}
-                startDate={tripState.startDate}
-                endDate={tripState.endDate}
-                onChange={handleDateChange}
-                open={onEnteringDate}
-                setOpen={setOnEnteringDate}
-                handleClose={() => {
-                    updateTrip({
-                        tripId: trip.id,
-                        updateTripReq: {
-                            startDate: tripState.startDate.format('YYYY-MM-DD'),
-                            endDate: tripState.endDate.format('YYYY-MM-DD')
-                        }
-                    });
-                }}
-                range
-            />
         </View>
     );
 }

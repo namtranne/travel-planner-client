@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
-import { useGetPlaceToVisitDetailsOverview } from '@/src/hooks/use-trip';
+import { useGetPlaceToVisitDetailsItinerary, useGetPlaceToVisitDetailsOverview } from '@/src/hooks/use-trip';
 import { getOpeningPeriodsText } from '@/src/utils/DateTimeUtil';
 
 const PlaceToVisitCard = ({
@@ -10,16 +10,21 @@ const PlaceToVisitCard = ({
     sectionId,
     placeToVisitId,
     order,
-    onDelete
+    onDelete,
+    tab = 'overview'
 }: {
     tripId: number;
     sectionId: number;
     placeToVisitId: number;
     order: number;
     onDelete: () => void;
+    tab?: string;
 }) => {
     const [expanded, setExpanded] = useState(false);
-    const { isLoading, data: placeToVisit } = useGetPlaceToVisitDetailsOverview(tripId, sectionId, placeToVisitId);
+    const overviewData = useGetPlaceToVisitDetailsOverview(tripId, sectionId, placeToVisitId);
+    const itineraryData = useGetPlaceToVisitDetailsItinerary(tripId, sectionId, placeToVisitId);
+
+    const { isLoading, data: placeToVisit } = tab === 'overview' ? overviewData : itineraryData;
 
     if (isLoading) {
         return (

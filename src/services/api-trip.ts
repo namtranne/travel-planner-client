@@ -5,12 +5,15 @@ import type {
     CreateCheckListREQ,
     CreateNoteREQ,
     CreatePlaceToVisitREQ,
+    CreateTripExpenseREQ,
     CreateTripOverviewSectionREQ,
     CreateTripREQ,
     UpdateCheckListItemREQ,
     UpdateCheckListREQ,
     UpdateNoteREQ,
     UpdatePlaceToVisitREQ,
+    UpdateTripBudgetREQ,
+    UpdateTripExpenseREQ,
     UpdateTripOverviewSectionREQ,
     UpdateTripREQ
 } from './types';
@@ -474,6 +477,68 @@ export async function updateChecklistItemItinerary(
 export async function deleteChecklistItemItinerary(tripId: number, dayId: number, checklistId: number, itemId: number) {
     await authAxios
         .delete(`/trips/${tripId}/overview-sections/${dayId}/checklists/${checklistId}/items/${itemId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+/* TRIP BUDGET */
+// Trip Budget
+export async function getTripBudgetDetails(tripId: number) {
+    const data = await authAxios
+        .get(`/trips/${tripId}/budget`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function updateTripBudget(tripId: number, updateTripBudgetReq: UpdateTripBudgetREQ) {
+    const data = await authAxios
+        .patch(`/trips/${tripId}/budget`, updateTripBudgetReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+// Trip Budget Expense
+export async function getTripExpenses(tripId: number, sortBy: string, sortOrder: string) {
+    const data = await authAxios
+        .get(`/trips/${tripId}/budget/expenses?sortBy=${sortBy}&sortOrder=${sortOrder}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function createTripExpense(tripId: number, createTripExpenseReq: CreateTripExpenseREQ) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/budget/expenses`, createTripExpenseReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function updateTripExpense(tripId: number, expenseId: number, updateTripExpenseReq: UpdateTripExpenseREQ) {
+    const data = await authAxios
+        .patch(`/trips/${tripId}/budget/expenses/${expenseId}`, updateTripExpenseReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function deleteTripExpense(tripId: number, expenseId: number) {
+    await authAxios
+        .delete(`/trips/${tripId}/budget/expenses/${expenseId}`)
         .then((response) => response.data.data)
         .catch((err) => {
             throw new Error(err.response.data.message);
