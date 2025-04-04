@@ -30,6 +30,7 @@ import {
     getPlaceToVisitDetailsOverview as getPlaceToVisitDetailsOverviewApi,
     getTripBudgetDetails as getTripBudgetDetailsApi,
     getTripDetails,
+    getTripExpenseDetails as getTripExpenseDetailsApi,
     getTripExpenses as getTripExpensesApi,
     getTripItineraryDayDetails as getTripItineraryDayDetailsApi,
     getTripOverviewSectionDetails,
@@ -858,6 +859,19 @@ export function useTripExpenses(tripId: number, sortBy: string, sortOrder: strin
     }
 
     return { isLoading, tripExpenses: data, error, refetch };
+}
+
+export function useTripExpenseDetails(tripId: number, expenseId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-expense-${expenseId}`, tripId, expenseId],
+        queryFn: () => getTripExpenseDetailsApi(tripId, expenseId),
+        enabled: !!tripId && !!expenseId && expenseId !== -1
+    });
+    if (error) {
+        console.log('error', error);
+    }
+
+    return { isLoading, tripExpense: data, error };
 }
 
 export function useCreateTripExpense() {

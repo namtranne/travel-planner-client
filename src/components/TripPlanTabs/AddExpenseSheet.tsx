@@ -1,7 +1,7 @@
 import { CheckBox, Icon } from '@rneui/base';
 import dayjs from 'dayjs';
 import type React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import Iconify from 'react-native-iconify';
@@ -9,8 +9,14 @@ import type { DateType } from 'react-native-ui-datepicker';
 import DateTimePicker, { useDefaultStyles } from 'react-native-ui-datepicker';
 
 import { useUser } from '@/src/hooks/use-authenticate';
-import { useCreateTripExpense } from '@/src/hooks/use-trip';
+import {
+    useCreateTripExpense,
+    useDeleteTripExpense,
+    useTripExpenseDetails,
+    useUpdateTripExpense
+} from '@/src/hooks/use-trip';
 import { TripExpenseSplitType, TripExpenseType } from '@/src/services/types';
+import { convertDateStringFormat } from '@/src/utils/DateTimeUtil';
 
 export enum AddExpenseSheetView {
     ADD_EXPENSE,
@@ -174,6 +180,12 @@ const PaidBy = ({
     );
 };
 
+const splitOptions = [
+    { type: TripExpenseSplitType.INDIVIDUALS, label: 'Individuals' },
+    { type: TripExpenseSplitType.EVERYONE, label: 'Everyone' },
+    { type: TripExpenseSplitType.NONE, label: "Don't split" }
+];
+
 const SplitBetween = ({
     setCurrentView,
     expenseDetails,
@@ -185,15 +197,6 @@ const SplitBetween = ({
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
     participants: any[];
 }) => {
-    const splitOptions = useMemo(
-        () => [
-            { type: TripExpenseSplitType.INDIVIDUALS, label: 'Individuals' },
-            { type: TripExpenseSplitType.EVERYONE, label: 'Everyone' },
-            { type: TripExpenseSplitType.NONE, label: "Don't split" }
-        ],
-        []
-    );
-
     return (
         <View className="bg-white px-4">
             {/* Header */}
@@ -360,23 +363,26 @@ const AddExpense = ({
     setExpenseDetails,
     currency,
     currencyCode,
-    createExpense,
-    isPendingCreateTripExpense
+    handleExpense,
+    handleDeleteExpense,
+    isPending,
+    isUpdateView
 }: {
     setCurrentView: React.Dispatch<React.SetStateAction<AddExpenseSheetView>>;
     expenseDetails: any;
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
     currency: string;
     currencyCode: string;
-    createExpense: () => void;
-    isPendingCreateTripExpense: boolean;
+    handleExpense: () => void;
+    handleDeleteExpense: () => void;
+    isPending: boolean;
+    isUpdateView: boolean;
 }) => {
     const [displayExpense, setDisplayExpense] = useState(
         expenseDetails.expense !== null && expenseDetails.expense !== undefined && expenseDetails.expense !== 0
             ? expenseDetails.expense.toLocaleString('en-US', { maximumFractionDigits: 2 })
             : ''
     );
-
     const handleExpenseChange = (text: string) => {
         const cleanedText = text.replace(/[^0-9.,]/g, '');
         setDisplayExpense(cleanedText);
@@ -391,6 +397,8 @@ const AddExpense = ({
     useEffect(() => {
         if (expenseDetails.expense !== null && expenseDetails.expense !== undefined && expenseDetails.expense === 0) {
             setDisplayExpense(null);
+        } else if (expenseDetails.expense !== null && expenseDetails.expense !== undefined) {
+            setDisplayExpense(expenseDetails.expense.toLocaleString('en-US', { maximumFractionDigits: 2 }));
         }
     }, [expenseDetails.expense]);
 
@@ -398,14 +406,9 @@ const AddExpense = ({
         <View className="bg-white">
             <View className="px-4">
                 {/* Header */}
-                <View className="flex-row items-center justify-between">
-                    <View className="flex-1" />
-                    <Text className="flex-1 text-center text-base font-bold">Add expense</Text>
-                    <TouchableOpacity
-                        className="flex-1 flex-row justify-end"
-                        onPress={createExpense}
-                        disabled={isPendingCreateTripExpense}
-                    >
+                <View className="flex-row items-center justify-center">
+                    <Text className="text-base font-bold">{isUpdateView ? 'Update expense' : 'Add expense'}</Text>
+                    <TouchableOpacity onPress={handleExpense} disabled={isPending} className="absolute right-2">
                         <Text className="text-sm text-[#60ABEF]">Done</Text>
                     </TouchableOpacity>
                 </View>
@@ -486,6 +489,16 @@ const AddExpense = ({
                     <Iconify icon="mdi:chevron-right" className="text-black" size={24} />
                 </TouchableOpacity>
             </View>
+            <View className="flex-row justify-center">
+                <TouchableOpacity
+                    className="mt-4 flex-row items-center justify-center rounded-full bg-gray-200 px-3 py-2"
+                    onPress={handleDeleteExpense}
+                    disabled={isPending}
+                >
+                    <Iconify icon="mdi:trash-can" className="text-gray-400" size={14} />
+                    <Text className="text-sm font-semibold text-gray-500">Delete</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -495,13 +508,15 @@ export const AddExpenseSheet = ({
     currency,
     participants,
     currencyCode,
-    closeSheet
+    closeSheet,
+    expenseId
 }: {
     tripId: number;
     currency: string;
     participants: any[];
     currencyCode: string;
     closeSheet: () => void;
+    expenseId?: number;
 }) => {
     const [currentView, setCurrentView] = useState<AddExpenseSheetView>(AddExpenseSheetView.ADD_EXPENSE);
     const [expenseDetails, setExpenseDetails] = useState<{
@@ -529,8 +544,11 @@ export const AddExpenseSheet = ({
         date: 'Optional',
         tripExpenseIndividuals: []
     });
-    const { isLoading, user } = useUser();
+    const { isLoading: isFetchingUser, user } = useUser();
     const { isPending: isPendingCreateTripExpense, createTripExpense } = useCreateTripExpense();
+    const { isPending: isPendingUpdateTripExpense, updateTripExpense } = useUpdateTripExpense();
+    const { isPending: isPendingDeleteTripExpense, deleteTripExpense } = useDeleteTripExpense();
+    const { isLoading: isFetchingTripExpense, tripExpense } = useTripExpenseDetails(tripId, expenseId || -1);
 
     useEffect(() => {
         if (user) {
@@ -540,9 +558,33 @@ export const AddExpenseSheet = ({
                 displayPayer: `You (${user.name})`
             }));
         }
-    }, [user, isLoading]);
+    }, [user, isFetchingUser]);
 
-    const createExpense = useCallback(() => {
+    useEffect(() => {
+        if (tripExpense && user) {
+            setExpenseDetails({
+                expense: tripExpense.expense,
+                category: tripExpense.tripExpenseType,
+                categoryIcon:
+                    categories.find((cat) => cat.name.toString() === tripExpense.tripExpenseType)?.icon ||
+                    'mdi:help-circle-outline',
+                displayCategory:
+                    categories.find((cat) => cat.name.toString() === tripExpense.tripExpenseType)?.displayName || '',
+                description: tripExpense.details || '',
+                tripExpenseSplitType:
+                    TripExpenseSplitType[tripExpense.tripExpenseSplitType as keyof typeof TripExpenseSplitType],
+                displayTripExpenseSplitType:
+                    splitOptions.find((option) => option.type === tripExpense.tripExpenseSplitType)?.label ||
+                    "Don't split",
+                payerId: tripExpense.payerId,
+                displayPayer: user.id === tripExpense.payerId ? `You (${user.name})` : tripExpense.payer.name,
+                date: tripExpense.date ? convertDateStringFormat(tripExpense.date) : 'Optional',
+                tripExpenseIndividuals: tripExpense.tripExpenseIndividuals.map((ted: any) => ted.individualId) || []
+            });
+        }
+    }, [tripExpense, user, isFetchingUser]);
+
+    const handleExpense = useCallback(() => {
         if (!expenseDetails.expense || expenseDetails.expense <= 0) {
             Alert.alert('Error', 'Enter the amount of this expense');
             return;
@@ -551,56 +593,135 @@ export const AddExpenseSheet = ({
             Alert.alert('Error', 'Select an expense category');
             return;
         }
-        createTripExpense(
-            {
-                tripId,
-                createTripExpenseReq: {
-                    expense: expenseDetails.expense,
-                    tripExpenseSplitType: expenseDetails.tripExpenseSplitType,
-                    tripExpenseType: expenseDetails.category,
-                    payerId: expenseDetails.payerId,
-                    details: expenseDetails.description,
-                    date: expenseDetails.date === 'Optional' ? undefined : expenseDetails.date,
-                    tripExpenseIndividuals: expenseDetails.tripExpenseIndividuals
+
+        if (expenseId) {
+            updateTripExpense(
+                {
+                    tripId,
+                    expenseId,
+                    updateTripExpenseReq: {
+                        expense: expenseDetails.expense,
+                        tripExpenseSplitType: expenseDetails.tripExpenseSplitType,
+                        tripExpenseType: expenseDetails.category,
+                        payerId: expenseDetails.payerId,
+                        details: expenseDetails.description,
+                        date: expenseDetails.date === 'Optional' ? undefined : expenseDetails.date,
+                        tripExpenseIndividuals: expenseDetails.tripExpenseIndividuals
+                    }
+                },
+                {
+                    onSuccess: () => {
+                        Alert.alert('Expense updated', '', [
+                            {
+                                text: 'OK',
+                                onPress: () => {
+                                    setExpenseDetails({
+                                        ...expenseDetails,
+                                        category: undefined,
+                                        categoryIcon: 'mdi:help-circle-outline',
+                                        displayCategory: '',
+                                        description: '',
+                                        tripExpenseSplitType: TripExpenseSplitType.NONE,
+                                        displayTripExpenseSplitType: "Don't split",
+                                        payerId: user.id,
+                                        displayPayer: `You (${user.name})`,
+                                        date: 'Optional',
+                                        tripExpenseIndividuals: []
+                                    });
+                                    closeSheet();
+                                }
+                            }
+                        ]);
+                    }
                 }
+            );
+        } else {
+            createTripExpense(
+                {
+                    tripId,
+                    createTripExpenseReq: {
+                        expense: expenseDetails.expense,
+                        tripExpenseSplitType: expenseDetails.tripExpenseSplitType,
+                        tripExpenseType: expenseDetails.category,
+                        payerId: expenseDetails.payerId,
+                        details: expenseDetails.description,
+                        date: expenseDetails.date === 'Optional' ? undefined : expenseDetails.date,
+                        tripExpenseIndividuals: expenseDetails.tripExpenseIndividuals
+                    }
+                },
+                {
+                    onSuccess: () => {
+                        Alert.alert('New expense created', '', [
+                            {
+                                text: 'OK',
+                                onPress: () => {
+                                    setExpenseDetails({
+                                        expense: 0,
+                                        category: undefined,
+                                        categoryIcon: 'mdi:help-circle-outline',
+                                        displayCategory: '',
+                                        description: '',
+                                        tripExpenseSplitType: TripExpenseSplitType.NONE,
+                                        displayTripExpenseSplitType: "Don't split",
+                                        payerId: user.id,
+                                        displayPayer: `You (${user.name})`,
+                                        date: 'Optional',
+                                        tripExpenseIndividuals: []
+                                    });
+                                    closeSheet();
+                                }
+                            }
+                        ]);
+                    }
+                }
+            );
+        }
+    }, [tripId, expenseDetails, createTripExpense, updateTripExpense, expenseId, closeSheet, user]);
+
+    const handleDeleteExpense = useCallback(() => {
+        Alert.alert('Delete expense', 'Are you sure you want to delete this expense?', [
+            {
+                text: 'Cancel',
+                style: 'cancel'
             },
             {
-                onSuccess: () => {
-                    Alert.alert('New expense created', '', [
+                text: 'Delete',
+                onPress: () => {
+                    if (!expenseId) return;
+                    deleteTripExpense(
+                        { tripId, expenseId },
                         {
-                            text: 'OK',
-                            onPress: () => {
-                                setExpenseDetails({
-                                    expense: 0,
-                                    category: undefined,
-                                    categoryIcon: 'mdi:help-circle-outline',
-                                    displayCategory: '',
-                                    description: '',
-                                    tripExpenseSplitType: TripExpenseSplitType.NONE,
-                                    displayTripExpenseSplitType: "Don't split",
-                                    payerId: user.id,
-                                    displayPayer: `You (${user.name})`,
-                                    date: 'Optional',
-                                    tripExpenseIndividuals: []
-                                });
-                                closeSheet();
+                            onSuccess: () => {
+                                Alert.alert('Expense deleted', '', [
+                                    {
+                                        text: 'OK',
+                                        onPress: () => {
+                                            setExpenseDetails({
+                                                ...expenseDetails,
+                                                category: undefined,
+                                                categoryIcon: 'mdi:help-circle-outline',
+                                                displayCategory: '',
+                                                description: '',
+                                                tripExpenseSplitType: TripExpenseSplitType.NONE,
+                                                displayTripExpenseSplitType: "Don't split",
+                                                payerId: user.id,
+                                                displayPayer: `You (${user.name})`,
+                                                date: 'Optional',
+                                                tripExpenseIndividuals: []
+                                            });
+                                            closeSheet();
+                                        }
+                                    }
+                                ]);
                             }
                         }
-                    ]);
+                    );
                 }
             }
-        );
-    }, [tripId, expenseDetails, createTripExpense, closeSheet, user]);
+        ]);
+    }, [tripId, expenseId, deleteTripExpense, closeSheet, expenseDetails, user]);
 
-    if (isLoading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#60ABEF" />
-            </View>
-        );
-    }
-
-    const renderContent = () => {
+    const renderContent = useCallback(() => {
         switch (currentView) {
             case AddExpenseSheetView.ADD_EXPENSE:
                 return (
@@ -610,8 +731,12 @@ export const AddExpenseSheet = ({
                         setExpenseDetails={setExpenseDetails}
                         currency={currency}
                         currencyCode={currencyCode}
-                        createExpense={createExpense}
-                        isPendingCreateTripExpense={isPendingCreateTripExpense}
+                        handleExpense={handleExpense}
+                        handleDeleteExpense={handleDeleteExpense}
+                        isPending={
+                            isPendingCreateTripExpense || isPendingUpdateTripExpense || isPendingDeleteTripExpense
+                        }
+                        isUpdateView={!!expenseId}
                     />
                 );
             case AddExpenseSheetView.EXPENSE_CATEGORY:
@@ -651,7 +776,27 @@ export const AddExpenseSheet = ({
             default:
                 return null;
         }
-    };
+    }, [
+        currency,
+        currencyCode,
+        currentView,
+        expenseDetails,
+        isPendingCreateTripExpense,
+        isPendingUpdateTripExpense,
+        participants,
+        handleExpense,
+        expenseId,
+        isPendingDeleteTripExpense,
+        handleDeleteExpense
+    ]);
+
+    if (isFetchingUser || isFetchingTripExpense) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
 
     return <>{renderContent()}</>;
 };

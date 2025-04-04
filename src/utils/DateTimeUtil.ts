@@ -9,9 +9,9 @@ export function convertDateFormat(dateString: string) {
     }).format(date);
 }
 
-export function convertDateStringFormat(date: string) {
+export function convertDateStringFormat(date: string): string {
     // YYYY-MM-DD
-    return new Date(date).toISOString().split('T')[0];
+    return new Date(date).toISOString().split('T')[0] || new Date().toISOString().split('T')[0] || '';
 }
 
 type OpeningPeriod = {

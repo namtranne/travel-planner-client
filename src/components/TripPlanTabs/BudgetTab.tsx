@@ -134,13 +134,33 @@ export default function BudgetTab({
 
                 <ScrollView className="mt-3" contentContainerStyle={{ paddingBottom: 200 }}>
                     {tripExpenses.map((expense: any) => (
-                        <ExpenseCard
+                        <TouchableOpacity
                             key={expense.id}
-                            expense={expense}
-                            openSheet={openSheet}
-                            setBottomSheetContent={setBottomSheetContent}
-                            setSnapPoints={setSnapPoints}
-                        />
+                            onPress={() => {
+                                setBottomSheetContent(
+                                    <AddExpenseSheet
+                                        tripId={trip.id}
+                                        currency={tripBudget.currency}
+                                        currencyCode={
+                                            currencies.find((currency) => currency.symbol === tripBudget.currency)
+                                                ?.code || ''
+                                        }
+                                        participants={trip.participants}
+                                        closeSheet={closeSheet}
+                                        expenseId={expense.id}
+                                    />
+                                );
+                                openSheet();
+                                setSnapPoints(['80%']);
+                            }}
+                        >
+                            <ExpenseCard
+                                expense={expense}
+                                openSheet={openSheet}
+                                setBottomSheetContent={setBottomSheetContent}
+                                setSnapPoints={setSnapPoints}
+                            />
+                        </TouchableOpacity>
                     ))}
                 </ScrollView>
             </View>

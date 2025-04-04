@@ -516,6 +516,16 @@ export async function getTripExpenses(tripId: number, sortBy: string, sortOrder:
     return data;
 }
 
+export async function getTripExpenseDetails(tripId?: number, expenseId?: number) {
+    const data = await authAxios
+        .get(`/trips/${tripId}/budget/expenses/${expenseId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
 export async function createTripExpense(tripId: number, createTripExpenseReq: CreateTripExpenseREQ) {
     const data = await authAxios
         .post(`/trips/${tripId}/budget/expenses`, createTripExpenseReq)
