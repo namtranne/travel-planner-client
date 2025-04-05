@@ -489,16 +489,18 @@ const AddExpense = ({
                     <Iconify icon="mdi:chevron-right" className="text-black" size={24} />
                 </TouchableOpacity>
             </View>
-            <View className="flex-row justify-center">
-                <TouchableOpacity
-                    className="mt-4 flex-row items-center justify-center rounded-full bg-gray-200 px-3 py-2"
-                    onPress={handleDeleteExpense}
-                    disabled={isPending}
-                >
-                    <Iconify icon="mdi:trash-can" className="text-gray-400" size={14} />
-                    <Text className="text-sm font-semibold text-gray-500">Delete</Text>
-                </TouchableOpacity>
-            </View>
+            {isUpdateView && (
+                <View className="flex-row justify-center">
+                    <TouchableOpacity
+                        className="mt-4 flex-row items-center justify-center rounded-full bg-gray-200 px-3 py-2"
+                        onPress={handleDeleteExpense}
+                        disabled={isPending}
+                    >
+                        <Iconify icon="mdi:trash-can" className="text-gray-400" size={14} />
+                        <Text className="text-sm font-semibold text-gray-500">Delete</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
 };

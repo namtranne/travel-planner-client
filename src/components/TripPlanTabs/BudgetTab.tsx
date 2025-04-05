@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Iconify from 'react-native-iconify';
+import * as Progress from 'react-native-progress';
 
 import { useTripBudgetDetails, useTripExpenses } from '@/src/hooks/use-trip';
 import { formatAmount } from '@/src/utils/AmountUtil';
@@ -56,7 +57,13 @@ export default function BudgetTab({
                     {tripBudget.currency}
                     {formatAmount(tripBudget.totalExpense)}
                 </Text>
-                <View className="mt-2 h-1 w-1/2 bg-[#5854d6]" />
+                <Progress.Bar
+                    progress={tripBudget.totalExpense / tripBudget.budget}
+                    width={200}
+                    color="#5854d6"
+                    unfilledColor="#fff"
+                    borderColor="#fffff"
+                />
                 <TouchableOpacity
                     className="mt-1 flex-row items-center space-x-1"
                     onPress={() => {

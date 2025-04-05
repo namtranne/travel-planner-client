@@ -6,7 +6,6 @@ import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     ActivityIndicator,
-    Image,
     Keyboard,
     KeyboardAvoidingView,
     Platform,
@@ -17,6 +16,7 @@ import {
     TouchableWithoutFeedback,
     View
 } from 'react-native';
+import { Avatar } from 'react-native-elements';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
 
@@ -46,6 +46,13 @@ const TabComponents: { [key: string]: React.ComponentType<TabContentProps> } = {
     Budget: BudgetTab
 };
 
+interface Participant {
+    user: {
+        avatarUrl?: string;
+        name: string;
+    };
+}
+
 export default function TripScreen() {
     const [selectedTab, setSelectedTab] = useState(TripPlanTabs[0] || 'Overview');
     const { id: tripId } = useLocalSearchParams<{ id: string }>();
@@ -56,10 +63,13 @@ export default function TripScreen() {
         endDate: moment()
     });
     const [onEnteringDate, setOnEnteringDate] = useState(false);
+    const [displayParticipants, setDisplayParticipants] = useState<Participant[]>([]);
+    const [extraParticipants, setExtraParticipants] = useState(0);
+    const tripTitleRef = useRef<TextInput>(null);
+
     const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
     const { isPending: isPendingDeleteTrip, deleteTrip } = useDeleteTrip();
     const { isLoading, trip } = useTripDetails(Number(tripId));
-    const tripTitleRef = useRef<TextInput>(null);
 
     // Bottom Sheet Management
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -83,9 +93,7 @@ export default function TripScreen() {
     const closeSheet = useCallback(() => {
         bottomSheetRef.current?.close();
     }, []);
-    const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-    }, []);
+    const handleSheetChanges = useCallback(() => {}, []);
 
     useEffect(() => {
         if (trip) {
@@ -94,6 +102,8 @@ export default function TripScreen() {
                 startDate: moment(trip.startDate),
                 endDate: moment(trip.endDate)
             });
+            setDisplayParticipants(trip.participants.slice(0, 3));
+            setExtraParticipants(trip.participants.length - 3);
         }
     }, [trip]);
 
@@ -165,7 +175,10 @@ export default function TripScreen() {
                                                     setTripState((prev) => ({ ...prev, title: text }));
                                             }}
                                             onBlur={() =>
-                                                updateTrip({ tripId: 1, updateTripReq: { title: tripState.title } })
+                                                updateTrip({
+                                                    tripId: Number(tripId),
+                                                    updateTripReq: { title: tripState.title }
+                                                })
                                             }
                                             multiline
                                         />
@@ -184,22 +197,43 @@ export default function TripScreen() {
                                             </View>
                                             <View className="flex-row items-center justify-center space-x-2">
                                                 <View className="-ml-2 flex-row items-center justify-center">
-                                                    {[...Array(3)].map((_, index) => (
-                                                        <Image
+                                                    {displayParticipants.map((participant, index) => (
+                                                        <Avatar
                                                             key={index}
-                                                            source={{
-                                                                uri: 'https://cdn.pixabay.com/photo/2014/09/17/20/03/profile-449912__340.jpg'
+                                                            rounded
+                                                            size={30}
+                                                            source={
+                                                                participant.user.avatarUrl
+                                                                    ? { uri: participant.user.avatarUrl }
+                                                                    : undefined
+                                                            }
+                                                            title={
+                                                                (participant.user.name?.[0]?.toUpperCase() ?? '') ||
+                                                                undefined
+                                                            }
+                                                            titleStyle={{ fontSize: 12 }}
+                                                            containerStyle={{
+                                                                borderWidth: 2,
+                                                                borderColor: 'white',
+                                                                backgroundColor: 'gray',
+                                                                marginLeft: index !== 0 ? -8 : 0
                                                             }}
-                                                            className="h-7 w-7 rounded-full border-2 border-white"
-                                                            style={{ marginLeft: -36 / 3 }}
                                                         />
                                                     ))}
-                                                    <View
-                                                        className="flex h-7 w-7 items-center justify-center rounded-full bg-[#e3f2fd]"
-                                                        style={{ marginLeft: -36 / 3 }}
-                                                    >
-                                                        <Text className="text-xs font-bold text-[#60ABEF]">+2</Text>
-                                                    </View>
+                                                    {extraParticipants > 0 && (
+                                                        <Avatar
+                                                            rounded
+                                                            size={30}
+                                                            title={`+${extraParticipants}`}
+                                                            titleStyle={{ fontSize: 12 }}
+                                                            containerStyle={{
+                                                                marginLeft: -8,
+                                                                borderWidth: 2,
+                                                                borderColor: 'white',
+                                                                backgroundColor: 'gray'
+                                                            }}
+                                                        />
+                                                    )}
                                                 </View>
                                                 <Button
                                                     text="Share"
