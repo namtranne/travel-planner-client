@@ -1,11 +1,29 @@
 import authAxios, { getToken } from '../utils/axios';
 import type { UpdateUserREQ } from './types';
 
+export const getUsers = async ({
+    page,
+    limit,
+    usernameOrEmail
+}: {
+    page?: number;
+    limit?: number;
+    usernameOrEmail: string;
+}) => {
+    try {
+        const { data } = await authAxios.get('/users', {
+            params: { page, limit, usernameOrEmail }
+        });
+        return data.data;
+    } catch (error: any) {
+        throw new Error(error.response.data.message);
+    }
+};
 export const getCurrentUser = async () => {
     try {
         const token = await getToken();
         if (!token) return null;
-        const { data } = await authAxios.get('/users');
+        const { data } = await authAxios.get('/users/me');
         return data.data;
     } catch (error: any) {
         throw new Error(error.response.data.message);

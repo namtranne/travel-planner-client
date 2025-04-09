@@ -1,11 +1,12 @@
 import type { BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     Keyboard,
     KeyboardAvoidingView,
     Platform,
@@ -23,11 +24,14 @@ import Iconify from 'react-native-iconify';
 import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
 import BudgetTab from '@/src/components/TripPlanTabs/BudgetTab';
 import ExploreTab from '@/src/components/TripPlanTabs/ExploreTab';
+import { InviteTripmatesSheet } from '@/src/components/TripPlanTabs/InviteTripmatesSheet';
 import ItineraryTab from '@/src/components/TripPlanTabs/ItineraryTab';
 import OverviewTab from '@/src/components/TripPlanTabs/OverviewTab';
+import { TripCollaboratorsSheet } from '@/src/components/TripPlanTabs/TripCollaboratorsSheet';
 import BackButton from '@/src/components/ui/BackButton';
 import Button from '@/src/components/ui/CommonButton';
-import { useDeleteTrip, useTripDetails, useUpdateTrip } from '@/src/hooks/use-trip';
+import { useUser } from '@/src/hooks/use-authenticate';
+import { useDeleteTrip, useLeaveTrip, useTripDetails, useUpdateTrip } from '@/src/hooks/use-trip';
 
 const TripPlanTabs = ['Overview', 'Itinerary', 'Explore', 'Budget'];
 interface TabContentProps {
@@ -67,9 +71,11 @@ export default function TripScreen() {
     const [extraParticipants, setExtraParticipants] = useState(0);
     const tripTitleRef = useRef<TextInput>(null);
 
+    const { isLoading: isLoadingUser, user } = useUser();
+    const { isLoading: isLoadingTripDetails, trip } = useTripDetails(Number(tripId));
     const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
     const { isPending: isPendingDeleteTrip, deleteTrip } = useDeleteTrip();
-    const { isLoading, trip } = useTripDetails(Number(tripId));
+    const { isPending: isPendingLeaveTrip, leaveTrip } = useLeaveTrip();
 
     // Bottom Sheet Management
     const bottomSheetRef = useRef<BottomSheet>(null);
@@ -138,12 +144,39 @@ export default function TripScreen() {
                 }
             },
             { icon: 'weui:share-outlined', label: 'Share', action: () => {} },
-            { icon: 'mdi:trash-can', label: 'Delete this trip', action: () => deleteTrip({ tripId: 1 }) }
+            {
+                icon: 'mdi:trash-can',
+                label: trip && user && user.id === trip.owner.id ? 'Delete this trip' : 'Leave this trip',
+                action: () => {
+                    if (trip && user && user.id === trip.owner.id) deleteTrip({ tripId: Number(tripId) });
+                    else if (trip && user && user.id !== trip.owner.id)
+                        Alert.alert('Leave trip', `Are you sure you want to leave this trip ?`, [
+                            {
+                                text: 'Cancel',
+                                style: 'cancel'
+                            },
+                            {
+                                text: 'Yes',
+                                onPress: () => {
+                                    leaveTrip(
+                                        { tripId: Number(tripId) },
+                                        {
+                                            onSuccess: () => {
+                                                closeSheet();
+                                                router.navigate('../home-tabs/trips');
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        ]);
+                }
+            }
         ],
-        [closeSheet, deleteTrip]
+        [closeSheet, deleteTrip, trip, user, tripId, leaveTrip]
     );
 
-    if (isLoading) {
+    if (isLoadingTripDetails || isLoadingUser) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#60ABEF" />
@@ -171,7 +204,7 @@ export default function TripScreen() {
                                             className="mt-2 text-2xl font-bold text-white"
                                             value={tripState.title}
                                             onChangeText={(text) => {
-                                                if (!isPendingUpdateTrip && !isPendingDeleteTrip)
+                                                if (!isPendingUpdateTrip && !isPendingDeleteTrip && !isPendingLeaveTrip)
                                                     setTripState((prev) => ({ ...prev, title: text }));
                                             }}
                                             onBlur={() =>
@@ -196,7 +229,29 @@ export default function TripScreen() {
                                                 </TouchableOpacity>
                                             </View>
                                             <View className="flex-row items-center justify-center space-x-2">
-                                                <View className="-ml-2 flex-row items-center justify-center">
+                                                <TouchableOpacity
+                                                    className="-ml-2 flex-row items-center justify-center"
+                                                    onPress={() => {
+                                                        setBottomSheetContent(
+                                                            <TripCollaboratorsSheet
+                                                                tripId={trip.id}
+                                                                ownerId={trip.owner.id}
+                                                                openInviteTripmatesSheet={() => {
+                                                                    setBottomSheetContent(
+                                                                        <InviteTripmatesSheet
+                                                                            tripId={trip.id}
+                                                                            joinedParticipants={trip.participants}
+                                                                        />
+                                                                    );
+                                                                    openSheet();
+                                                                    setSnapPoints(['70%']);
+                                                                }}
+                                                            />
+                                                        );
+                                                        openSheet();
+                                                        setSnapPoints(['50%']);
+                                                    }}
+                                                >
                                                     {displayParticipants.map((participant, index) => (
                                                         <Avatar
                                                             key={index}
@@ -234,10 +289,19 @@ export default function TripScreen() {
                                                             }}
                                                         />
                                                     )}
-                                                </View>
+                                                </TouchableOpacity>
                                                 <Button
                                                     text="Share"
-                                                    onPress={() => {}}
+                                                    onPress={() => {
+                                                        setBottomSheetContent(
+                                                            <InviteTripmatesSheet
+                                                                tripId={trip.id}
+                                                                joinedParticipants={trip.participants}
+                                                            />
+                                                        );
+                                                        openSheet();
+                                                        setSnapPoints(['70%']);
+                                                    }}
                                                     additionalStyle="bg-black px-3 py-1 ml-2"
                                                 />
                                                 <TouchableOpacity
@@ -254,7 +318,12 @@ export default function TripScreen() {
                                                                         className="flex-row items-center gap-2 p-3"
                                                                         onPress={() => action()}
                                                                     >
-                                                                        <Iconify icon={icon} size={20} color="black" />
+                                                                        <Iconify
+                                                                            icon={icon}
+                                                                            size={20}
+                                                                            color="black"
+                                                                            className="text-black"
+                                                                        />
                                                                         <Text className="text-base">{label}</Text>
                                                                     </TouchableOpacity>
                                                                 ))}

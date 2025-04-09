@@ -147,7 +147,10 @@ module.exports = (api) => {
                         'mdi:shopping',
                         'mdi:cart',
                         'mdi:help-circle-outline',
-                        'mdi:note-outline'
+                        'mdi:note-outline',
+                        'flowbite:user-add-solid',
+                        'codicon:send',
+                        'mdi:remove'
                     ]
                 }
             ]

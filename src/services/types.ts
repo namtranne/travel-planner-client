@@ -140,6 +140,11 @@ export type UpdateTripExpenseREQ = {
     tripExpenseIndividuals?: number[];
 };
 
+export type AddTripParticipant = {
+    userId: number;
+    isAllowedToEdit: boolean;
+};
+
 export enum TripExpenseSplitType {
     INDIVIDUALS = 'INDIVIDUALS',
     EVERYONE = 'EVERYONE',

@@ -26,6 +26,7 @@
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "cSpell.words": [
-    "daterange"
+    "daterange",
+    "Tripmate"
   ] // Don't run prettier for files listed in .gitignore
 }

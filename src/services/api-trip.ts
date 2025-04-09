@@ -1,5 +1,6 @@
 import authAxios from '../utils/axios';
 import type {
+    AddTripParticipant,
     AutofillItineraryREQ,
     CreateCheckListItemREQ,
     CreateCheckListREQ,
@@ -549,6 +550,45 @@ export async function updateTripExpense(tripId: number, expenseId: number, updat
 export async function deleteTripExpense(tripId: number, expenseId: number) {
     await authAxios
         .delete(`/trips/${tripId}/budget/expenses/${expenseId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+// Trip Participants
+export async function getTripParticipants(tripId: number) {
+    const data = await authAxios
+        .get(`/trips/${tripId}/participants`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function addTripParticipant(tripId: number, participants: AddTripParticipant[]) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/participants`, { participants })
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function leaveTrip(tripId: number) {
+    await authAxios
+        .delete(`/trips/${tripId}/participants`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+export async function removeTripParticipant(tripId: number, participantId: number) {
+    return authAxios
+        .delete(`/trips/${tripId}/participants/${participantId}`)
         .then((response) => response.data.data)
         .catch((err) => {
             throw new Error(err.response.data.message);

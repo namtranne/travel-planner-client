@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+    addTripParticipant as addTripParticipantApi,
     autofillTripItinerary as autofillTripItineraryApi,
     createChecklistItemItinerary as createChecklistItemItineraryApi,
     createChecklistItemOverview as createChecklistItemOverviewApi,
@@ -34,6 +35,9 @@ import {
     getTripExpenses as getTripExpensesApi,
     getTripItineraryDayDetails as getTripItineraryDayDetailsApi,
     getTripOverviewSectionDetails,
+    getTripParticipants as getTripParticipantsApi,
+    leaveTrip as leaveTripApi,
+    removeTripParticipant as removeTripParticipantApi,
     updateChecklistItemItinerary as updateChecklistItemItineraryApi,
     updateChecklistItemOverview as updateChecklistItemOverviewApi,
     updateChecklistItinerary as updateChecklistItineraryApi,
@@ -49,6 +53,7 @@ import {
     updateTripOverviewSection as updateTripOverviewSectionApi
 } from '../services/api-trip';
 import type {
+    AddTripParticipant,
     AutofillItineraryREQ,
     CreateCheckListItemREQ,
     CreateCheckListREQ,
@@ -931,6 +936,75 @@ export function useDeleteTripExpense() {
     });
 
     return { isPending, deleteTripExpense, error };
+}
+
+// Trip Participants
+export function useGetTripParticipants(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-participants-${tripId}`, tripId],
+        queryFn: () => getTripParticipantsApi(tripId)
+    });
+    if (error) {
+        console.log('error', error);
+    }
+
+    return { isLoading, tripParticipants: data, error };
+}
+
+export function useAddTripParticipant() {
+    const queryClient = useQueryClient();
+    const {
+        mutate: addTripParticipant,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; participants: AddTripParticipant[] }) =>
+            addTripParticipantApi(data.tripId, data.participants),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-participants-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, addTripParticipant, error };
+}
+
+export function useLeaveTrip() {
+    const queryClient = useQueryClient();
+    const {
+        mutate: leaveTrip,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number }) => leaveTripApi(data.tripId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-participants-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, leaveTrip, error };
+}
+
+export function useRemoveTripParticipant() {
+    const queryClient = useQueryClient();
+    const {
+        mutate: removeTripParticipant,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; participantId: number }) =>
+            removeTripParticipantApi(data.tripId, data.participantId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-participants-${variables.tripId}`] });
+        },
+        onError: (err) => console.error(err.message)
+    });
+
+    return { isPending, removeTripParticipant, error };
 }
 
 // Autofill Trip Itinerary
