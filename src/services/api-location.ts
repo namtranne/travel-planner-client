@@ -7,7 +7,8 @@ export const fetchLocations = async (search?: string) => {
     return response.data.data.map((item: any) => ({
         id: item.id,
         title: item.name, // Ensure this matches API response
-        subtitle: item.stateName ? `${item.stateName}, ${item.countryName}` : item.countryName // Handle missing stateName
+        subtitle:
+            item.stateName && item.stateName !== 'null' ? `${item.stateName}, ${item.countryName}` : item.countryName // Handle missing stateName
     }));
 };
 

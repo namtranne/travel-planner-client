@@ -69,13 +69,14 @@ export default function TripScreen() {
     const [onEnteringDate, setOnEnteringDate] = useState(false);
     const [displayParticipants, setDisplayParticipants] = useState<Participant[]>([]);
     const [extraParticipants, setExtraParticipants] = useState(0);
-    const tripTitleRef = useRef<TextInput>(null);
 
     const { isLoading: isLoadingUser, user } = useUser();
     const { isLoading: isLoadingTripDetails, trip } = useTripDetails(Number(tripId));
     const { isPending: isPendingUpdateTrip, updateTrip } = useUpdateTrip();
     const { isPending: isPendingDeleteTrip, deleteTrip } = useDeleteTrip();
     const { isPending: isPendingLeaveTrip, leaveTrip } = useLeaveTrip();
+
+    const tripTitleRef = useRef<TextInput>(null);
 
     // Bottom Sheet Management
     const bottomSheetRef = useRef<BottomSheet>(null);

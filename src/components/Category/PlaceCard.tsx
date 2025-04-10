@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { Iconify } from 'react-native-iconify';
 
-const PlaceCard = ({ item, onAddToPlan }: any) => {
+const PlaceCard = ({ item, onSelected }: any) => {
     const router = useRouter();
 
     return (
@@ -37,7 +37,7 @@ const PlaceCard = ({ item, onAddToPlan }: any) => {
 
                     {/* Rating & Reviews */}
                     <View className="mt-2 flex-row items-center">
-                        <Iconify icon="material-symbols:star" color="black" />
+                        <Iconify className="text-black" icon="material-symbols:star" color="black" />
                         <Text className="ml-1 font-inter font-semibold">{item.rating}</Text>
                         <Text className="ml-2 font-inter text-gray-500">({item.reviews} reviews)</Text>
                     </View>
@@ -45,7 +45,7 @@ const PlaceCard = ({ item, onAddToPlan }: any) => {
                     {/* Address */}
                     {item.address && (
                         <View className="mt-2 flex-row items-start">
-                            <Iconify icon="material-symbols:map" color="black" />
+                            <Iconify className="text-black" icon="material-symbols:map" color="black" />
                             <Text className="ml-1 flex-1 font-inter text-gray-600">{item.address}</Text>
                         </View>
                     )}
@@ -60,7 +60,7 @@ const PlaceCard = ({ item, onAddToPlan }: any) => {
                     {/* Time Spent */}
                     {(item.minMinutesSpent || item.maxMinutesSpent) && (
                         <View className="mt-2 flex-row items-center">
-                            <Iconify icon="mdi:clock-outline" color="black" />
+                            <Iconify className="text-black" icon="mdi:clock-outline" color="black" />
                             <Text className="ml-1 font-inter text-gray-500">
                                 Time Spent:{' '}
                                 {item.minMinutesSpent &&
@@ -83,7 +83,7 @@ const PlaceCard = ({ item, onAddToPlan }: any) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             className="ml-2 flex-1 rounded-lg bg-[#b6b6b6] py-2"
-                            onPress={() => onAddToPlan(item)}
+                            onPress={() => onSelected(item.id)}
                         >
                             <Text className=" text-center font-inter font-semibold text-white">Add to Plan</Text>
                         </TouchableOpacity>

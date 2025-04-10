@@ -1,22 +1,28 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Alert, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import CategorySelector from '@/src/components/TagSelector/CategorySelector';
 import { categoryData, initialCategories, REQUIRED_CATEGORIES } from '@/src/components/TagSelector/TagSelectorData';
 import Button from '@/src/components/ui/CommonButton';
 import LinearProgressBar from '@/src/components/ui/LinearProgressBar';
+import { submitUserPreferences } from '@/src/services';
 
 export default function UserSurvey() {
     const [displayedCategories, setDisplayedCategories] = useState<string[]>(initialCategories);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         if (selectedCategories.length < REQUIRED_CATEGORIES) {
             // ToastAndroid.show('You need to select at least 5 category', ToastAndroid.SHORT);
-            console.error('You need to select at least 5 category');
+            Alert.alert('You need to select at least 5 tags');
         } else {
-            router.push('./home');
+            try {
+                await submitUserPreferences(selectedCategories);
+            } catch (err) {
+                return;
+            }
+            router.navigate('home-tabs/home');
         }
     };
 
@@ -68,6 +74,7 @@ export default function UserSurvey() {
                         <View className="w-full flex-row flex-wrap">
                             {displayedCategories.map((category) => (
                                 <CategorySelector
+                                    key={category}
                                     category={category}
                                     selectedCategories={selectedCategories}
                                     handleSelectCategories={handleSelectCategories}

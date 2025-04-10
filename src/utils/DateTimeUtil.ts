@@ -22,7 +22,7 @@ type OpeningPeriod = {
 };
 
 export function getOpeningPeriodsText(periods: OpeningPeriod[]): string {
-    if (periods.length === 0) return 'Closed';
+    if (!periods || periods.length === 0) return '';
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const formatTime = (time: string): string => `${time.slice(0, 2)}:${time.slice(2)}`;
     const formatRange = (start: number, end: number, open: string, close: string): string => {

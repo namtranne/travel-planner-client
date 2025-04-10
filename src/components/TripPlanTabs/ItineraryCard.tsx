@@ -52,6 +52,7 @@ const ItineraryCard = ({
     const inputHeadingRef = useRef<TextInput>(null);
 
     const { isLoading, tripItineraryDay } = useTripItineraryDayDetails(tripId, dayId);
+
     const { isPending: isPendingUpdateTripItineraryDay, updateTripItineraryDay } = useUpdateTripItineraryDay();
     const { isPending: isPendingDeleteTripItineraryDay, deleteTripItineraryDay } = useDeleteTripItineraryDay();
 
@@ -69,7 +70,6 @@ const ItineraryCard = ({
         useDeleteChecklistItemItinerary();
     const { isPending: isPendingDeletePlaceToVisitItinerary, deletePlaceToVisitItinerary } =
         useDeletePlaceToVisitItinerary();
-
     const options = useMemo(
         () => [
             {
@@ -106,6 +106,21 @@ const ItineraryCard = ({
             </View>
         );
     }
+
+    const renderRightActions = (id: any, itemType: String) => {
+        return (
+            <TouchableOpacity
+                className="ml-4 w-20 items-center justify-center bg-red-500"
+                onPress={() => {
+                    if (itemType === 'note') deleteNoteItinerary({ tripId, dayId, noteId: id });
+                    if (itemType === 'checklist') deleteChecklistItinerary({ tripId, dayId, checklistId: id });
+                    if (itemType === 'place') deletePlaceToVisitItinerary({ tripId, dayId, placeToVisitId: id });
+                }}
+            >
+                <Text className="font-bold text-white">Delete</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View className="my-4 bg-white p-4 shadow-md">
@@ -258,19 +273,20 @@ const ItineraryCard = ({
                         />
                     ))}
                     {/* Place to visits */}
-                    {tripItineraryDay?.placeToVisits.map((placeToVisit: any, index: number) => (
-                        <PlaceToVisitCard
-                            key={placeToVisit.id}
-                            tripId={tripId}
-                            sectionId={dayId}
-                            placeToVisitId={placeToVisit.id}
-                            order={index + 1}
-                            tab="itinerary"
-                            onDelete={() =>
-                                deletePlaceToVisitItinerary({ tripId, dayId, placeToVisitId: placeToVisit.id })
-                            }
-                        />
-                    ))}
+                    {tripItineraryDay?.placeToVisits.map((placeToVisit: any, index: number) => {
+                        return (
+                            <PlaceToVisitCard
+                                key={placeToVisit.id}
+                                tripId={tripId}
+                                sectionId={placeToVisit.itineraryDayId}
+                                placeToVisitId={placeToVisit.id}
+                                order={index + 1}
+                                onDelete={() =>
+                                    deletePlaceToVisitItinerary({ tripId, dayId, placeToVisitId: placeToVisit.id })
+                                }
+                            />
+                        );
+                    })}
                     <View className="mt-4 flex-row items-center justify-between">
                         <TouchableOpacity
                             className="flex-1 flex-row items-center rounded-lg bg-gray-100 p-3"
