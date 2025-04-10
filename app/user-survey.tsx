@@ -1,26 +1,16 @@
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import CategorySelector from '@/src/components/TagSelector/CategorySelector';
 import { categoryData, initialCategories, REQUIRED_CATEGORIES } from '@/src/components/TagSelector/TagSelectorData';
 import Button from '@/src/components/ui/CommonButton';
 import LinearProgressBar from '@/src/components/ui/LinearProgressBar';
-import { useUser } from '@/src/hooks/use-authenticate';
 import { submitUserPreferences } from '@/src/services';
 
 export default function UserSurvey() {
     const [displayedCategories, setDisplayedCategories] = useState<string[]>(initialCategories);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const { user, isLoading } = useUser();
-    useEffect(() => {
-        if (!user && !isLoading) {
-            router.navigate('/welcome');
-        }
-        if (user && user.preferences) {
-            router.navigate('home-tabs/home');
-        }
-    }, [user, isLoading]);
 
     const handleContinue = async () => {
         if (selectedCategories.length < REQUIRED_CATEGORIES) {

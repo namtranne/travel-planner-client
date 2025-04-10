@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
 
 import {
@@ -95,6 +96,21 @@ const TripOverviewSection = ({
         );
     }
 
+    const renderRightActions = (id: any, itemType: String) => {
+        return (
+            <TouchableOpacity
+                className="ml-4 w-20 items-center justify-center bg-red-500"
+                onPress={() => {
+                    if (itemType === 'note') deleteNoteOverview({ tripId, sectionId, noteId: id });
+                    if (itemType === 'checklist') deleteChecklistOverview({ tripId, sectionId, checklistId: id });
+                    if (itemType === 'place') deletePlaceToVisitOverview({ tripId, sectionId, placeToVisitId: id });
+                }}
+            >
+                <Text className="font-bold text-white">Delete</Text>
+            </TouchableOpacity>
+        );
+    };
+
     return (
         <View className="mb-4 rounded-lg bg-white p-4 pb-6 shadow">
             <View className="flex-row items-center justify-between gap-x-2">
@@ -148,98 +164,111 @@ const TripOverviewSection = ({
                 <View className="mt-2">
                     {/* Notes */}
                     {tripOverviewSection?.notes.map((note: any) => (
-                        <Note
-                            initialNote={note.content}
-                            handleUpdateNote={(updatedNote) =>
-                                updateNoteOverview({
-                                    tripId,
-                                    sectionId,
-                                    noteId: note.id,
-                                    updateNoteReq: { content: updatedNote }
-                                })
-                            }
-                            handleDeleteNote={() =>
-                                deleteNoteOverview(
-                                    { tripId, sectionId, noteId: note.id },
-                                    {
-                                        onSuccess: () =>
-                                            Alert.alert('Success', 'Note deleted.', [
-                                                {
-                                                    text: 'OK'
-                                                }
-                                            ])
-                                    }
-                                )
-                            }
-                            key={note.id}
-                        />
+                        <Swipeable renderRightActions={() => renderRightActions(note.id, 'note')} key={note.id}>
+                            <Note
+                                initialNote={note.content}
+                                handleUpdateNote={(updatedNote) =>
+                                    updateNoteOverview({
+                                        tripId,
+                                        sectionId,
+                                        noteId: note.id,
+                                        updateNoteReq: { content: updatedNote }
+                                    })
+                                }
+                                handleDeleteNote={() =>
+                                    deleteNoteOverview(
+                                        { tripId, sectionId, noteId: note.id },
+                                        {
+                                            onSuccess: () =>
+                                                Alert.alert('Success', 'Note deleted.', [
+                                                    {
+                                                        text: 'OK'
+                                                    }
+                                                ])
+                                        }
+                                    )
+                                }
+                            />
+                        </Swipeable>
                     ))}
+
                     {/* Checklists */}
                     {tripOverviewSection?.checkLists.map((checklist: any) => (
-                        <Checklist
-                            initialTitle={checklist.title}
-                            items={checklist.items}
-                            handleUpdateChecklist={(updatedTitle) =>
-                                updateChecklistOverview({
-                                    tripId,
-                                    sectionId,
-                                    checklistId: checklist.id,
-                                    updateCheckListReq: { title: updatedTitle }
-                                })
-                            }
-                            handleDeleteChecklist={() =>
-                                deleteChecklistOverview(
-                                    { tripId, sectionId, checklistId: checklist.id },
-                                    {
-                                        onSuccess: () =>
-                                            Alert.alert('Success', 'Checklist deleted.', [
-                                                {
-                                                    text: 'OK'
-                                                }
-                                            ])
-                                    }
-                                )
-                            }
-                            handleCreateChecklistItem={() =>
-                                createChecklistItemOverview({
-                                    tripId,
-                                    sectionId,
-                                    checklistId: checklist.id,
-                                    createCheckListItemReq: { title: 'Add item title' }
-                                })
-                            }
-                            handleUpdateChecklistItem={(checklistItemId, itemTitle, isChecked) => {
-                                updateChecklistItemOverview({
-                                    tripId,
-                                    sectionId,
-                                    checklistId: checklist.id,
-                                    checklistItemId,
-                                    updateCheckListItemReq: { title: itemTitle, isChecked }
-                                });
-                            }}
-                            handleDeleteChecklistItem={(checklistItemId) =>
-                                deleteChecklistItemOverview({
-                                    tripId,
-                                    sectionId,
-                                    checklistId: checklist.id,
-                                    checklistItemId
-                                })
-                            }
+                        <Swipeable
+                            renderRightActions={() => renderRightActions(checklist.id, 'checklist')}
                             key={checklist.id}
-                        />
+                        >
+                            <Checklist
+                                initialTitle={checklist.title}
+                                items={checklist.items}
+                                handleUpdateChecklist={(updatedTitle) =>
+                                    updateChecklistOverview({
+                                        tripId,
+                                        sectionId,
+                                        checklistId: checklist.id,
+                                        updateCheckListReq: { title: updatedTitle }
+                                    })
+                                }
+                                handleDeleteChecklist={() =>
+                                    deleteChecklistOverview(
+                                        { tripId, sectionId, checklistId: checklist.id },
+                                        {
+                                            onSuccess: () =>
+                                                Alert.alert('Success', 'Checklist deleted.', [
+                                                    {
+                                                        text: 'OK'
+                                                    }
+                                                ])
+                                        }
+                                    )
+                                }
+                                handleCreateChecklistItem={() =>
+                                    createChecklistItemOverview({
+                                        tripId,
+                                        sectionId,
+                                        checklistId: checklist.id,
+                                        createCheckListItemReq: { title: 'Add item title' }
+                                    })
+                                }
+                                handleUpdateChecklistItem={(checklistItemId, itemTitle, isChecked) => {
+                                    updateChecklistItemOverview({
+                                        tripId,
+                                        sectionId,
+                                        checklistId: checklist.id,
+                                        checklistItemId,
+                                        updateCheckListItemReq: { title: itemTitle, isChecked }
+                                    });
+                                }}
+                                handleDeleteChecklistItem={(checklistItemId) =>
+                                    deleteChecklistItemOverview({
+                                        tripId,
+                                        sectionId,
+                                        checklistId: checklist.id,
+                                        checklistItemId
+                                    })
+                                }
+                                key={checklist.id}
+                            />
+                        </Swipeable>
                     ))}
+
                     {/* Place to visits */}
                     {tripOverviewSection?.placeToVisits.map((placeToVisit: any, index: number) => (
-                        <PlaceToVisitCard
+                        <Swipeable
+                            renderRightActions={() => renderRightActions(placeToVisit.id, 'place')}
                             key={placeToVisit.id}
-                            tripId={tripId}
-                            sectionId={placeToVisit.sectionId}
-                            placeToVisitId={placeToVisit.id}
-                            order={index + 1}
-                            onDelete={() =>
-                                deletePlaceToVisitOverview({ tripId, sectionId, placeToVisitId: placeToVisit.id })
-                            }
-                        />
+                        >
+                            <PlaceToVisitCard
+                                key={placeToVisit.id}
+                                tripId={tripId}
+                                sectionId={placeToVisit.sectionId}
+                                placeToVisitId={placeToVisit.id}
+                                order={index + 1}
+                                onDelete={() =>
+                                    deletePlaceToVisitOverview({ tripId, sectionId, placeToVisitId: placeToVisit.id })
+                                }
+                            />
+                        </Swipeable>
                     ))}
                     <View className="mt-2 flex-row items-center justify-between">
                         <TouchableOpacity

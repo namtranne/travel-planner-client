@@ -19,7 +19,7 @@ const Note = ({
     const { width } = useWindowDimensions();
 
     return (
-        <View className="border-t border-gray-200 py-3">
+        <TouchableOpacity className="border-t border-gray-200 py-3" onPress={() => setExpanded(true)}>
             <View className={`rounded-lg ${expanded ? 'bg-gray-100' : ''} p-3`}>
                 <View className="flex-1 flex-row items-center justify-center">
                     <View className="h-6 w-6 items-center justify-center rounded-full bg-gray-300">
@@ -28,7 +28,7 @@ const Note = ({
                     {expanded ? (
                         <RichTextInput initialContent={note} onChange={(text) => setNote(text)} />
                     ) : (
-                        <TouchableOpacity className="ml-3 flex-1" onPress={() => setExpanded(true)}>
+                        <View className="ml-3 flex-1">
                             <RenderHTML
                                 source={{ html: note || 'Add your notes here' }}
                                 contentWidth={width - 50}
@@ -45,7 +45,7 @@ const Note = ({
                                     em: { fontStyle: 'italic' }
                                 }}
                             />
-                        </TouchableOpacity>
+                        </View>
                     )}
                 </View>
                 {expanded && (
@@ -67,13 +67,19 @@ const Note = ({
                                 color="#6b7280"
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setExpanded(false)}>
+                        <TouchableOpacity
+                            onPress={async () => {
+                                console.log('Update note');
+                                handleUpdateNote(note);
+                                setExpanded(false);
+                            }}
+                        >
                             <Iconify className="text-[#6c757d]" icon="mdi:chevron-up" size={24} color="#6b7280" />
                         </TouchableOpacity>
                     </View>
                 )}
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 

@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font'; // Static import
 import { Slot } from 'expo-router';
 import { NativeWindStyleSheet } from 'nativewind';
 import { ActivityIndicator, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { Inter, InterItalic } from '@/assets';
 
@@ -40,6 +41,7 @@ export default function Layout() {
         <QueryClientProvider client={queryClient}>
             <View className="h-full w-full bg-[#FAFAFA]">
                 <Slot />
+                <Toast />
             </View>
         </QueryClientProvider>
     );

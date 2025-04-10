@@ -106,6 +106,22 @@ const ItineraryCard = ({
             </View>
         );
     }
+
+    const renderRightActions = (id: any, itemType: String) => {
+        return (
+            <TouchableOpacity
+                className="ml-4 w-20 items-center justify-center bg-red-500"
+                onPress={() => {
+                    if (itemType === 'note') deleteNoteItinerary({ tripId, dayId, noteId: id });
+                    if (itemType === 'checklist') deleteChecklistItinerary({ tripId, dayId, checklistId: id });
+                    if (itemType === 'place') deletePlaceToVisitItinerary({ tripId, dayId, placeToVisitId: id });
+                }}
+            >
+                <Text className="font-bold text-white">Delete</Text>
+            </TouchableOpacity>
+        );
+    };
+
     return (
         <View className="my-4 bg-white p-4 shadow-md">
             {/* Header */}

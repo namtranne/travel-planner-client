@@ -41,6 +41,7 @@ export type CreateTripREQ = {
     locationId: number;
     startDate?: string;
     endDate?: string;
+    selectedChecklistTypes?: string[];
 };
 
 export type UpdateTripREQ = {

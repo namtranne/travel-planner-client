@@ -52,7 +52,7 @@ export default function SearchBar({
     return (
         <View className={additionalStyle}>
             {/* Search Bar */}
-            <View className="bg-gray-50">
+            <View>
                 <Text className="mb-2 font-inter text-xs font-light text-black">{title}</Text>
                 <View
                     className={`h-[54px] flex-row items-center rounded-lg border border-[#E4E4E4] bg-white px-3 py-2 ${isSearching && 'border-[#60ABEF]'}`}

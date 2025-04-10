@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
 
 import {
     autofillTripItinerary as autofillTripItineraryApi,
@@ -247,6 +248,12 @@ export function useCreatePlaceToVisitOverview() {
             createPlaceToVisitOverviewApi(data.tripId, data.sectionId, data.createPlaceToVisitReq),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
+            Toast.show({
+                type: 'success',
+                text1: 'Place Added',
+                text2: 'The place was added to your overview 🎉',
+                position: 'top'
+            });
         },
         onError: (err) => console.error(err.message)
     });
@@ -567,6 +574,12 @@ export function useCreatePlaceToVisitItinerary() {
             createPlaceToVisitItineraryApi(data.tripId, data.dayId, data.createPlaceToVisitReq),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
+            Toast.show({
+                type: 'success',
+                text1: 'Place Added',
+                text2: 'The place was added to your itinerary ✅',
+                position: 'top'
+            });
         },
         onError: (err) => console.error(err.message)
     });

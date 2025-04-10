@@ -70,6 +70,7 @@ export default function Explore({
                 createPlaceToVisitReq: { placeId: selectedPlace }
             });
         }
+        setSelectedPlace(0);
     };
 
     // Wait for base explore data to load first

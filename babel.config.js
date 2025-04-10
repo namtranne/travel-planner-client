@@ -18,6 +18,7 @@ module.exports = (api) => {
                 'react-native-iconify/babel',
                 {
                     icons: [
+                        'material-symbols-light:smart-toy-outline',
                         'basil:user-outline',
                         'clarity:email-line',
                         'mdi:password-outline',

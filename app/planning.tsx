@@ -4,13 +4,14 @@ import { useState } from 'react';
 import {
     Keyboard,
     SafeAreaView,
+    ScrollView,
     Text,
-    TextInput,
     TouchableOpacity,
     TouchableWithoutFeedback,
     View
 } from 'react-native';
 
+import { checklistTypes } from '@/assets/data/checklistTypes';
 import DateRangePicker from '@/src/components/Planning/DateRangePicker/src/DateRangePicker';
 import SearchBar from '@/src/components/Planning/SearchBar';
 import BackButton from '@/src/components/ui/BackButton';
@@ -19,6 +20,7 @@ import { createTrip } from '@/src/services/api-trip';
 import { convertDateStringFormat } from '@/src/utils/DateTimeUtil';
 
 export default function Planning() {
+    const [loading, setLoading] = useState(false);
     const [destination, setDestination] = useState({ id: -1, name: '' });
     const [budget, setBudget] = useState('0');
     const [date, setDate] = useState({
@@ -27,24 +29,45 @@ export default function Planning() {
     });
     const [onEnteringBudget, setOnEnteringBudget] = useState(false);
     const [onEnteringDate, setOnEnteringDate] = useState(false);
+    const [selectedChecklists, setSelectedChecklists] = useState<string[]>([]);
+
+    const toggleChecklist = (type: string) => {
+        if (selectedChecklists.includes(type)) {
+            setSelectedChecklists(selectedChecklists.filter((t) => t !== type));
+        } else {
+            setSelectedChecklists([...selectedChecklists, type]);
+        }
+    };
 
     const handleCreateTrip = async () => {
-        const res = await createTrip({
-            locationId: destination.id,
-            startDate: convertDateStringFormat(date.startDate.toISOString()),
-            endDate: convertDateStringFormat(date.endDate.toISOString())
-        });
-        router.replace(`/trip-plan/${res.id}`);
+        if (loading) return;
+
+        setLoading(true);
+        try {
+            const res = await createTrip({
+                locationId: destination.id,
+                startDate: convertDateStringFormat(date.startDate.toISOString()),
+                endDate: convertDateStringFormat(date.endDate.toISOString()),
+                selectedChecklistTypes: selectedChecklists
+            });
+            router.replace(`/trip-plan/${res.id}`);
+        } catch (error) {
+            console.error('Failed to create trip:', error);
+            // Optionally show toast or alert here
+        } finally {
+            setLoading(false);
+        }
     };
+
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <SafeAreaView>
                 <BackButton />
                 <View className="px-6">
-                    <Text className="mt-20 font-inter text-2xl font-semibold">
+                    <Text className="mt-10 font-inter text-2xl font-semibold">
                         Let’s make your trip unforgettable!{' '}
                     </Text>
-                    <View className="mt-12">
+                    <View className="mt-8">
                         <SearchBar
                             title="Where do you wanna go?"
                             value={destination}
@@ -65,28 +88,39 @@ export default function Planning() {
                         </View>
 
                         <View className="mb-8">
-                            <Text className="mb-2 font-inter text-xs font-light text-black">Budget?</Text>
-                            <View
-                                className={`h-[54px] flex-row items-center rounded-lg border border-[#E4E4E4] bg-white px-3 py-2 ${onEnteringBudget && 'border-[#60ABEF]'}`}
-                            >
-                                <TextInput
-                                    className="flex-1 font-inter text-xs"
-                                    placeholder=""
-                                    value={budget.toString()}
-                                    onChangeText={(value) => setBudget(value)}
-                                    onFocus={() => setOnEnteringBudget(true)}
-                                    onBlur={() => setOnEnteringBudget(false)}
-                                    autoCapitalize="none"
-                                    keyboardType="numeric"
-                                />
+                            <Text className="mb-2 font-inter text-xs font-light text-black">
+                                What checklists do you need?
+                            </Text>
+                            <View className="h-56 rounded-lg border border-[#E4E4E4] bg-white px-3 py-2">
+                                <ScrollView showsVerticalScrollIndicator={false}>
+                                    <View className="flex-row flex-wrap gap-2">
+                                        {checklistTypes.map((type) => (
+                                            <TouchableOpacity
+                                                key={type}
+                                                onPress={() => toggleChecklist(type)}
+                                                className={`mb-2 rounded-full px-4 py-2 ${
+                                                    selectedChecklists.includes(type) ? 'bg-[#60ABEF]' : 'bg-gray-200'
+                                                }`}
+                                            >
+                                                <Text
+                                                    className={`text-xs ${
+                                                        selectedChecklists.includes(type) ? 'text-white' : 'text-black'
+                                                    }`}
+                                                >
+                                                    {type}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+                                </ScrollView>
                             </View>
                         </View>
 
                         <View>
                             <Button
-                                text="Continue"
-                                onPress={() => handleCreateTrip()}
-                                additionalStyle="bg-[#60ABEF] w-full"
+                                text={loading ? 'Creating trip...' : 'Continue'}
+                                onPress={handleCreateTrip}
+                                additionalStyle={`w-full ${loading ? 'bg-[#A4C9EA]' : 'bg-[#60ABEF]'}`}
                             />
                         </View>
                     </View>

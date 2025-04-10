@@ -1,11 +1,22 @@
 import { router } from 'expo-router';
+import { useEffect } from 'react';
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { AirPlane, BrandText, Logo } from '@/assets';
 import DestinationSuggestions from '@/src/components/Home/DestinationSuggestions';
 import HomeButtonGroup from '@/src/components/Home/HomeButtonGroup';
+import { useUser } from '@/src/hooks/use-authenticate';
 
 export default function HomeScreen() {
+    const { user, isLoading } = useUser();
+    useEffect(() => {
+        if (user && !user.preferences && !isLoading) {
+            router.navigate('/user-survey');
+        }
+    }, [user, isLoading]);
+    if (isLoading) {
+        return null;
+    }
     return (
         <View className="h-full w-full">
             <View className="w-full flex-1 pb-4">

@@ -33,7 +33,6 @@ const PlaceToVisitCard = ({
             </View>
         );
     }
-    console.log('Place', placeToVisit);
     return (
         <TouchableOpacity onPress={() => setExpanded(true)} className="border-t border-gray-200 py-4 shadow-md">
             <View className={`${expanded ? 'rounded-xl bg-gray-200 p-2' : ''}`}>
