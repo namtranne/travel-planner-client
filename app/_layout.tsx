@@ -5,7 +5,8 @@ import { useFonts } from 'expo-font'; // Static import
 import { Slot } from 'expo-router';
 import { NativeWindStyleSheet } from 'nativewind';
 import { ActivityIndicator, View } from 'react-native';
-import Toast from 'react-native-toast-message';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import Toast, { ErrorToast } from 'react-native-toast-message';
 
 import { Inter, InterItalic } from '@/assets';
 
@@ -21,6 +22,26 @@ const queryClient = new QueryClient({
 NativeWindStyleSheet.setOutput({
     default: 'native'
 });
+
+const toastConfig = {
+    error: (props: any) => (
+        <SafeAreaInsetsContext.Consumer>
+            {(insets) => (
+                <ErrorToast
+                    {...props}
+                    style={{
+                        marginTop: insets?.top ?? 10, // safe distance from top
+                        marginHorizontal: 16,
+                        borderLeftColor: 'red'
+                    }}
+                    text1Style={{ fontWeight: 'bold' }}
+                    text2Style={{ flexWrap: 'wrap' }}
+                    text2NumberOfLines={0}
+                />
+            )}
+        </SafeAreaInsetsContext.Consumer>
+    )
+};
 
 export default function Layout() {
     const [fontsLoaded] = useFonts({
@@ -41,7 +62,7 @@ export default function Layout() {
         <QueryClientProvider client={queryClient}>
             <View className="h-full w-full bg-[#FAFAFA]">
                 <Slot />
-                <Toast />
+                <Toast config={toastConfig} />
             </View>
         </QueryClientProvider>
     );

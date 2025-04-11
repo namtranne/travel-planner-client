@@ -858,6 +858,7 @@ export function useUpdateTripBudget() {
             updateTripBudgetApi(data.tripId, data.updateTripBudgetReq),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
         onError: (err) => console.error(err.message)
@@ -906,7 +907,15 @@ export function useCreateTripExpense() {
             queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Expense created failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
     });
 
     return { isPending, createTripExpense, error };
@@ -926,7 +935,15 @@ export function useUpdateTripExpense() {
             queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Expense updated failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
     });
 
     return { isPending, updateTripExpense, error };
@@ -945,7 +962,15 @@ export function useDeleteTripExpense() {
             queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Expense deleted failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
     });
 
     return { isPending, deleteTripExpense, error };
@@ -977,7 +1002,15 @@ export function useAddTripParticipant() {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-participants-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Tripmates added failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
     });
 
     return { isPending, addTripParticipant, error };
@@ -995,7 +1028,15 @@ export function useLeaveTrip() {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-participants-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Leave trip failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
     });
 
     return { isPending, leaveTrip, error };
@@ -1014,7 +1055,15 @@ export function useRemoveTripParticipant() {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-participants-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Remove trip collaborator failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
     });
 
     return { isPending, removeTripParticipant, error };
