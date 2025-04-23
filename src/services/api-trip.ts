@@ -6,17 +6,26 @@ import type {
     CreateCheckListREQ,
     CreateNoteREQ,
     CreatePlaceToVisitREQ,
+    CreateTripCruiseREQ,
     CreateTripExpenseREQ,
+    CreateTripFlightREQ,
+    CreateTripLodgingREQ,
     CreateTripOverviewSectionREQ,
     CreateTripREQ,
+    CreateTripTransitREQ,
+    TransitType,
     UpdateCheckListItemREQ,
     UpdateCheckListREQ,
     UpdateNoteREQ,
     UpdatePlaceToVisitREQ,
     UpdateTripBudgetREQ,
+    UpdateTripCruiseREQ,
     UpdateTripExpenseREQ,
+    UpdateTripFlightREQ,
+    UpdateTripLodgingREQ,
     UpdateTripOverviewSectionREQ,
-    UpdateTripREQ
+    UpdateTripREQ,
+    UpdateTripTransitREQ
 } from './types';
 
 // Trip
@@ -285,6 +294,166 @@ export async function deleteChecklistItemOverview(
 ) {
     await authAxios
         .delete(`/trips/${tripId}/overview-sections/${sectionId}/checklists/${checklistId}/items/${itemId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+// Flights
+export async function createTripFlight(tripId: number, createTripFlightReq: CreateTripFlightREQ) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/flights`, createTripFlightReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function verifyFLightEmailForwarded(tripId: number) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/flights/verify-forwarded-email`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function updateTripFlight(tripId: number, flightId: number, updateTripFlightReq: UpdateTripFlightREQ) {
+    const data = await authAxios
+        .patch(`/trips/${tripId}/flights/${flightId}`, updateTripFlightReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function deleteTripFlight(tripId: number, flightId: number) {
+    await authAxios
+        .delete(`/trips/${tripId}/flights/${flightId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+// Transits
+export async function createTripTransit(tripId: number, createTripTransitReq: CreateTripTransitREQ) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/transits`, createTripTransitReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function verifyTransitEmailForwarded(tripId: number, transitType: TransitType) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/transits/verify-forwarded-email?transitType=${transitType}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function updateTripTransit(tripId: number, transitId: number, updateTripTransitReq: UpdateTripTransitREQ) {
+    const data = await authAxios
+        .patch(`/trips/${tripId}/transits/${transitId}`, updateTripTransitReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function deleteTripTransit(tripId: number, transitId: number) {
+    await authAxios
+        .delete(`/trips/${tripId}/transits/${transitId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+// Cruises
+export async function createTripCruise(tripId: number, createTripCruiseReq: CreateTripCruiseREQ) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/cruises`, createTripCruiseReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function verifyCruiseEmailForwarded(tripId: number) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/cruises/verify-forwarded-email`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function updateTripCruise(tripId: number, cruiseId: number, updateTripCruiseReq: UpdateTripCruiseREQ) {
+    const data = await authAxios
+        .patch(`/trips/${tripId}/cruises/${cruiseId}`, updateTripCruiseReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function deleteTripCruise(tripId: number, cruiseId: number) {
+    await authAxios
+        .delete(`/trips/${tripId}/cruises/${cruiseId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+// Lodging
+export async function createTripLodging(tripId: number, createTripLodgingReq: CreateTripLodgingREQ) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/lodgings`, createTripLodgingReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function verifyLodgingEmailForwarded(tripId: number) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/lodgings/verify-forwarded-email`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function updateTripLodging(tripId: number, lodgingId: number, updateTripLodgingReq: UpdateTripLodgingREQ) {
+    const data = await authAxios
+        .patch(`/trips/${tripId}/lodgings/${lodgingId}`, updateTripLodgingReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function deleteTripLodging(tripId: number, lodgingId: number) {
+    await authAxios
+        .delete(`/trips/${tripId}/lodgings/${lodgingId}`)
         .then((response) => response.data.data)
         .catch((err) => {
             throw new Error(err.response.data.message);

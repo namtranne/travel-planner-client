@@ -1,7 +1,7 @@
 import { Skeleton } from '@rneui/themed';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Modal, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,19 +15,25 @@ import authAxios from '@/src/utils/axios';
 export default function Explore({
     locationId = 174,
     showFullPage = false,
-    tripId
+    tripId,
+    openSheet,
+    setBottomSheetContent,
+    setSnapPoints
 }: {
     locationId: number;
     showFullPage?: boolean;
     tripId?: number;
+    openSheet: () => void;
+    setBottomSheetContent: (content: React.ReactNode) => void;
+    setSnapPoints: (points: string[]) => void;
 }) {
     const { data, isLoading } = useExplorePage(locationId);
-    const [selectedPlace, setSelectedPlace] = useState(0);
     const [restaurantData, setRestaurantData] = useState<any>(null);
     const [attractionData, setAttractionData] = useState<any>(null);
     const { trip, isLoading: isLoadingTrip } = useTripDetails(tripId);
-    const { isPending, createPlaceToVisitItinerary } = useCreatePlaceToVisitItinerary();
-    const { isPending: isAddingPlaceToOverview, createPlaceToVisitOverview, error } = useCreatePlaceToVisitOverview();
+    const { isPending: isPendingCreatePlaceToVisitItinerary, createPlaceToVisitItinerary } =
+        useCreatePlaceToVisitItinerary();
+    const { isPending: isAddingPlaceToOverview, createPlaceToVisitOverview } = useCreatePlaceToVisitOverview();
 
     const sections = [
         {
@@ -43,7 +49,7 @@ export default function Explore({
         },
         {
             title: 'Itinerary',
-            data: trip.tripItinerary.days.map((day, index) => ({
+            data: trip.tripItinerary.days.map((day: any, index: number) => ({
                 id: day.id,
                 label: day.title,
                 color: ['text-teal-500', 'text-purple-500', 'text-blue-500', 'text-red-500'][index % 4],
@@ -52,25 +58,66 @@ export default function Explore({
         }
     ];
 
-    const handleSelectPlace = (placeId: number) => {
-        setSelectedPlace(placeId);
-    };
-
-    const handleAddPlace = (item: any) => {
+    const handleAddPlace = (item: any, placeId: number) => {
         if (item.section === 'Overview') {
             createPlaceToVisitOverview({
                 tripId: tripId || 0,
                 sectionId: item.id,
-                createPlaceToVisitReq: { placeId: selectedPlace }
+                createPlaceToVisitReq: { placeId }
             });
         } else if (item.section === 'Itinerary') {
             createPlaceToVisitItinerary({
                 tripId: tripId || 0,
                 dayId: item.id,
-                createPlaceToVisitReq: { placeId: selectedPlace }
+                createPlaceToVisitReq: { placeId }
             });
         }
-        setSelectedPlace(0);
+    };
+
+    const handleSelectPlace = (placeId: number) => {
+        setBottomSheetContent(
+            <View className="bg-white p-4">
+                <View className="mb-4 flex-row items-center justify-between">
+                    <TouchableOpacity onPress={() => router.back()}>
+                        <Text className="text-gray-400">Cancel</Text>
+                    </TouchableOpacity>
+                    <Text className="text-lg font-semibold">Add to trip</Text>
+                    <View className="w-12" />
+                </View>
+
+                <SectionList
+                    sections={sections}
+                    keyExtractor={(item) => item.id}
+                    renderSectionHeader={({ section: { title } }) => (
+                        <Text className="mb-2 mt-6 text-xs font-semibold text-gray-500">{title}</Text>
+                    )}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() => handleAddPlace(item, placeId)}
+                            className="flex-row items-center py-3"
+                            disabled={isAddingPlaceToOverview || isPendingCreatePlaceToVisitItinerary}
+                        >
+                            <View className={`mr-3 h-2 w-2 rounded-full ${item.color || 'text-gray-400'}`} />
+                            <View className="flex flex-row items-center">
+                                <Iconify
+                                    icon={item.isNew ? 'ic:baseline-plus' : 'mdi:map-marker'}
+                                    size={item.isNew ? 20 : 25}
+                                    className="text-[#60ABEF]"
+                                />
+                                <Text
+                                    className={`${item.isNew ? 'text-[#60ABEF]' : 'text-black'} text-center text-sm font-normal`}
+                                >
+                                    {item.label}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    ItemSeparatorComponent={() => <View className="ml-5 h-px bg-gray-200" />}
+                />
+            </View>
+        );
+        setSnapPoints(['70%']);
+        openSheet();
     };
 
     // Wait for base explore data to load first
@@ -183,56 +230,6 @@ export default function Explore({
                     </View>
                 )}
             </ScrollView>
-            <Modal visible={!!selectedPlace} animationType="slide" transparent>
-                <View className="flex-1 justify-end bg-black/50">
-                    {/* Modal Container */}
-                    <TouchableOpacity className="flex-1" onPress={() => setSelectedPlace(null)} />
-                    <View className="h-3/4 w-full rounded-t-xl bg-white shadow-lg">
-                        <SafeAreaView className="flex-1">
-                            <View className="flex-1 bg-white p-4 pt-12">
-                                <View className="mb-4 flex-row items-center justify-between">
-                                    <TouchableOpacity onPress={() => router.back()}>
-                                        <Text className="text-gray-400">Cancel</Text>
-                                    </TouchableOpacity>
-                                    <Text className="text-lg font-semibold">Add to trip</Text>
-                                    <View className="w-12" />
-                                </View>
-
-                                <SectionList
-                                    sections={sections}
-                                    keyExtractor={(item) => item.id}
-                                    renderSectionHeader={({ section: { title } }) => (
-                                        <Text className="mb-2 mt-6 text-xs font-semibold text-gray-500">{title}</Text>
-                                    )}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity
-                                            onPress={() => handleAddPlace(item)}
-                                            className="flex-row items-center py-3"
-                                        >
-                                            <View
-                                                className={`mr-3 h-2 w-2 rounded-full ${item.color || 'text-gray-400'}`}
-                                            />
-                                            <View className="flex flex-row items-center">
-                                                <Iconify
-                                                    icon={item.isNew ? 'ic:baseline-plus' : 'mdi:map-marker'}
-                                                    size={item.isNew ? 20 : 25}
-                                                    className={`text-[${item.color}]`}
-                                                />
-                                                <Text
-                                                    className={`${item.isNew ? 'text-blue-500' : 'text-black'} text-center text-sm font-normal`}
-                                                >
-                                                    {item.label}
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    )}
-                                    ItemSeparatorComponent={() => <View className="ml-5 h-px bg-gray-200" />}
-                                />
-                            </View>
-                        </SafeAreaView>
-                    </View>
-                </View>
-            </Modal>
         </SafeAreaView>
     );
 }

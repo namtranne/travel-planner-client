@@ -1,3 +1,8 @@
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+
 export function convertDateFormat(dateString: string) {
     // DD MMM
     if (!dateString) return '';
@@ -13,6 +18,61 @@ export function convertDateStringFormat(date: string): string {
     // YYYY-MM-DD
     return new Date(date).toISOString().split('T')[0] || new Date().toISOString().split('T')[0] || '';
 }
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
+export const formatFlightTime = (
+    departure: string | null | undefined,
+    arrival: string | null | undefined,
+    timeZone: string = dayjs.tz.guess()
+): string => {
+    if (!departure && !arrival) return 'Date/time unavailable';
+    if (!departure) return 'Departure time unavailable';
+    if (!arrival) return 'Arrival time unavailable';
+
+    try {
+        const dep = dayjs.utc(departure).tz(timeZone);
+        const arr = dayjs.utc(arrival).tz(timeZone);
+
+        const dayFormatted = dep.format('ddd, MMM D');
+        const depTime = dep.format('h:mm A');
+        const arrTime = arr.format('h:mm A');
+
+        return `${dayFormatted} • ${depTime} — ${arrTime}`;
+    } catch (err) {
+        console.error('Invalid date format:', err);
+        return 'Invalid date format';
+    }
+};
+
+export const formatTransitTime = (departureDateStr: string | null, arrivalDateStr: string | null): string => {
+    if (!departureDateStr || !arrivalDateStr) return '';
+
+    const departure = dayjs(departureDateStr);
+    const arrival = dayjs(arrivalDateStr);
+
+    const dayDiff = arrival.diff(departure, 'day');
+
+    return `${departure.format('ddd, MMM D')}${dayDiff > 0 ? ` +${dayDiff}` : ''}`;
+};
+
+export const formatDateToDayMonth = (dateStr: string | null): string => {
+    if (!dateStr) return '';
+    return dayjs(dateStr).format('ddd, MMM D');
+};
+
+export const formatLodgingTime = (checkInDate: string | null, checkOutDate: string | null): string => {
+    if (!checkInDate || !checkOutDate) return '';
+
+    const dep = dayjs(checkInDate);
+    const arr = dayjs(checkOutDate);
+
+    const formattedDeparture = dep.format('ddd, MMM Do');
+    const formattedArrival = arr.format('ddd, MMM Do');
+
+    return `${formattedDeparture} — ${formattedArrival}`;
+};
 
 type OpeningPeriod = {
     openDay: number;

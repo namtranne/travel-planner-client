@@ -6,7 +6,7 @@ import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity
 import { Avatar } from 'react-native-elements';
 import Iconify from 'react-native-iconify';
 import type { DateType } from 'react-native-ui-datepicker';
-import DateTimePicker, { useDefaultStyles } from 'react-native-ui-datepicker';
+import DateTimePicker from 'react-native-ui-datepicker';
 
 import { useUser } from '@/src/hooks/use-authenticate';
 import {
@@ -315,7 +315,6 @@ const SelectDate = ({
     expenseDetails: any;
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
 }) => {
-    const defaultStyles = useDefaultStyles();
     const [selected, setSelected] = useState<DateType>(
         expenseDetails.date === 'Optional' ? undefined : new Date(expenseDetails.date)
     );
@@ -346,7 +345,6 @@ const SelectDate = ({
                         setCurrentView(AddExpenseSheetView.ADD_EXPENSE);
                     }}
                     styles={{
-                        ...defaultStyles,
                         today: { borderColor: '#60ABEF', borderWidth: 1, borderRadius: 50 },
                         selected: { backgroundColor: '#60ABEF', borderRadius: 50 },
                         selected_label: { color: 'white' }
