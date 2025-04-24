@@ -34,12 +34,14 @@ export const ExpenseCard = ({
     expense,
     openSheet,
     setBottomSheetContent,
-    setSnapPoints
+    setSnapPoints,
+    currency
 }: {
     expense: TripExpense;
     openSheet: () => void;
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
+    currency: string;
 }) => {
     const maxAvatars = 3;
     const displayExpenseIndividuals = expense.tripExpenseIndividuals.slice(0, maxAvatars);
@@ -49,8 +51,8 @@ export const ExpenseCard = ({
 
     const getExpenseIcon = useCallback((type: string) => expenseIcons[type] || 'mdi:help-circle-outline', []); // Fallback icon
     return (
-        <View className="flex-row items-center justify-between border-b border-gray-200 py-3">
-            <View className="flex-row items-center">
+        <View className="flex-row items-center justify-between space-x-2 border-b border-gray-200 py-3">
+            <View className="flex-[4] flex-row items-center">
                 <View className="rounded-full bg-gray-300 p-2">
                     <Iconify icon={getExpenseIcon(expense.tripExpenseType)} className="text-gray-500" size={16} />
                 </View>
@@ -66,8 +68,11 @@ export const ExpenseCard = ({
                     </View>
                 </View>
             </View>
-            <View>
-                <Text className="text-base font-bold">${formatAmount(expense.expense)}</Text>
+            <View className="flex-[2] items-end">
+                <Text className="text-base font-bold">
+                    {currency}
+                    {formatAmount(expense.expense)}
+                </Text>
                 <TouchableOpacity
                     className="flex-row items-center justify-end"
                     onPress={() => {

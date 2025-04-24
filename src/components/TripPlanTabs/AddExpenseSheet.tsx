@@ -1,16 +1,19 @@
 import { CheckBox, Icon } from '@rneui/base';
 import dayjs from 'dayjs';
+import * as ImagePicker from 'expo-image-picker';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import Iconify from 'react-native-iconify';
+import Toast from 'react-native-toast-message';
 import type { DateType } from 'react-native-ui-datepicker';
 import DateTimePicker from 'react-native-ui-datepicker';
 
 import { useUser } from '@/src/hooks/use-authenticate';
 import {
     useCreateTripExpense,
+    useCreateTripExpenseFromInvoice,
     useDeleteTripExpense,
     useTripExpenseDetails,
     useUpdateTripExpense
@@ -356,6 +359,7 @@ const SelectDate = ({
 };
 
 const AddExpense = ({
+    tripId,
     setCurrentView,
     expenseDetails,
     setExpenseDetails,
@@ -366,6 +370,7 @@ const AddExpense = ({
     isPending,
     isUpdateView
 }: {
+    tripId: number;
     setCurrentView: React.Dispatch<React.SetStateAction<AddExpenseSheetView>>;
     expenseDetails: any;
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
@@ -376,11 +381,15 @@ const AddExpense = ({
     isPending: boolean;
     isUpdateView: boolean;
 }) => {
+    const [invoice, setInvoice] = useState('');
     const [displayExpense, setDisplayExpense] = useState(
         expenseDetails.expense !== null && expenseDetails.expense !== undefined && expenseDetails.expense !== 0
             ? expenseDetails.expense.toLocaleString('en-US', { maximumFractionDigits: 2 })
             : ''
     );
+    const { isPending: isPendingCreateTripExpenseFromInvoice, createTripExpenseFromInvoice } =
+        useCreateTripExpenseFromInvoice();
+
     const handleExpenseChange = (text: string) => {
         const cleanedText = text.replace(/[^0-9.,]/g, '');
         setDisplayExpense(cleanedText);
@@ -392,6 +401,54 @@ const AddExpense = ({
         });
     };
 
+    const handleChoosePhoto = async () => {
+        Alert.alert('Upload invoice', 'Choose image source', [
+            {
+                text: 'Take a photo',
+                onPress: async () => {
+                    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                    if (status !== 'granted') {
+                        Alert.alert('Permission Denied', 'Camera access is required to take a photo.');
+                        return;
+                    }
+
+                    const result = await ImagePicker.launchCameraAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        allowsEditing: true,
+                        quality: 0.8
+                    });
+
+                    if (!result.canceled) {
+                        if (result.assets && result.assets.length > 0) {
+                            setInvoice(result?.assets[0]?.uri || '');
+                        }
+                    }
+                }
+            },
+            {
+                text: 'Choose from library',
+                onPress: async () => {
+                    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (status !== 'granted') {
+                        Alert.alert('Permission Denied', 'Gallery access is required to choose a photo.');
+                        return;
+                    }
+
+                    const result = await ImagePicker.launchImageLibraryAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        allowsEditing: false,
+                        quality: 1
+                    });
+
+                    if (!result.canceled) {
+                        setInvoice(result?.assets[0]?.uri || '');
+                    }
+                }
+            },
+            { text: 'Cancel', style: 'cancel' }
+        ]);
+    };
+
     useEffect(() => {
         if (expenseDetails.expense !== null && expenseDetails.expense !== undefined && expenseDetails.expense === 0) {
             setDisplayExpense(null);
@@ -400,13 +457,47 @@ const AddExpense = ({
         }
     }, [expenseDetails.expense]);
 
+    if (isPendingCreateTripExpenseFromInvoice) {
+        return (
+            <View className="px-4">
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
+
     return (
         <View className="bg-white">
             <View className="px-4">
                 {/* Header */}
                 <View className="flex-row items-center justify-center">
                     <Text className="text-base font-bold">{isUpdateView ? 'Update expense' : 'Add expense'}</Text>
-                    <TouchableOpacity onPress={handleExpense} disabled={isPending} className="absolute right-2">
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (invoice) {
+                                createTripExpenseFromInvoice(
+                                    {
+                                        tripId,
+                                        invoice
+                                    },
+                                    {
+                                        onSuccess: () => {
+                                            Toast.show({
+                                                type: 'success',
+                                                text1: 'Expense imported from invoice',
+                                                position: 'top'
+                                            });
+                                            setInvoice('');
+                                            setCurrentView(AddExpenseSheetView.ADD_EXPENSE);
+                                        }
+                                    }
+                                );
+                            } else {
+                                handleExpense();
+                            }
+                        }}
+                        disabled={isPending || isPendingCreateTripExpenseFromInvoice}
+                        className="absolute right-2"
+                    >
                         <Text className="text-sm text-[#60ABEF]">Done</Text>
                     </TouchableOpacity>
                 </View>
@@ -487,7 +578,7 @@ const AddExpense = ({
                     <Iconify icon="mdi:chevron-right" className="text-black" size={24} />
                 </TouchableOpacity>
             </View>
-            {isUpdateView && (
+            {isUpdateView ? (
                 <View className="flex-row justify-center">
                     <TouchableOpacity
                         className="mt-4 flex-row items-center justify-center rounded-full bg-gray-200 px-3 py-2"
@@ -497,6 +588,26 @@ const AddExpense = ({
                         <Iconify icon="mdi:trash-can" className="text-gray-400" size={14} />
                         <Text className="text-sm font-semibold text-gray-500">Delete</Text>
                     </TouchableOpacity>
+                </View>
+            ) : (
+                <View className="flex-row justify-center">
+                    <TouchableOpacity
+                        className="mt-4 flex-row items-center justify-center rounded-full bg-gray-200 px-3 py-2"
+                        onPress={handleChoosePhoto}
+                        disabled={isPending}
+                    >
+                        <Iconify icon="mdi:camera-outline" className="text-gray-400" size={14} />
+                        <Text className="ml-1 text-sm font-semibold text-gray-500">Add with your invoice</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+            {invoice !== '' && (
+                <View className="mt-4 px-4">
+                    <Image
+                        source={{ uri: invoice }}
+                        style={{ width: '100%', height: 200, borderRadius: 8 }}
+                        resizeMode="contain"
+                    />
                 </View>
             )}
         </View>
@@ -726,6 +837,7 @@ export const AddExpenseSheet = ({
             case AddExpenseSheetView.ADD_EXPENSE:
                 return (
                     <AddExpense
+                        tripId={tripId}
                         setCurrentView={setCurrentView}
                         expenseDetails={expenseDetails}
                         setExpenseDetails={setExpenseDetails}
@@ -787,7 +899,8 @@ export const AddExpenseSheet = ({
         handleExpense,
         expenseId,
         isPendingDeleteTripExpense,
-        handleDeleteExpense
+        handleDeleteExpense,
+        tripId
     ]);
 
     if (isFetchingUser || isFetchingTripExpense) {

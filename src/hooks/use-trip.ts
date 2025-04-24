@@ -15,6 +15,7 @@ import {
     createTrip as createTripApi,
     createTripCruise as createTripCruiseApi,
     createTripExpense as createTripExpenseApi,
+    createTripExpenseFromInvoice as createTripExpenseFromInvoiceApi,
     createTripFlight as createTripFlightApi,
     createTripLodging as createTripLodgingApi,
     createTripOverviewSection as createTripOverviewSectionApi,
@@ -1670,6 +1671,34 @@ export function useCreateTripExpense() {
     });
 
     return { isPending, createTripExpense, error };
+}
+
+export function useCreateTripExpenseFromInvoice() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createTripExpenseFromInvoice,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; invoice: any }) =>
+            createTripExpenseFromInvoiceApi(data.tripId, data.invoice),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
+        },
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Expense created from invoice failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
+    });
+
+    return { isPending, createTripExpenseFromInvoice, error };
 }
 
 export function useUpdateTripExpense() {

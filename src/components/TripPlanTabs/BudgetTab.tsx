@@ -166,6 +166,7 @@ export default function BudgetTab({
                                 openSheet={openSheet}
                                 setBottomSheetContent={setBottomSheetContent}
                                 setSnapPoints={setSnapPoints}
+                                currency={tripBudget.currency}
                             />
                         </TouchableOpacity>
                     ))}

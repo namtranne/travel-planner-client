@@ -706,6 +706,28 @@ export async function createTripExpense(tripId: number, createTripExpenseReq: Cr
     return data;
 }
 
+export async function createTripExpenseFromInvoice(tripId: number, invoice: any) {
+    try {
+        const formData = new FormData();
+        if (invoice) {
+            const filename = invoice.split('/').pop();
+            const match = /\.(\w+)$/.exec(filename);
+            const type = match ? `image/${match[1]}` : `image`;
+            formData.append('invoice', JSON.parse(JSON.stringify({ uri: invoice, name: filename, type })));
+        }
+
+        const response = await authAxios.post(`/trips/${tripId}/budget/expenses/invoice`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        return response.data;
+    } catch (error: any) {
+        throw new Error(error.response.data.message);
+    }
+}
+
 export async function updateTripExpense(tripId: number, expenseId: number, updateTripExpenseReq: UpdateTripExpenseREQ) {
     const data = await authAxios
         .patch(`/trips/${tripId}/budget/expenses/${expenseId}`, updateTripExpenseReq)

@@ -156,7 +156,8 @@ module.exports = (api) => {
                         'mdi:arrow-right',
                         'mdi:content-copy',
                         'material-symbols:directions',
-                        'mdi:map'
+                        'mdi:map',
+                        'mdi:camera-outline'
                     ]
                 }
             ]

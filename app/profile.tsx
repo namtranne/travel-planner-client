@@ -161,7 +161,7 @@ export default function ProfileScreen() {
 
                         <View className="mt-8 space-y-6">
                             {Object.keys(profile)
-                                .filter((key) => key !== 'AvatarUrl') // Không hiển thị field AvatarUrl ở đây
+                                .filter((key) => key !== 'AvatarUrl')
                                 .map((key) => (
                                     <View key={key} className="space-y-2">
                                         <Text className="text-sm font-semibold text-gray-600">
