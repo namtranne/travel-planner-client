@@ -21,16 +21,21 @@ const SetBudget = ({
     setSnapPoints: (points: string[]) => void;
 }) => {
     const { isPending: isPendingUpdateTripBudget, updateTripBudget } = useUpdateTripBudget();
-    const [budget, setBudget] = useState(initialBudget);
-    const [displayBudget, setDisplayBudget] = useState(
-        initialBudget ? initialBudget.toLocaleString('en-US', { maximumFractionDigits: 2 }) : ''
-    );
+    const [budget, setBudget] = useState<number | undefined>(initialBudget);
+    const [displayBudget, setDisplayBudget] = useState(initialBudget ? initialBudget.toLocaleString('en-US') : '');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleBudgetChange = (text: string) => {
-        const cleanedText = text.replace(/[^0-9.,]/g, '');
-        setDisplayBudget(cleanedText);
+        setDisplayBudget(text);
+        const delimiterCount = (text.match(/[.,]/g) || []).length;
+        if (delimiterCount > 1) {
+            setErrorMessage('Please enter a valid amount');
+            setBudget(undefined);
+            return;
+        }
 
-        const parsedValue = parseFloat(cleanedText.replace(/,/g, '.')).toFixed(2);
+        setErrorMessage('');
+        const parsedValue = parseFloat(text.replace(/,/g, '.'));
         setBudget(Number.isNaN(Number(parsedValue)) ? 0 : Number(parsedValue));
     };
 
@@ -43,25 +48,27 @@ const SetBudget = ({
                 <Text className="text-center text-base font-bold">Set Budget</Text>
                 <TouchableOpacity
                     onPress={() => {
-                        updateTripBudget(
-                            { tripId, updateTripBudgetReq: { budget, currency: currencySymbol } },
-                            {
-                                onSuccess: () => {
-                                    Keyboard.dismiss();
-                                    Alert.alert('New budget set !');
-                                },
-                                onError: (error: { message: string }) => {
-                                    Alert.alert('Set Budget Failed', error.message, [
-                                        {
-                                            text: 'Try Again',
-                                            onPress: () => console.log('User retries change budget')
-                                        },
-                                        { text: 'Cancel', style: 'cancel' }
-                                    ]);
+                        if (budget) {
+                            updateTripBudget(
+                                { tripId, updateTripBudgetReq: { budget, currency: currencySymbol } },
+                                {
+                                    onSuccess: () => {
+                                        Keyboard.dismiss();
+                                        Alert.alert('New budget set !');
+                                    },
+                                    onError: (error: { message: string }) => {
+                                        Alert.alert('Set Budget Failed', error.message, [
+                                            {
+                                                text: 'Try Again',
+                                                onPress: () => console.log('User retries change budget')
+                                            },
+                                            { text: 'Cancel', style: 'cancel' }
+                                        ]);
+                                    }
                                 }
-                            }
-                        );
-                        closeSheet();
+                            );
+                            closeSheet();
+                        }
                     }}
                     disabled={isPendingUpdateTripBudget}
                 >
@@ -86,6 +93,9 @@ const SetBudget = ({
                     value={displayBudget}
                     onChangeText={handleBudgetChange}
                 />
+            </View>
+            <View className="mt-1 flex-row items-center justify-center">
+                {errorMessage !== '' && <Text className="text-xs text-red-500">{errorMessage}</Text>}
             </View>
         </View>
     );

@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
@@ -79,11 +80,13 @@ const TripOverviewSection = ({
     const { isPending: isPendingDeleteTripLodging, deleteTripLodging } = useDeleteTripLodging();
     const { isPending: isPendingDeleteTripTransit, deleteTripTransit } = useDeleteTripTransit();
 
+    const { t } = useTranslation();
+
     const options = useMemo(
         () => [
             {
                 icon: 'mdi:pencil',
-                label: 'Edit section heading',
+                label: t('Edit section heading'),
                 action: () => {
                     closeSheet();
                     setExpanded(true);
@@ -92,16 +95,16 @@ const TripOverviewSection = ({
             },
             {
                 icon: 'mdi:trash-can',
-                label: 'Delete section',
+                label: t('Delete section'),
                 action: () => {
                     closeSheet();
                     deleteTripOverviewSection({ tripId, sectionId });
                 },
                 disabled: isPendingDeleteTripOverviewSection
             },
-            { icon: 'mdi:dots-grid', label: 'Reorder sections', action: () => {} }
+            { icon: 'mdi:dots-grid', label: t('Reorder sections'), action: () => {} }
         ],
-        [isPendingDeleteTripOverviewSection, deleteTripOverviewSection, sectionId, tripId, closeSheet]
+        [isPendingDeleteTripOverviewSection, deleteTripOverviewSection, sectionId, tripId, closeSheet, t]
     );
 
     const transitTypes = useMemo(
@@ -227,7 +230,7 @@ const TripOverviewSection = ({
                             }}
                         >
                             <Iconify className="text-black" icon="mdi-light:map-marker" size={20} color="black" />
-                            <Text className="ml-2 text-gray-500">Add a place</Text>
+                            <Text className="ml-2 text-gray-500">{t('Add a place')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             className="mx-2 rounded-lg bg-gray-100 p-3"
@@ -282,7 +285,7 @@ const TripOverviewSection = ({
                         disabled={isPendingDeleteTripFlight}
                     >
                         <Iconify className="font-semibold text-gray-600" icon="ic:baseline-plus" size={20} />
-                        <Text className="font-semibold text-gray-600">Add another flight</Text>
+                        <Text className="font-semibold text-gray-600">{t('Add another flight')}</Text>
                     </TouchableOpacity>
                 );
             case 'TRANSIT':
@@ -300,7 +303,7 @@ const TripOverviewSection = ({
                                             disabled={disabled}
                                         >
                                             <Iconify className="text-black" icon={icon} size={20} color="black" />
-                                            <Text className="text-base">{label}</Text>
+                                            <Text className="text-base">{t(label)}</Text>
                                         </TouchableOpacity>
                                     ))}
                                 </View>
@@ -311,7 +314,7 @@ const TripOverviewSection = ({
                         disabled={isPendingDeleteTripTransit}
                     >
                         <Iconify className="font-semibold text-gray-600" icon="ic:baseline-plus" size={20} />
-                        <Text className="font-semibold text-gray-600">Add another transit</Text>
+                        <Text className="font-semibold text-gray-600">{t('Add another transit')}</Text>
                     </TouchableOpacity>
                 );
             case 'CRUISE':
@@ -326,7 +329,7 @@ const TripOverviewSection = ({
                         disabled={isPendingDeleteTripCruise}
                     >
                         <Iconify className="font-semibold text-gray-600" icon="ic:baseline-plus" size={20} />
-                        <Text className="font-semibold text-gray-600">Add another cruise</Text>
+                        <Text className="font-semibold text-gray-600">{t('Add another cruise')}</Text>
                     </TouchableOpacity>
                 );
             case 'LODGING':
@@ -341,7 +344,7 @@ const TripOverviewSection = ({
                         disabled={isPendingDeleteTripLodging}
                     >
                         <Iconify className="font-semibold text-gray-600" icon="ic:baseline-plus" size={20} />
-                        <Text className="font-semibold text-gray-600">Add another lodging</Text>
+                        <Text className="font-semibold text-gray-600">{t('Add another lodging')}</Text>
                     </TouchableOpacity>
                 );
             default:

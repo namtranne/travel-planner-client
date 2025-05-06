@@ -74,6 +74,15 @@ export const formatLodgingTime = (checkInDate: string | null, checkOutDate: stri
     return `${formattedDeparture} — ${formattedArrival}`;
 };
 
+export const getDaysAgo = (dateString: string) => {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffTime = Math.abs(now.getTime() - past.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays === 0 ? 'Today' : `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+};
+
 type OpeningPeriod = {
     openDay: number;
     openTime: string;

@@ -2,6 +2,7 @@ import { Tab, TabView } from '@rneui/themed';
 import { useRouter } from 'expo-router';
 import moment from 'moment';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -12,6 +13,7 @@ const Trips = () => {
     const router = useRouter();
     const { data, isLoading } = useMyTrips();
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const { t } = useTranslation();
 
     if (isLoading)
         return (
@@ -53,7 +55,7 @@ const Trips = () => {
 
     return (
         <SafeAreaView className="flex-1 bg-gray-100">
-            <HeaderComponent title="Your Trips" hasBackButton={false} />
+            <HeaderComponent title={t('Your trips')} hasBackButton={false} />
 
             {/* Top Tabs with Dynamic Styles */}
             <Tab
@@ -62,7 +64,7 @@ const Trips = () => {
                 indicatorStyle={{ backgroundColor: activeColor, height: 3 }}
             >
                 <Tab.Item
-                    title="Upcoming"
+                    title={t('Upcoming')}
                     titleStyle={{
                         fontSize: 14,
                         fontWeight: 'bold',
@@ -71,7 +73,7 @@ const Trips = () => {
                     }}
                 />
                 <Tab.Item
-                    title="Active"
+                    title={t('Active')}
                     titleStyle={{
                         fontSize: 14,
                         fontWeight: 'bold',
@@ -80,7 +82,7 @@ const Trips = () => {
                     }}
                 />
                 <Tab.Item
-                    title="Past"
+                    title={t('Past')}
                     titleStyle={{
                         fontSize: 14,
                         fontWeight: 'bold',
@@ -99,7 +101,7 @@ const Trips = () => {
                         renderItem={renderTripCard}
                         keyExtractor={(item) => item.id.toString()}
                         ListEmptyComponent={
-                            <Text className="mt-10 text-center font-inter text-gray-500">No upcoming trips</Text>
+                            <Text className="mt-10 text-center font-inter text-gray-500">{t('No upcoming trips')}</Text>
                         }
                     />
                 </TabView.Item>
@@ -111,7 +113,7 @@ const Trips = () => {
                         renderItem={renderTripCard}
                         keyExtractor={(item) => item.id.toString()}
                         ListEmptyComponent={
-                            <Text className="mt-10 text-center font-inter text-gray-500">No active trips</Text>
+                            <Text className="mt-10 text-center font-inter text-gray-500">{t('No active trips')}</Text>
                         }
                     />
                 </TabView.Item>
@@ -123,7 +125,7 @@ const Trips = () => {
                         renderItem={renderTripCard}
                         keyExtractor={(item) => item.id.toString()}
                         ListEmptyComponent={
-                            <Text className="mt-10 text-center font-inter text-gray-500">No past trips</Text>
+                            <Text className="mt-10 text-center font-inter text-gray-500">{t('No past trips')}</Text>
                         }
                     />
                 </TabView.Item>

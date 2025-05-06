@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { Swipeable, TextInput } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
 
 import {
@@ -46,6 +47,7 @@ const ItineraryCard = ({
     setBottomSheetContent,
     setSnapPoints
 }: ItineraryCardProps) => {
+    const { t } = useTranslation();
     const [subheading, setSubheading] = useState(subHeading);
     const [isFocused, setIsFocused] = useState(false);
     const [expanded, setExpanded] = useState(false);
@@ -132,7 +134,7 @@ const ItineraryCard = ({
                 <TextInput
                     ref={inputHeadingRef}
                     className={`flex-1 rounded-lg p-2 text-base text-gray-400 ${isFocused ? 'bg-gray-200' : 'bg-transparent'}`}
-                    placeholder="Add subheading"
+                    placeholder={t('Add subheading')}
                     value={subheading}
                     onChangeText={setSubheading}
                     onFocus={() => setIsFocused(true)}
@@ -180,111 +182,120 @@ const ItineraryCard = ({
             <View className="mt-2 flex-row items-center space-x-4">
                 <TouchableOpacity className="flex-row items-center">
                     <Iconify icon="mdi:magic-wand" width="18" height="18" className="font-semibold text-blue-600" />
-                    <Text className="ml-1 rounded-lg font-semibold text-blue-600">Auto-fill day</Text>
+                    <Text className="ml-1 rounded-lg font-semibold text-blue-600">{t('Auto-fill day')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity className="flex-row items-center">
                     <Iconify icon="fa-solid:route" width="18" height="18" className="font-semibold text-blue-600" />
-                    <Text className="ml-1 font-semibold text-blue-600">Optimize route</Text>
+                    <Text className="ml-1 font-semibold text-blue-600">{t('Optimize route')}</Text>
                 </TouchableOpacity>
             </View>
             {expanded && (
                 <View className="my-2">
                     {/* Notes */}
                     {tripItineraryDay?.notes.map((note: any) => (
-                        <Note
-                            initialNote={note.content}
-                            handleUpdateNote={(updatedNote) =>
-                                updateNoteItinerary({
-                                    tripId,
-                                    dayId,
-                                    noteId: note.id,
-                                    updateNoteReq: { content: updatedNote }
-                                })
-                            }
-                            handleDeleteNote={() =>
-                                deleteNoteItinerary(
-                                    { tripId, dayId, noteId: note.id },
-                                    {
-                                        onSuccess: () =>
-                                            Alert.alert('Success', 'Note deleted.', [
-                                                {
-                                                    text: 'OK'
-                                                }
-                                            ])
-                                    }
-                                )
-                            }
-                            key={note.id}
-                        />
+                        <Swipeable renderRightActions={() => renderRightActions(note.id, 'note')} key={note.id}>
+                            <Note
+                                initialNote={note.content}
+                                handleUpdateNote={(updatedNote) =>
+                                    updateNoteItinerary({
+                                        tripId,
+                                        dayId,
+                                        noteId: note.id,
+                                        updateNoteReq: { content: updatedNote }
+                                    })
+                                }
+                                handleDeleteNote={() =>
+                                    deleteNoteItinerary(
+                                        { tripId, dayId, noteId: note.id },
+                                        {
+                                            onSuccess: () =>
+                                                Alert.alert('Success', 'Note deleted.', [
+                                                    {
+                                                        text: 'OK'
+                                                    }
+                                                ])
+                                        }
+                                    )
+                                }
+                            />
+                        </Swipeable>
                     ))}
                     {/* Checklists */}
                     {tripItineraryDay?.checkLists.map((checklist: any) => (
-                        <Checklist
-                            initialTitle={checklist.title}
-                            items={checklist.items}
-                            handleUpdateChecklist={(updatedTitle) =>
-                                updateChecklistItinerary({
-                                    tripId,
-                                    dayId,
-                                    checklistId: checklist.id,
-                                    updateCheckListReq: { title: updatedTitle }
-                                })
-                            }
-                            handleDeleteChecklist={() =>
-                                deleteChecklistItinerary(
-                                    { tripId, dayId, checklistId: checklist.id },
-                                    {
-                                        onSuccess: () =>
-                                            Alert.alert('Success', 'Checklist deleted.', [
-                                                {
-                                                    text: 'OK'
-                                                }
-                                            ])
-                                    }
-                                )
-                            }
-                            handleCreateChecklistItem={() =>
-                                createChecklistItemItinerary({
-                                    tripId,
-                                    dayId,
-                                    checklistId: checklist.id,
-                                    createCheckListItemReq: { title: 'Add item title' }
-                                })
-                            }
-                            handleUpdateChecklistItem={(checklistItemId, itemTitle, isChecked) => {
-                                updateChecklistItemItinerary({
-                                    tripId,
-                                    dayId,
-                                    checklistId: checklist.id,
-                                    checklistItemId,
-                                    updateCheckListItemReq: { title: itemTitle, isChecked }
-                                });
-                            }}
-                            handleDeleteChecklistItem={(checklistItemId) =>
-                                deleteChecklistItemItinerary({
-                                    tripId,
-                                    dayId,
-                                    checklistId: checklist.id,
-                                    checklistItemId
-                                })
-                            }
+                        <Swipeable
+                            renderRightActions={() => renderRightActions(checklist.id, 'checklist')}
                             key={checklist.id}
-                        />
+                        >
+                            <Checklist
+                                initialTitle={checklist.title}
+                                items={checklist.items}
+                                handleUpdateChecklist={(updatedTitle) =>
+                                    updateChecklistItinerary({
+                                        tripId,
+                                        dayId,
+                                        checklistId: checklist.id,
+                                        updateCheckListReq: { title: updatedTitle }
+                                    })
+                                }
+                                handleDeleteChecklist={() =>
+                                    deleteChecklistItinerary(
+                                        { tripId, dayId, checklistId: checklist.id },
+                                        {
+                                            onSuccess: () =>
+                                                Alert.alert('Success', 'Checklist deleted.', [
+                                                    {
+                                                        text: 'OK'
+                                                    }
+                                                ])
+                                        }
+                                    )
+                                }
+                                handleCreateChecklistItem={() =>
+                                    createChecklistItemItinerary({
+                                        tripId,
+                                        dayId,
+                                        checklistId: checklist.id,
+                                        createCheckListItemReq: { title: 'Add item title' }
+                                    })
+                                }
+                                handleUpdateChecklistItem={(checklistItemId, itemTitle, isChecked) => {
+                                    updateChecklistItemItinerary({
+                                        tripId,
+                                        dayId,
+                                        checklistId: checklist.id,
+                                        checklistItemId,
+                                        updateCheckListItemReq: { title: itemTitle, isChecked }
+                                    });
+                                }}
+                                handleDeleteChecklistItem={(checklistItemId) =>
+                                    deleteChecklistItemItinerary({
+                                        tripId,
+                                        dayId,
+                                        checklistId: checklist.id,
+                                        checklistItemId
+                                    })
+                                }
+                            />
+                        </Swipeable>
                     ))}
                     {/* Place to visits */}
                     {tripItineraryDay?.placeToVisits.map((placeToVisit: any, index: number) => {
                         return (
-                            <PlaceToVisitCard
+                            <Swipeable
+                                renderRightActions={() => renderRightActions(placeToVisit.id, 'place')}
                                 key={placeToVisit.id}
-                                tripId={tripId}
-                                sectionId={placeToVisit.itineraryDayId}
-                                placeToVisitId={placeToVisit.id}
-                                order={index + 1}
-                                onDelete={() =>
-                                    deletePlaceToVisitItinerary({ tripId, dayId, placeToVisitId: placeToVisit.id })
-                                }
-                            />
+                            >
+                                <PlaceToVisitCard
+                                    tripId={tripId}
+                                    sectionId={placeToVisit.itineraryDayId}
+                                    placeToVisitId={placeToVisit.id}
+                                    order={index + 1}
+                                    onDelete={() =>
+                                        deletePlaceToVisitItinerary({ tripId, dayId, placeToVisitId: placeToVisit.id })
+                                    }
+                                />
+                            </Swipeable>
                         );
                     })}
                     <View className="mt-4 flex-row items-center justify-between">

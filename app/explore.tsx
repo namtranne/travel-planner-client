@@ -1,6 +1,7 @@
 import { Skeleton } from '@rneui/themed';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
@@ -27,6 +28,8 @@ export default function Explore({
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
 }) {
+    const { t } = useTranslation();
+
     const { data, isLoading } = useExplorePage(locationId);
     const [restaurantData, setRestaurantData] = useState<any>(null);
     const [attractionData, setAttractionData] = useState<any>(null);
@@ -79,9 +82,9 @@ export default function Explore({
             <View className="bg-white p-4">
                 <View className="mb-4 flex-row items-center justify-between">
                     <TouchableOpacity onPress={() => router.back()}>
-                        <Text className="text-gray-400">Cancel</Text>
+                        <Text className="text-gray-400">{t('Cancel')}</Text>
                     </TouchableOpacity>
-                    <Text className="text-lg font-semibold">Add to trip</Text>
+                    <Text className="text-lg font-semibold">{t('Add to trip')}</Text>
                     <View className="w-12" />
                 </View>
 
@@ -177,7 +180,7 @@ export default function Explore({
 
                 {/* Categories */}
                 <View className="mb-4 flex-row items-center justify-between">
-                    <Text className="font-inter text-xl font-bold">Categories</Text>
+                    <Text className="font-inter text-xl font-bold">{t('Categories')}</Text>
                     <BrowseCategories categories={data.categories} />
                 </View>
 
@@ -205,7 +208,7 @@ export default function Explore({
                 {/* Custom Section: Restaurants */}
                 {restaurantData && (
                     <View className="mt-6">
-                        <Text className="mb-2 font-inter text-xl font-bold">Top places to eat</Text>
+                        <Text className="mb-2 font-inter text-xl font-bold">{t('Top places to eat')}</Text>
                         {/* Replace this with a flatlist or card component */}
                         {restaurantData.places
                             ?.slice(0, 10)
@@ -222,7 +225,7 @@ export default function Explore({
                 {/* Custom Section: Attractions */}
                 {attractionData && (
                     <View className="mt-6">
-                        <Text className="mb-2 font-inter text-xl font-bold">Top places to visit</Text>
+                        <Text className="mb-2 font-inter text-xl font-bold">{t('Top places to visit')}</Text>
                         {/* Replace this with a flatlist or card component */}
                         {attractionData.places
                             ?.slice(0, 10)

@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { Iconify } from 'react-native-iconify';
 
 const PlaceCard = ({ item, onSelected }: any) => {
     const router = useRouter();
+    const { t } = useTranslation();
 
     return (
         <View className="mt-8 " key={item.id}>
@@ -39,7 +41,9 @@ const PlaceCard = ({ item, onSelected }: any) => {
                     <View className="mt-2 flex-row items-center">
                         <Iconify className="text-black" icon="material-symbols:star" color="black" />
                         <Text className="ml-1 font-inter font-semibold">{item.rating}</Text>
-                        <Text className="ml-2 font-inter text-gray-500">({item.reviews} reviews)</Text>
+                        <Text className="ml-2 font-inter text-gray-500">
+                            ({item.reviews} {t('reviews')})
+                        </Text>
                     </View>
 
                     {/* Address */}
@@ -62,7 +66,7 @@ const PlaceCard = ({ item, onSelected }: any) => {
                         <View className="mt-2 flex-row items-center">
                             <Iconify className="text-black" icon="mdi:clock-outline" color="black" />
                             <Text className="ml-1 font-inter text-gray-500">
-                                Time Spent:{' '}
+                                {t('Time spent')}:{' '}
                                 {item.minMinutesSpent &&
                                 item.maxMinutesSpent &&
                                 item.minMinutesSpent !== item.maxMinutesSpent
@@ -79,13 +83,13 @@ const PlaceCard = ({ item, onSelected }: any) => {
                             className="mr-2 flex-1 rounded-lg bg-[#60ABEF] py-2"
                             onPress={() => router.push(`/place/${item.id}`)}
                         >
-                            <Text className="text-center font-inter font-semibold text-white">View More</Text>
+                            <Text className="text-center font-inter font-semibold text-white">{t('View more')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             className="ml-2 flex-1 rounded-lg bg-[#b6b6b6] py-2"
                             onPress={() => onSelected(item.id)}
                         >
-                            <Text className=" text-center font-inter font-semibold text-white">Add to Plan</Text>
+                            <Text className=" text-center font-inter font-semibold text-white">{t('Add to Plan')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

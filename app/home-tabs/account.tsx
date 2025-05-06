@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import HeaderComponent from '@/src/components/ui/HeaderComponent';
@@ -10,6 +11,8 @@ import authAxios from '@/src/utils/axios';
 const AccountScreen = () => {
     const { logout, isPending } = useLogout();
     const { user, isLoading } = useUser();
+    const { t } = useTranslation();
+
     if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -20,15 +23,15 @@ const AccountScreen = () => {
 
     const handleLogout = () => {
         Alert.alert(
-            'Log out',
-            'Are you sure you want to log out?',
+            t('Log out'),
+            t('Are you sure you want to log out?'),
             [
                 {
-                    text: 'Cancel',
+                    text: t('Cancel'),
                     style: 'cancel'
                 },
                 {
-                    text: 'Log out',
+                    text: t('Log out'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -53,7 +56,7 @@ const AccountScreen = () => {
         <View className="h-full w-full bg-white">
             <ScrollView showsHorizontalScrollIndicator={false}>
                 <SafeAreaView>
-                    <HeaderComponent title="Account" hasBackButton={false} />
+                    <HeaderComponent title={t('Account')} hasBackButton={false} />
                     <View className="w-full flex-1 px-6 pt-4">
                         <View className="mt-10 items-center">
                             <Image
@@ -71,22 +74,22 @@ const AccountScreen = () => {
                         <View className="rounded-2xl p-2 shadow">
                             <OptionItem
                                 icon="mdi:account"
-                                title="Personal Information"
+                                title={t('Personal Information')}
                                 handlePress={() => router.navigate('/profile')}
                             />
                             <OptionItem
                                 icon="material-symbols:settings-outline"
-                                title="Settings"
+                                title={t('Settings')}
                                 handlePress={() => router.push('/settings')}
                             />
                             <OptionItem
                                 icon="tabler:trash-off"
-                                title="Delete Account"
+                                title={t('Delete Account')}
                                 handlePress={() => router.push('/profile')}
                             />
                             <OptionItem
                                 icon="pepicons-pencil:leave"
-                                title="Log out"
+                                title={t('Log out')}
                                 handlePress={handleLogout}
                                 disabled={isPending}
                             />

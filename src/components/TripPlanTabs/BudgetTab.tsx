@@ -1,16 +1,19 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { Swipeable } from 'react-native-gesture-handler';
 import Iconify from 'react-native-iconify';
 import * as Progress from 'react-native-progress';
 
-import { useTripBudgetDetails, useTripExpenses } from '@/src/hooks/use-trip';
+import { useDeleteTripExpense, useTripBudgetDetails, useTripExpenses } from '@/src/hooks/use-trip';
 import { formatAmount } from '@/src/utils/AmountUtil';
 import { currencies } from '@/src/utils/constants';
 
 import { AddExpenseSheet } from './AddExpenseSheet';
 import { ExpenseCard } from './ExpenseCard';
 import { SetBudgetSheet } from './SetBudgetSheet';
+import ExpenseSummarySheet from './TripExpenseSummarySheet';
 
 const sortTypeList = [
     { heading: 'Date (newest first)', sortBy: 'date', sortOrder: 'desc' },
@@ -33,6 +36,8 @@ export default function BudgetTab({
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
 }) {
+    const { t } = useTranslation();
+
     const [sortType, setSortType] = useState(sortTypeList[0]);
     const { isLoading: isLoadingTripBudget, tripBudget } = useTripBudgetDetails(trip.id);
     const { isLoading: isLoadingTripExpenses, tripExpenses } = useTripExpenses(
@@ -40,6 +45,7 @@ export default function BudgetTab({
         sortType?.sortBy || 'date',
         sortType?.sortOrder || 'desc'
     );
+    const { isPending: isPendingDeleteTripExpense, deleteTripExpense } = useDeleteTripExpense();
 
     if (isLoadingTripBudget || isLoadingTripExpenses) {
         return (
@@ -81,7 +87,7 @@ export default function BudgetTab({
                     }}
                 >
                     <Text className="text-xs text-white">
-                        Budget: {tripBudget.currency}
+                        {t('Budget')}: {tripBudget.currency}
                         {formatAmount(tripBudget.budget)}
                     </Text>
                     <Iconify icon="mdi:pencil" className="text-white" size={12} />
@@ -91,13 +97,22 @@ export default function BudgetTab({
                     <TouchableOpacity className="flex-row items-center rounded-full border-2 border-white p-2">
                         <Icon name="person-add-alt" type="material-icons" color="white" size={16} />
                     </TouchableOpacity>
-                    <TouchableOpacity className="flex-row items-center rounded-full border-2 border-white p-2">
+                    <TouchableOpacity
+                        className="flex-row items-center rounded-full border-2 border-white p-2"
+                        onPress={() => {
+                            setBottomSheetContent(
+                                <ExpenseSummarySheet tripId={trip.id} setSnapPoints={setSnapPoints} />
+                            );
+                            openSheet();
+                            setSnapPoints(['80%']);
+                        }}
+                    >
                         <Icon name="coins" type="font-awesome-5" color="white" size={14} />
-                        <Text className="ml-2 font-bold text-white">Group balances</Text>
+                        <Text className="ml-2 font-bold text-white">{t('Group balances')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity className="flex-row items-center rounded-full border-2 border-white p-2">
                         <Icon type="font-awesome-5" name="chart-bar" color="white" size={16} />
-                        <Text className="ml-2 font-bold text-white">View breakdown</Text>
+                        <Text className="ml-2 font-bold text-white">{t('View breakdown')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -105,7 +120,7 @@ export default function BudgetTab({
             {/* Expenses List */}
             <View className="flex-1 rounded-t-3xl bg-white p-4">
                 <View className="flex-row items-center justify-between">
-                    <Text className="text-lg font-bold">Expenses</Text>
+                    <Text className="text-lg font-bold">{t('Expenses')}</Text>
                     <TouchableOpacity
                         className="flex-row items-center"
                         onPress={() => {
@@ -120,7 +135,7 @@ export default function BudgetTab({
                                                 closeSheet();
                                             }}
                                         >
-                                            <Text className="text-sm text-gray-700">{type.heading}</Text>
+                                            <Text className="text-sm text-gray-700">{t(type.heading)}</Text>
                                             {sortType?.sortBy === type.sortBy &&
                                                 sortType.sortOrder === type.sortOrder && (
                                                     <Icon name="check" color="#60ABEF" />
@@ -133,42 +148,54 @@ export default function BudgetTab({
                             setSnapPoints(['40%']);
                         }}
                     >
-                        <Text className="text-xs font-extrabold text-black">Sort: </Text>
-                        <Text className="text-xs text-gray-500">{sortType?.heading} </Text>
+                        <Text className="text-xs font-extrabold text-black">{t('Sort')}: </Text>
+                        <Text className="text-xs text-gray-500">{t(sortType?.heading || '')} </Text>
                         <Text className="text-sm font-extrabold text-black">▾</Text>
                     </TouchableOpacity>
                 </View>
 
                 <ScrollView className="mt-3" contentContainerStyle={{ paddingBottom: 200 }}>
                     {tripExpenses.map((expense: any) => (
-                        <TouchableOpacity
+                        <Swipeable
+                            renderRightActions={() => (
+                                <TouchableOpacity
+                                    className="ml-4 w-20 items-center justify-center bg-red-500"
+                                    onPress={() => deleteTripExpense({ expenseId: expense.id, tripId: trip.id })}
+                                    disabled={isPendingDeleteTripExpense}
+                                >
+                                    <Text className="font-bold text-white">{t('Delete')}</Text>
+                                </TouchableOpacity>
+                            )}
                             key={expense.id}
-                            onPress={() => {
-                                setBottomSheetContent(
-                                    <AddExpenseSheet
-                                        tripId={trip.id}
-                                        currency={tripBudget.currency}
-                                        currencyCode={
-                                            currencies.find((currency) => currency.symbol === tripBudget.currency)
-                                                ?.code || ''
-                                        }
-                                        participants={trip.participants}
-                                        closeSheet={closeSheet}
-                                        expenseId={expense.id}
-                                    />
-                                );
-                                openSheet();
-                                setSnapPoints(['80%']);
-                            }}
                         >
-                            <ExpenseCard
-                                expense={expense}
-                                openSheet={openSheet}
-                                setBottomSheetContent={setBottomSheetContent}
-                                setSnapPoints={setSnapPoints}
-                                currency={tripBudget.currency}
-                            />
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                key={expense.id}
+                                onPress={() => {
+                                    setBottomSheetContent(
+                                        <AddExpenseSheet
+                                            tripId={trip.id}
+                                            currency={tripBudget.currency}
+                                            currencyCode={
+                                                currencies.find((currency) => currency.symbol === tripBudget.currency)
+                                                    ?.code || ''
+                                            }
+                                            participants={trip.participants}
+                                            closeSheet={closeSheet}
+                                            expenseId={expense.id}
+                                        />
+                                    );
+                                    openSheet();
+                                    setSnapPoints(['80%']);
+                                }}
+                            >
+                                <ExpenseCard
+                                    expense={expense}
+                                    openSheet={openSheet}
+                                    setBottomSheetContent={setBottomSheetContent}
+                                    setSnapPoints={setSnapPoints}
+                                />
+                            </TouchableOpacity>
+                        </Swipeable>
                     ))}
                 </ScrollView>
             </View>
@@ -180,6 +207,7 @@ export default function BudgetTab({
                     onPress={() => {
                         setBottomSheetContent(
                             <AddExpenseSheet
+                                isCreateNewExpense
                                 tripId={trip.id}
                                 currency={tripBudget.currency}
                                 currencyCode={
@@ -193,7 +221,7 @@ export default function BudgetTab({
                         setSnapPoints(['80%']);
                     }}
                 >
-                    <Text className="text-sm font-bold text-white">+ Add expense</Text>
+                    <Text className="text-sm font-bold text-white">+ {t('Add expense')}</Text>
                 </TouchableOpacity>
             </View>
         </View>

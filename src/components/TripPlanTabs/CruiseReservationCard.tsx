@@ -46,6 +46,7 @@ const CruiseReservationCard = ({
     });
     const { createTripCruise } = useCreateTripCruise();
     const { isPending: isPendingUpdateTripCruise, updateTripCruise } = useUpdateTripCruise();
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (cruiseReservationDetails) {
@@ -84,7 +85,7 @@ const CruiseReservationCard = ({
     }, [currencySymbol]);
 
     useEffect(() => {
-        if (isCreateClicked) {
+        if (isCreateClicked && errorMessage === '') {
             createTripCruise(
                 {
                     tripId,
@@ -123,16 +124,28 @@ const CruiseReservationCard = ({
                 }
             );
         }
-    }, [isCreateClicked, setIsCreateClicked, createTripCruise, cruiseReservationInfo, tripId, dateStates]);
+    }, [
+        isCreateClicked,
+        setIsCreateClicked,
+        createTripCruise,
+        cruiseReservationInfo,
+        tripId,
+        dateStates,
+        errorMessage
+    ]);
 
     const handlePriceChange = (text: string) => {
-        const cleanedText = text.replace(/[^0-9.,]/g, '');
         setCruiseReservationInfo((prevState) => ({
             ...prevState,
-            displayPrice: cleanedText
+            displayPrice: text
         }));
+        const delimiterCount = (text.match(/[.,]/g) || []).length;
+        if (delimiterCount > 1) {
+            setErrorMessage('Please enter a valid amount');
+            return;
+        }
 
-        const parsedValue = parseFloat(cleanedText.replace(/,/g, '.')).toFixed(2);
+        const parsedValue = parseFloat(text.replace(/,/g, '.'));
         setCruiseReservationInfo((prevState) => ({
             ...prevState,
             price: Number.isNaN(Number(parsedValue)) ? 0 : Number(parsedValue)
@@ -143,7 +156,7 @@ const CruiseReservationCard = ({
         <TouchableOpacity
             className="w-full space-y-3 rounded-xl border border-gray-200 bg-gray-100 p-4"
             onPress={() => {
-                if (!isCreateManually) return;
+                if (!isCreateManually || errorMessage !== '') return;
                 updateTripCruise(
                     {
                         tripId,
@@ -257,6 +270,7 @@ const CruiseReservationCard = ({
                             onChangeText={handlePriceChange}
                         />
                     </View>
+                    {errorMessage !== '' && <Text className="mt-1 text-xs text-red-500">{errorMessage}</Text>}
                 </View>
             </View>
 

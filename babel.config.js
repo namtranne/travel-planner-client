@@ -157,7 +157,8 @@ module.exports = (api) => {
                         'mdi:content-copy',
                         'material-symbols:directions',
                         'mdi:map',
-                        'mdi:camera-outline'
+                        'mdi:camera-outline',
+                        'hugeicons:transaction'
                     ]
                 }
             ]

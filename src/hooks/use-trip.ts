@@ -30,16 +30,20 @@ import {
     deletePlaceToVisitOverview as deletePlaceToVisitOverviewApi,
     deleteTrip as deleteTripApi,
     deleteTripCruise as deleteTripCruiseApi,
+    deleteTripDebtSettlement as deleteTripDebtSettlementApi,
     deleteTripExpense as deleteTripExpenseApi,
     deleteTripFlight as deleteTripFlightApi,
     deleteTripItineraryDay as deleteTripItineraryDayApi,
     deleteTripLodging as deleteTripLodgingApi,
     deleteTripOverviewSection as deleteTripOverviewSectionApi,
     deleteTripTransit as deleteTripTransitApi,
+    getGroupTripDebts as getGroupTripDebtsApi,
+    getMyTripDebts as getMyTripDebtsApi,
     getMyTrips,
     getPlaceToVisitDetailsItinerary as getPlaceToVisitDetailsItineraryApi,
     getPlaceToVisitDetailsOverview as getPlaceToVisitDetailsOverviewApi,
     getTripBudgetDetails as getTripBudgetDetailsApi,
+    getTripDebtSettlements as getTripDebtSettlementsApi,
     getTripDetails,
     getTripExpenseDetails as getTripExpenseDetailsApi,
     getTripExpenses as getTripExpensesApi,
@@ -48,6 +52,7 @@ import {
     getTripParticipants as getTripParticipantsApi,
     leaveTrip as leaveTripApi,
     removeTripParticipant as removeTripParticipantApi,
+    settleTripDebt as settleTripDebtApi,
     updateChecklistItemItinerary as updateChecklistItemItineraryApi,
     updateChecklistItemOverview as updateChecklistItemOverviewApi,
     updateChecklistItinerary as updateChecklistItineraryApi,
@@ -83,6 +88,7 @@ import type {
     CreateTripLodgingREQ,
     CreateTripOverviewSectionREQ,
     CreateTripTransitREQ,
+    SettleTripDebtREQ,
     TransitType,
     UpdateCheckListREQ,
     UpdateNoteREQ,
@@ -1754,6 +1760,118 @@ export function useDeleteTripExpense() {
     });
 
     return { isPending, deleteTripExpense, error };
+}
+
+// Trip debts
+export function useMyTripDebts(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-my-debts-${tripId}`, tripId],
+        queryFn: () => getMyTripDebtsApi(tripId)
+    });
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip debts failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
+    }
+
+    return { isLoading, tripDebts: data, error };
+}
+
+export function useGroupTripDebts(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-group-debts-${tripId}`, tripId],
+        queryFn: () => getGroupTripDebtsApi(tripId)
+    });
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip debts failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
+    }
+
+    return { isLoading, tripDebts: data, error };
+}
+
+export function useSettleTripDebt() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: settleTripDebt,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; settleTripDebtReq: SettleTripDebtREQ }) =>
+            settleTripDebtApi(data.tripId, data.settleTripDebtReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-my-debts-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-group-debts-${variables.tripId}`] });
+        },
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Settle trip debt failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
+    });
+
+    return { isPending, settleTripDebt, error };
+}
+
+export function useGetTripDebtSettlements(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-debt-settlements-${tripId}`, tripId],
+        queryFn: () => getTripDebtSettlementsApi(tripId)
+    });
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip debt settlements failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
+    }
+
+    return { isLoading, tripDebtSettlements: data, error };
+}
+
+export function useDeleteTripDebtSettlement() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deleteTripDebtSettlement,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; settlementId: number }) =>
+            deleteTripDebtSettlementApi(data.tripId, data.settlementId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-my-debts-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-group-debts-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-debt-settlements-${variables.tripId}`] });
+        },
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Delete trip debt settlement failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
+    });
+
+    return { isPending, deleteTripDebtSettlement, error };
 }
 
 // Trip Participants

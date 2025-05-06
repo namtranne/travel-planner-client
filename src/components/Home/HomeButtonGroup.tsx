@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
@@ -6,9 +7,10 @@ const buttons = [
     { name: 'Nearby Attractions', icon: 'fa-solid:place-of-worship', color: '#F0F422', route: 'nearby-attractions' },
     { name: 'Budget Tracker', icon: 'arcticons:budgetbakers-wallet', color: '#A092DE', route: 'budget-tracker' },
     { name: 'Travel Tips', icon: 'icon-park-solid:tips-one', color: '#12F187', route: 'travel-tips' },
-    { name: 'Favourites', icon: 'gis:map-favorite', color: '#D9D9D9', route: 'favourites' }
+    { name: 'Favorites', icon: 'gis:map-favorite', color: '#D9D9D9', route: 'favourites' }
 ];
 export default function HomeButtonGroup() {
+    const { t } = useTranslation();
     return (
         <View className="mt-4 flex-row justify-between px-4">
             {buttons.map((button) => (
@@ -21,7 +23,7 @@ export default function HomeButtonGroup() {
                         <Iconify icon={button.icon} size={30} color="black" />
                     </TouchableOpacity>
                     <Text className="font-inter text-xs" style={{ fontSize: 8 }}>
-                        {button.name}
+                        {t(button.name)}
                     </Text>
                 </View>
             ))}

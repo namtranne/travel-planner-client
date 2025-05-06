@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
     Alert,
@@ -76,6 +77,8 @@ export default function TripScreen() {
     const { isPending: isPendingDeleteTrip, deleteTrip } = useDeleteTrip();
     const { isPending: isPendingLeaveTrip, leaveTrip } = useLeaveTrip();
 
+    const { t } = useTranslation();
+
     const tripTitleRef = useRef<TextInput>(null);
 
     // Bottom Sheet Management
@@ -138,16 +141,16 @@ export default function TripScreen() {
         () => [
             {
                 icon: 'mdi:pencil',
-                label: 'Edit title',
+                label: t('Edit title'),
                 action: () => {
                     tripTitleRef.current?.focus();
                     closeSheet();
                 }
             },
-            { icon: 'weui:share-outlined', label: 'Share', action: () => {} },
+            { icon: 'weui:share-outlined', label: t('Share'), action: () => {} },
             {
                 icon: 'mdi:trash-can',
-                label: trip && user && user.id === trip.owner.id ? 'Delete this trip' : 'Leave this trip',
+                label: trip && user && user.id === trip.owner.id ? t('Delete this trip') : t('Leave this trip'),
                 action: () => {
                     if (trip && user && user.id === trip.owner.id) deleteTrip({ tripId: Number(tripId) });
                     else if (trip && user && user.id !== trip.owner.id)
@@ -174,7 +177,7 @@ export default function TripScreen() {
                 }
             }
         ],
-        [closeSheet, deleteTrip, trip, user, tripId, leaveTrip]
+        [closeSheet, deleteTrip, trip, user, tripId, leaveTrip, t]
     );
 
     if (isLoadingTripDetails || isLoadingUser) {
@@ -292,7 +295,7 @@ export default function TripScreen() {
                                                     )}
                                                 </TouchableOpacity>
                                                 <Button
-                                                    text="Share"
+                                                    text={t('Share')}
                                                     onPress={() => {
                                                         setBottomSheetContent(
                                                             <InviteTripmatesSheet
@@ -353,7 +356,7 @@ export default function TripScreen() {
                                                 <Text
                                                     className={`font-semibold ${isActive ? 'text-[#60ABEF]' : 'text-white'}`}
                                                 >
-                                                    {tab}
+                                                    {t(tab)}
                                                 </Text>
                                             </TouchableOpacity>
                                         );

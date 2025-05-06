@@ -48,6 +48,7 @@ const FlightReservationCard = ({
     });
     const { createTripFlight } = useCreateTripFlight();
     const { isPending: isPendingUpdateTripFlight, updateTripFlight } = useUpdateTripFlight();
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (flightReservationDetails) {
@@ -89,7 +90,7 @@ const FlightReservationCard = ({
     }, [currencySymbol]);
 
     useEffect(() => {
-        if (isCreateClicked) {
+        if (isCreateClicked && errorMessage === '') {
             createTripFlight(
                 {
                     tripId,
@@ -130,16 +131,20 @@ const FlightReservationCard = ({
                 }
             );
         }
-    }, [isCreateClicked, setIsCreateClicked, createTripFlight, flightReservationInfo, tripId]);
+    }, [isCreateClicked, setIsCreateClicked, createTripFlight, flightReservationInfo, tripId, errorMessage]);
 
     const handlePriceChange = (text: string) => {
-        const cleanedText = text.replace(/[^0-9.,]/g, '');
         setFlightReservationInfo((prevState) => ({
             ...prevState,
-            displayPrice: cleanedText
+            displayPrice: text
         }));
+        const delimiterCount = (text.match(/[.,]/g) || []).length;
+        if (delimiterCount > 1) {
+            setErrorMessage('Please enter a valid amount');
+            return;
+        }
 
-        const parsedValue = parseFloat(cleanedText.replace(/,/g, '.')).toFixed(2);
+        const parsedValue = parseFloat(text.replace(/,/g, '.'));
         setFlightReservationInfo((prevState) => ({
             ...prevState,
             price: Number.isNaN(Number(parsedValue)) ? 0 : Number(parsedValue)
@@ -150,7 +155,7 @@ const FlightReservationCard = ({
         <TouchableOpacity
             className="my-2 w-full space-y-3 rounded-xl border border-gray-200 bg-gray-100 p-4"
             onPress={() => {
-                if (isCreateManually) return;
+                if (isCreateManually || errorMessage !== '') return;
                 updateTripFlight(
                     {
                         tripId,
@@ -298,6 +303,7 @@ const FlightReservationCard = ({
                             onChangeText={handlePriceChange}
                         />
                     </View>
+                    {errorMessage !== '' && <Text className="mt-1 text-xs text-red-500">{errorMessage}</Text>}
                 </View>
             </View>
             {/* FOOTER ICONS */}

@@ -3,6 +3,7 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import * as Clipboard from 'expo-clipboard';
 import type React from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 import Toast from 'react-native-toast-message';
@@ -56,6 +57,7 @@ const SelectDate = ({
     dateType: string;
     setDateStates: React.Dispatch<React.SetStateAction<any>>;
 }) => {
+    const { t } = useTranslation();
     const [selectedDate, setSelectedDate] = useState<Date>(dateStates[dateType]);
 
     const handleTimeChange = (event: DateTimePickerEvent, selectedTime?: Date) => {
@@ -98,7 +100,7 @@ const SelectDate = ({
                 >
                     <Text className="text-base text-black">←</Text>
                 </TouchableOpacity>
-                <Text className="text-center text-base font-bold">Select date time</Text>
+                <Text className="text-center text-base font-bold">{t('Select date time')}</Text>
             </View>
             {/* Options List */}
             <ScrollView className="mt-2">
@@ -144,6 +146,7 @@ const CreateReservationManually = ({
     currencySymbol: string;
     isHided: boolean;
 }) => {
+    const { t } = useTranslation();
     const [isCreateClicked, setIsCreateClicked] = useState(false);
 
     const openSelectDateView = () => {
@@ -256,9 +259,9 @@ const CreateReservationManually = ({
                 >
                     <Text className="text-base text-black">←</Text>
                 </TouchableOpacity>
-                <Text className="text-center text-base font-bold">Add reservation</Text>
+                <Text className="text-center text-base font-bold">{t('Add reservation')}</Text>
                 <TouchableOpacity className="absolute right-2" onPress={() => setIsCreateClicked(true)}>
-                    <Text className="text-[#60ABEF]">Create</Text>
+                    <Text className="text-[#60ABEF]">{t('Create')}</Text>
                 </TouchableOpacity>
             </View>
             <View className="mt-4 flex-row justify-center">{renderReservationCard()}</View>
@@ -275,6 +278,8 @@ const ForwardYourConfirmation = ({
     reservationType: string;
     tripId: number;
 }) => {
+    const { t } = useTranslation();
+
     const { isPending: isPendingVerifyFlightEmailForwarded, verifyFlightEmailForwarded } =
         useVerifyFlightEmailForwarded();
     const { isPending: isPendingVerifyCruiseEmailForwarded, verifyCruiseEmailForwarded } =
@@ -328,13 +333,15 @@ const ForwardYourConfirmation = ({
                 >
                     <Text className="text-base text-black">←</Text>
                 </TouchableOpacity>
-                <Text className="text-center text-base font-bold">Forward your confirmation</Text>
+                <Text className="text-center text-base font-bold">{t('Forward your confirmation')}</Text>
                 <View />
             </View>
             <Text className="mt-2 text-center text-sm text-gray-600">
-                Forward your confirmation to the email below and click the button to allow us to check for new emails
-                (within <Text className="font-extrabold">5 minutes</Text> after forwarding)
-                {'\n'}We will automatically import your reservation details to your plan.
+                {t(
+                    'Forward your confirmation to the email below and click the button to allow us to check for new emails'
+                )}
+                ({t('within')} <Text className="font-extrabold">5 {t('minutes')}</Text> {t('after forwarding')}){'\n'}
+                {t('We will automatically import your reservation details to your plan.')}
             </Text>
             <View className="mt-6 flex-row items-center rounded-lg border border-gray-300 px-4 py-3">
                 <Text className="flex-1 text-base text-black">ez.trippin.apcs21@gmail.com</Text>
@@ -358,7 +365,7 @@ const ForwardYourConfirmation = ({
                     isPendingVerifyTransitEmailForwarded
                 }
             >
-                <Text className="text-center font-semibold text-[#60ABEF]">Check for new emails</Text>
+                <Text className="text-center font-semibold text-[#60ABEF]">{t('Check for new emails')}</Text>
                 {(isPendingVerifyFlightEmailForwarded ||
                     isPendingVerifyCruiseEmailForwarded ||
                     isPendingVerifyLodgingEmailForwarded ||
@@ -375,12 +382,13 @@ const AddReservation = ({
     setCurrentView: React.Dispatch<React.SetStateAction<AddReservationSheetView>>;
     reservationType: string;
 }) => {
+    const { t } = useTranslation();
     return (
         <View className="bg-white px-4">
             <View className="items-center justify-between">
-                <Text className="mb-2 text-base font-bold">Add {reservationType}</Text>
+                <Text className="mb-2 text-base font-bold">{t(`Add ${reservationType}`)}</Text>
                 <Text className="text-center text-[14px] text-gray-500">
-                    Import your reservation details to your plan by forwarding your email. Or create it manually.
+                    {t('Import your reservation details to your plan by forwarding your email. Or create it manually.')}
                 </Text>
             </View>
             <TouchableOpacity
@@ -388,12 +396,12 @@ const AddReservation = ({
                 onPress={() => setCurrentView(AddReservationSheetView.ForwardYourConfirmation)}
             >
                 <Iconify icon="material-symbols:mail-outline" size={20} className="text-gray-500" />
-                <Text className="text-base font-bold text-gray-600">Forward email</Text>
+                <Text className="text-base font-bold text-gray-600">{t('Forward email')}</Text>
                 <View />
             </TouchableOpacity>
             <View className="my-2 flex-row items-center justify-between">
                 <View className="mx-2 h-px flex-1 bg-gray-300" />
-                <Text className="text-sm text-gray-500">Or</Text>
+                <Text className="text-sm text-gray-500">{t('Or')}</Text>
                 <View className="mx-2 h-px flex-1 bg-gray-300" />
             </View>
             <TouchableOpacity
@@ -401,7 +409,7 @@ const AddReservation = ({
                 onPress={() => setCurrentView(AddReservationSheetView.CreateReservationManually)}
             >
                 <Iconify icon="ic:baseline-plus" size={20} className="text-gray-500" />
-                <Text className="text-base font-bold text-gray-600">Create manually</Text>
+                <Text className="text-base font-bold text-gray-600">{t('Create manually')}</Text>
                 <View />
             </TouchableOpacity>
         </View>

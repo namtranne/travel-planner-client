@@ -1,5 +1,6 @@
 import { Avatar, CheckBox } from '@rneui/base';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
@@ -17,6 +18,8 @@ type AddedUser = {
 };
 
 export const InviteTripmatesSheet = ({ tripId, joinedParticipants }: { tripId: number; joinedParticipants: any[] }) => {
+    const { t } = useTranslation();
+
     const [permission, setPermission] = useState<TripmatePermission>(TripmatePermission.CanView);
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -43,7 +46,7 @@ export const InviteTripmatesSheet = ({ tripId, joinedParticipants }: { tripId: n
     return (
         <View className="bg-white px-4">
             <View className="relative mt-2 flex-row items-center justify-center">
-                <Text className="text-base font-bold">Invite tripmates</Text>
+                <Text className="text-base font-bold">{t('Invite tripmates')}</Text>
                 {addedUsers.length > 0 && (
                     <TouchableOpacity
                         onPress={() => {
@@ -91,7 +94,7 @@ export const InviteTripmatesSheet = ({ tripId, joinedParticipants }: { tripId: n
                     <View className="flex-1 flex-row items-center">
                         <Iconify icon="flowbite:user-add-solid" size={20} className="mr-2 text-gray-500" />
                         <TextInput
-                            placeholder="Invite by username, email"
+                            placeholder={t('Invite by username, email')}
                             placeholderTextColor="#6b7280"
                             className="flex-1 text-sm text-gray-700"
                             multiline={false}
@@ -107,7 +110,7 @@ export const InviteTripmatesSheet = ({ tripId, joinedParticipants }: { tripId: n
                             disabled={isPendingAddTripParticipant}
                         >
                             <Iconify icon="mdi:pencil" size={16} className="text-gray-500" />
-                            <Text className="mr-1 text-sm font-bold text-gray-500">Can edit</Text>
+                            <Text className="mr-1 text-sm font-bold text-gray-500">{t('Can edit')}</Text>
                             <Iconify icon="mdi:chevron-down" size={16} className="text-gray-500" />
                         </TouchableOpacity>
                     ) : (
@@ -117,7 +120,7 @@ export const InviteTripmatesSheet = ({ tripId, joinedParticipants }: { tripId: n
                             disabled={isPendingAddTripParticipant}
                         >
                             <Iconify icon="mdi:eye-outline" size={16} className="text-gray-500" />
-                            <Text className="mr-1 text-sm font-bold text-gray-500">Can view</Text>
+                            <Text className="mr-1 text-sm font-bold text-gray-500">{t('Can view')}</Text>
                             <Iconify icon="mdi:chevron-down" size={16} className="text-gray-500" />
                         </TouchableOpacity>
                     )}
@@ -187,11 +190,11 @@ export const InviteTripmatesSheet = ({ tripId, joinedParticipants }: { tripId: n
                 ) : (
                     <View className="mt-2">
                         {addedUsers.length !== 0 && (
-                            <Text className="text-sm font-bold text-gray-600">Added tripmate</Text>
+                            <Text className="text-sm font-bold text-gray-600">{t('Added tripmate')}</Text>
                         )}
                         {addedUsers.length === 0 && (
                             <View className="mt-4 flex items-center">
-                                <Text className="text-sm text-gray-500">No tripmate added</Text>
+                                <Text className="text-sm text-gray-500">{t('No tripmate added')}</Text>
                             </View>
                         )}
                         <ScrollView className="my-4 max-h-[500px]" keyboardShouldPersistTaps="always">

@@ -13,6 +13,7 @@ import type {
     CreateTripOverviewSectionREQ,
     CreateTripREQ,
     CreateTripTransitREQ,
+    SettleTripDebtREQ,
     TransitType,
     UpdateCheckListItemREQ,
     UpdateCheckListREQ,
@@ -741,6 +742,56 @@ export async function updateTripExpense(tripId: number, expenseId: number, updat
 export async function deleteTripExpense(tripId: number, expenseId: number) {
     await authAxios
         .delete(`/trips/${tripId}/budget/expenses/${expenseId}`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+}
+
+// Trip debts
+export async function getMyTripDebts(tripId: number) {
+    const data = await authAxios
+        .get(`/trips/${tripId}/budget/my-debts`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function getGroupTripDebts(tripId: number) {
+    const data = await authAxios
+        .get(`/trips/${tripId}/budget/group-debts`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function settleTripDebt(tripId: number, settleTripDebtReq: SettleTripDebtREQ) {
+    const data = await authAxios
+        .post(`/trips/${tripId}/budget/settlements`, settleTripDebtReq)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function getTripDebtSettlements(tripId: number) {
+    const data = await authAxios
+        .get(`/trips/${tripId}/budget/settlements`)
+        .then((response) => response.data.data)
+        .catch((err) => {
+            throw new Error(err.response.data.message);
+        });
+    return data;
+}
+
+export async function deleteTripDebtSettlement(tripId: number, settlementId: number) {
+    await authAxios
+        .delete(`/trips/${tripId}/budget/settlements/${settlementId}`)
         .then((response) => response.data.data)
         .catch((err) => {
             throw new Error(err.response.data.message);

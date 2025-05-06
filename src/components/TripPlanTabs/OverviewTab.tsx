@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Keyboard, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
@@ -21,16 +22,17 @@ export default function OverviewTab({
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
 }) {
+    const { t } = useTranslation();
     const { isPending, createTripOverviewSection } = useCreateTripOverviewSection();
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View className="py-4">
                 <View className="mb-4 border-y border-gray-200 bg-white p-4 shadow-sm">
-                    <Text className="mb-2 text-lg font-bold">Reservations and attachments</Text>
+                    <Text className="mb-2 text-lg font-bold">{t('Reservations and attachments')}</Text>
                     <ScrollView className="flex-row space-x-6" horizontal showsHorizontalScrollIndicator>
                         {[
                             {
-                                name: 'Flight',
+                                name: t('Flight'),
                                 icon: 'mdi:airplane',
                                 handlePress: () => {
                                     setBottomSheetContent(
@@ -41,7 +43,7 @@ export default function OverviewTab({
                                 }
                             },
                             {
-                                name: 'Cruise',
+                                name: t('Cruise'),
                                 icon: 'mdi:ship-wheel',
                                 handlePress: () => {
                                     setBottomSheetContent(
@@ -52,7 +54,7 @@ export default function OverviewTab({
                                 }
                             },
                             {
-                                name: 'Bus',
+                                name: t('Bus'),
                                 icon: 'mdi:bus',
                                 handlePress: () => {
                                     setBottomSheetContent(
@@ -63,7 +65,7 @@ export default function OverviewTab({
                                 }
                             },
                             {
-                                name: 'Ferry',
+                                name: t('Ferry'),
                                 icon: 'mdi:ferry',
                                 handlePress: () => {
                                     setBottomSheetContent(
@@ -74,7 +76,7 @@ export default function OverviewTab({
                                 }
                             },
                             {
-                                name: 'Train',
+                                name: t('Train'),
                                 icon: 'mdi:train',
                                 handlePress: () => {
                                     setBottomSheetContent(
@@ -85,7 +87,7 @@ export default function OverviewTab({
                                 }
                             },
                             {
-                                name: 'Lodging',
+                                name: t('Lodging'),
                                 icon: 'mdi:bed',
                                 handlePress: () => {
                                     setBottomSheetContent(
@@ -95,8 +97,8 @@ export default function OverviewTab({
                                     setSnapPoints(['70%']);
                                 }
                             },
-                            { name: 'Restaurant', icon: 'mdi:silverware-fork-knife' },
-                            { name: 'Attachment', icon: 'mdi:paperclip' }
+                            { name: t('Restaurant'), icon: 'mdi:silverware-fork-knife' },
+                            { name: t('Attachment'), icon: 'mdi:paperclip' }
                         ].map((item, index) => (
                             <TouchableOpacity key={index} className="flex items-center" onPress={item.handlePress}>
                                 <Iconify
@@ -125,7 +127,7 @@ export default function OverviewTab({
                     ))}
                     <View className="px-4">
                         <Button
-                            text="New section"
+                            text={t('New section')}
                             onPress={() =>
                                 createTripOverviewSection({
                                     tripId: trip.id,

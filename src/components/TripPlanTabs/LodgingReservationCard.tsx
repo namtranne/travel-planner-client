@@ -45,6 +45,7 @@ const LodgingReservationCard = ({
     });
     const { createTripLodging } = useCreateTripLodging();
     const { isPending: isPendingUpdateTripLodging, updateTripLodging } = useUpdateTripLodging();
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (lodgingReservationDetails) {
@@ -81,7 +82,7 @@ const LodgingReservationCard = ({
     }, [currencySymbol]);
 
     useEffect(() => {
-        if (isCreateClicked) {
+        if (isCreateClicked && errorMessage === '') {
             createTripLodging(
                 {
                     tripId,
@@ -116,16 +117,20 @@ const LodgingReservationCard = ({
                 }
             );
         }
-    }, [isCreateClicked, lodgingReservationInfo, createTripLodging, setIsCreateClicked, tripId]);
+    }, [isCreateClicked, lodgingReservationInfo, createTripLodging, setIsCreateClicked, tripId, errorMessage]);
 
     const handlePriceChange = (text: string) => {
-        const cleanedText = text.replace(/[^0-9.,]/g, '');
         setLodgingReservationInfo((prevState) => ({
             ...prevState,
-            displayPrice: cleanedText
+            displayPrice: text
         }));
+        const delimiterCount = (text.match(/[.,]/g) || []).length;
+        if (delimiterCount > 1) {
+            setErrorMessage('Please enter a valid amount');
+            return;
+        }
 
-        const parsedValue = parseFloat(cleanedText.replace(/,/g, '.')).toFixed(2);
+        const parsedValue = parseFloat(text.replace(/,/g, '.'));
         setLodgingReservationInfo((prevState) => ({
             ...prevState,
             price: Number.isNaN(Number(parsedValue)) ? 0 : Number(parsedValue)
@@ -136,7 +141,7 @@ const LodgingReservationCard = ({
         <TouchableOpacity
             className="w-full space-y-4 rounded-2xl border border-gray-200 bg-gray-100 p-4"
             onPress={() => {
-                if (!isCreateManually) return;
+                if (!isCreateManually || errorMessage !== '') return;
                 updateTripLodging(
                     {
                         tripId,
@@ -234,6 +239,7 @@ const LodgingReservationCard = ({
                             onChangeText={handlePriceChange}
                         />
                     </View>
+                    {errorMessage !== '' && <Text className="mt-1 text-xs text-red-500">{errorMessage}</Text>}
                 </View>
             </View>
 

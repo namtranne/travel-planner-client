@@ -4,11 +4,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font'; // Static import
 import { Slot } from 'expo-router';
 import { NativeWindStyleSheet } from 'nativewind';
+import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import Toast, { ErrorToast } from 'react-native-toast-message';
 
 import { Inter, InterItalic } from '@/assets';
+
+import { initI18n } from '../src/i18n';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -48,6 +51,14 @@ export default function Layout() {
         Inter,
         'Inter-Italic': InterItalic
     });
+
+    useEffect(() => {
+        const initialize = async () => {
+            await initI18n();
+        };
+
+        initialize();
+    }, []);
 
     // Show loading state while fonts are loading
     if (!fontsLoaded) {

@@ -28,20 +28,19 @@ type TripExpense = {
     date?: string;
     tripExpenseIndividuals: any[];
     payer: any;
+    currency: string;
 };
 
 export const ExpenseCard = ({
     expense,
     openSheet,
     setBottomSheetContent,
-    setSnapPoints,
-    currency
+    setSnapPoints
 }: {
     expense: TripExpense;
     openSheet: () => void;
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
-    currency: string;
 }) => {
     const maxAvatars = 3;
     const displayExpenseIndividuals = expense.tripExpenseIndividuals.slice(0, maxAvatars);
@@ -56,7 +55,7 @@ export const ExpenseCard = ({
                 <View className="rounded-full bg-gray-300 p-2">
                     <Iconify icon={getExpenseIcon(expense.tripExpenseType)} className="text-gray-500" size={16} />
                 </View>
-                <View className="ml-3">
+                <View className="ml-1">
                     <Text className="text-base font-bold">{expense.details}</Text>
                     <View className="flex-row items-center">
                         {expense.date && (
@@ -70,7 +69,7 @@ export const ExpenseCard = ({
             </View>
             <View className="flex-[2] items-end">
                 <Text className="text-base font-bold">
-                    {currency}
+                    {expense.currency}
                     {formatAmount(expense.expense)}
                 </Text>
                 <TouchableOpacity

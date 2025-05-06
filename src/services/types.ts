@@ -126,6 +126,7 @@ export type CreateTripExpenseREQ = {
     tripExpenseSplitType: TripExpenseSplitType;
     tripExpenseType: TripExpenseType;
     payerId: number;
+    currency: string;
     details?: string;
     date?: string;
     tripExpenseIndividuals?: number[];
@@ -135,6 +136,7 @@ export type UpdateTripExpenseREQ = {
     expense?: number;
     tripExpenseSplitType?: TripExpenseSplitType;
     tripExpenseType?: TripExpenseType;
+    currency?: string;
     payerId?: number;
     details?: string;
     date?: string;
@@ -230,6 +232,12 @@ export type UpdateTripLodgingREQ = {
     currency?: string;
     price?: number;
     confirmationCode?: string;
+};
+
+export type SettleTripDebtREQ = {
+    amount?: number;
+    isFullyPaid: boolean;
+    tripDebtId: number;
 };
 
 export enum TransitType {
