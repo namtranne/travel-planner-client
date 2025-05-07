@@ -26,8 +26,8 @@ export default function Explore({
     const [restaurantData, setRestaurantData] = useState<any>(null);
     const [attractionData, setAttractionData] = useState<any>(null);
     const { trip, isLoading: isLoadingTrip } = useTripDetails(tripId);
-    const { isPending, createPlaceToVisitItinerary } = useCreatePlaceToVisitItinerary();
-    const { isPending: isAddingPlaceToOverview, createPlaceToVisitOverview, error } = useCreatePlaceToVisitOverview();
+    const { createPlaceToVisitItinerary } = useCreatePlaceToVisitItinerary();
+    const { createPlaceToVisitOverview } = useCreatePlaceToVisitOverview();
 
     const sections = [
         {
