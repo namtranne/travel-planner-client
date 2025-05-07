@@ -11,7 +11,7 @@ import { useTripDetails } from '@/src/hooks/use-trip';
 export default function TripMap() {
     const mapRef = useRef<MapView>(null);
     const { tripId } = useLocalSearchParams<{ tripId: string }>();
-    const { isLoading: isLoadingTripDetails, trip } = useTripDetails(Number(tripId));
+    const { trip } = useTripDetails(Number(tripId));
     const [selectedDay, setSelectedDay] = useState(trip.tripItinerary.days[0]);
 
     const centerMapOnPlace = (place: any) => {
@@ -27,7 +27,6 @@ export default function TripMap() {
         // call backend or local route optimization here
     };
 
-    console.log(selectedDay);
     // return null;
     return (
         <View style={{ flex: 1 }}>
