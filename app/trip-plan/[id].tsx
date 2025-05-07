@@ -391,6 +391,27 @@ export default function TripScreen() {
                                 }}
                                 range
                             />
+                            <TouchableOpacity
+                                onPress={() => router.push(`/trip-map?tripId=${trip.id}`)}
+                                style={{
+                                    position: 'absolute',
+                                    bottom: 32,
+                                    right: 20,
+                                    width: 56,
+                                    height: 56,
+                                    borderRadius: 28,
+                                    backgroundColor: '#ffaaec',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowOpacity: 0.3,
+                                    shadowRadius: 4,
+                                    elevation: 5
+                                }}
+                            >
+                                <Iconify icon="mdi:map-outline" color="white" size={28} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <BottomSheet

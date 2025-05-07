@@ -151,7 +151,9 @@ module.exports = (api) => {
                         'mdi:note-outline',
                         'flowbite:user-add-solid',
                         'codicon:send',
-                        'mdi:remove'
+                        'mdi:remove',
+                        'mdi:map-outline',
+                        'mdi:arrow-left'
                     ]
                 }
             ]
