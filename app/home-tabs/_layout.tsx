@@ -22,6 +22,13 @@ export default function HomeLayout() {
                 }}
             />
             <Tabs.Screen
+                name="notifications"
+                options={{
+                    title: t('Notifications'),
+                    tabBarIcon: ({ color, size }) => <Icon name="notifications" size={size} color={color} />
+                }}
+            />
+            <Tabs.Screen
                 name="account"
                 options={{
                     title: t('Account'),
