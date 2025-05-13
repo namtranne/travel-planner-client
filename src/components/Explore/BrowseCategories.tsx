@@ -1,10 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function BrowseCategories({ categories }: any) {
+    const { t } = useTranslation();
     const [modalVisible, setModalVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
@@ -16,7 +18,7 @@ export default function BrowseCategories({ categories }: any) {
     return (
         <View className="items-center justify-center p-4">
             <TouchableOpacity onPress={() => setModalVisible(true)} className="rounded-lg">
-                <Text className="text-red-500">See all</Text>
+                <Text className="text-red-500">{t('See all')}</Text>
             </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="slide" transparent>

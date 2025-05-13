@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
@@ -40,13 +41,14 @@ const destinationSuggestionData = [
     }
 ];
 export default function DestinationSuggestions() {
+    const { t } = useTranslation();
     return (
         <View>
             {destinationSuggestionData.map((category) => {
                 return (
                     <View key={category.name} className="mt-6">
                         <View className="mb-2 flex flex-row items-center justify-between px-6">
-                            <Text className="font-inter text-lg font-bold">{category.name}</Text>
+                            <Text className="font-inter text-lg font-bold">{t(category.name)}</Text>
                             <Iconify icon="grommet-icons:next" color="black" width="15" height="15" />
                         </View>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="space-x-4 pl-6">

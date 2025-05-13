@@ -126,6 +126,7 @@ export type CreateTripExpenseREQ = {
     tripExpenseSplitType: TripExpenseSplitType;
     tripExpenseType: TripExpenseType;
     payerId: number;
+    currency: string;
     details?: string;
     date?: string;
     tripExpenseIndividuals?: number[];
@@ -135,6 +136,7 @@ export type UpdateTripExpenseREQ = {
     expense?: number;
     tripExpenseSplitType?: TripExpenseSplitType;
     tripExpenseType?: TripExpenseType;
+    currency?: string;
     payerId?: number;
     details?: string;
     date?: string;
@@ -145,6 +147,104 @@ export type AddTripParticipant = {
     userId: number;
     isAllowedToEdit: boolean;
 };
+
+export type CreateTripFlightREQ = {
+    flightNumber?: string;
+    flightBrand?: string;
+    departurePlace: string;
+    departureDate?: string;
+    arrivalPlace: string;
+    arrivalDate?: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+};
+
+export type UpdateTripFlightREQ = {
+    flightNumber?: string;
+    flightBrand?: string;
+    departurePlace?: string;
+    departureDate?: string;
+    arrivalPlace?: string;
+    arrivalDate?: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+};
+
+export type CreateTripTransitREQ = {
+    departurePlace?: string;
+    departureDate?: string;
+    arrivalPlace: string;
+    arrivalDate?: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+    transitType?: TransitType;
+};
+
+export type UpdateTripTransitREQ = {
+    departurePlace?: string;
+    departureDate?: string;
+    arrivalPlace?: string;
+    arrivalDate?: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+    transitType?: TransitType;
+};
+
+export type CreateTripCruiseREQ = {
+    shipName?: string;
+    departurePlace: string;
+    departureDate?: string;
+    arrivalPlace: string;
+    arrivalDate?: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+};
+
+export type UpdateTripCruiseREQ = {
+    shipName?: string;
+    departurePlace?: string;
+    departureDate?: string;
+    arrivalPlace?: string;
+    arrivalDate?: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+};
+
+export type CreateTripLodgingREQ = {
+    lodgingName: string;
+    checkInDate: string;
+    checkOutDate: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+};
+
+export type UpdateTripLodgingREQ = {
+    lodgingName?: string;
+    checkInDate?: string;
+    checkOutDate?: string;
+    currency?: string;
+    price?: number;
+    confirmationCode?: string;
+};
+
+export type SettleTripDebtREQ = {
+    amount?: number;
+    isFullyPaid: boolean;
+    tripDebtId: number;
+};
+
+export enum TransitType {
+    TRAIN = 'TRAIN',
+    BUS = 'BUS',
+    FERRY = 'FERRY'
+}
 
 export enum TripExpenseSplitType {
     INDIVIDUALS = 'INDIVIDUALS',

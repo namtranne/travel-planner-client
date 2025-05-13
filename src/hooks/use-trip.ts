@@ -13,8 +13,13 @@ import {
     createPlaceToVisitItinerary as createPlaceToVisitItineraryApi,
     createPlaceToVisitOverview as createPlaceToVisitOverviewApi,
     createTrip as createTripApi,
+    createTripCruise as createTripCruiseApi,
     createTripExpense as createTripExpenseApi,
+    createTripExpenseFromInvoice as createTripExpenseFromInvoiceApi,
+    createTripFlight as createTripFlightApi,
+    createTripLodging as createTripLodgingApi,
     createTripOverviewSection as createTripOverviewSectionApi,
+    createTripTransit as createTripTransitApi,
     deleteChecklistItemItinerary as deleteChecklistItemItineraryApi,
     deleteChecklistItemOverview as deleteChecklistItemOverviewApi,
     deleteChecklistItinerary as deleteChecklistItineraryApi,
@@ -24,13 +29,21 @@ import {
     deletePlaceToVisitItinerary as deletePlaceToVisitItineraryApi,
     deletePlaceToVisitOverview as deletePlaceToVisitOverviewApi,
     deleteTrip as deleteTripApi,
+    deleteTripCruise as deleteTripCruiseApi,
+    deleteTripDebtSettlement as deleteTripDebtSettlementApi,
     deleteTripExpense as deleteTripExpenseApi,
+    deleteTripFlight as deleteTripFlightApi,
     deleteTripItineraryDay as deleteTripItineraryDayApi,
+    deleteTripLodging as deleteTripLodgingApi,
     deleteTripOverviewSection as deleteTripOverviewSectionApi,
+    deleteTripTransit as deleteTripTransitApi,
+    getGroupTripDebts as getGroupTripDebtsApi,
+    getMyTripDebts as getMyTripDebtsApi,
     getMyTrips,
     getPlaceToVisitDetailsItinerary as getPlaceToVisitDetailsItineraryApi,
     getPlaceToVisitDetailsOverview as getPlaceToVisitDetailsOverviewApi,
     getTripBudgetDetails as getTripBudgetDetailsApi,
+    getTripDebtSettlements as getTripDebtSettlementsApi,
     getTripDetails,
     getTripExpenseDetails as getTripExpenseDetailsApi,
     getTripExpenses as getTripExpensesApi,
@@ -39,6 +52,7 @@ import {
     getTripParticipants as getTripParticipantsApi,
     leaveTrip as leaveTripApi,
     removeTripParticipant as removeTripParticipantApi,
+    settleTripDebt as settleTripDebtApi,
     updateChecklistItemItinerary as updateChecklistItemItineraryApi,
     updateChecklistItemOverview as updateChecklistItemOverviewApi,
     updateChecklistItinerary as updateChecklistItineraryApi,
@@ -49,9 +63,17 @@ import {
     updatePlaceToVisitOverview as updatePlaceToVisitOverviewApi,
     updateTrip as updateTripApi,
     updateTripBudget as updateTripBudgetApi,
+    updateTripCruise as updateTripCruiseApi,
     updateTripExpense as updateTripExpenseApi,
+    updateTripFlight as updateTripFlightApi,
     updateTripItineraryDay as updateTripItineraryDayApi,
-    updateTripOverviewSection as updateTripOverviewSectionApi
+    updateTripLodging as updateTripLodgingApi,
+    updateTripOverviewSection as updateTripOverviewSectionApi,
+    updateTripTransit as updateTripTransitApi,
+    verifyCruiseEmailForwarded as verifyCruiseEmailForwardedApi,
+    verifyFLightEmailForwarded as verifyFLightEmailForwardedApi,
+    verifyLodgingEmailForwarded as verifyLodgingEmailForwardedApi,
+    verifyTransitEmailForwarded as verifyTransitEmailForwardedApi
 } from '../services/api-trip';
 import type {
     AddTripParticipant,
@@ -60,16 +82,26 @@ import type {
     CreateCheckListREQ,
     CreateNoteREQ,
     CreatePlaceToVisitREQ,
+    CreateTripCruiseREQ,
     CreateTripExpenseREQ,
+    CreateTripFlightREQ,
+    CreateTripLodgingREQ,
     CreateTripOverviewSectionREQ,
+    CreateTripTransitREQ,
+    SettleTripDebtREQ,
+    TransitType,
     UpdateCheckListREQ,
     UpdateNoteREQ,
     UpdatePlaceToVisitREQ,
     UpdateTripBudgetREQ,
+    UpdateTripCruiseREQ,
     UpdateTripExpenseREQ,
+    UpdateTripFlightREQ,
     UpdateTripItineraryDayREQ,
+    UpdateTripLodgingREQ,
     UpdateTripOverviewSectionREQ,
-    UpdateTripREQ
+    UpdateTripREQ,
+    UpdateTripTransitREQ
 } from '../services/types';
 
 // Trip
@@ -79,7 +111,13 @@ export function useMyTrips() {
         queryFn: getMyTrips
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get trips failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, data, error };
@@ -92,7 +130,13 @@ export function useTripDetails(tripId: any) {
         retry: false
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, trip: data, error };
@@ -110,7 +154,14 @@ export function useCreateTrip() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['trips'] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create trip failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createTrip, error };
@@ -130,7 +181,14 @@ export function useUpdateTrip() {
             queryClient.invalidateQueries({ queryKey: ['trips'] });
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update trip failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateTrip, error };
@@ -149,7 +207,14 @@ export function useDeleteTrip() {
             queryClient.invalidateQueries({ queryKey: ['trips'] });
             queryClient.removeQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete trip failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteTrip, error };
@@ -162,7 +227,13 @@ export function useTripOverviewSectionDetails(tripId: number, sectionId: number)
         queryFn: () => getTripOverviewSectionDetails(tripId, sectionId)
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip overview section failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, tripOverviewSection: data, error };
@@ -181,7 +252,14 @@ export function useCreateTripOverviewSection() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create trip overview section failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createTripOverviewSection, error };
@@ -206,7 +284,14 @@ export function useUpdateTripOverviewSection() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update trip overview section failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateTripOverviewSection, error };
@@ -226,7 +311,14 @@ export function useDeleteTripOverviewSection() {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
             queryClient.removeQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete trip overview section failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteTripOverviewSection, error };
@@ -239,7 +331,13 @@ export function useGetPlaceToVisitDetailsOverview(tripId: number, sectionId: num
         queryFn: () => getPlaceToVisitDetailsOverviewApi(tripId, sectionId, placeToVisitId)
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get place to visit failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, data, error };
@@ -264,7 +362,14 @@ export function useCreatePlaceToVisitOverview() {
                 position: 'top'
             });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create place to visit failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createPlaceToVisitOverview, error };
@@ -288,7 +393,14 @@ export function useUpdatePlaceToVisitOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update place to visit failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updatePlaceToVisitOverview, error };
@@ -307,7 +419,14 @@ export function useDeletePlaceToVisitOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete place to visit failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deletePlaceToVisitOverview, error };
@@ -327,7 +446,14 @@ export function useCreateNoteOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create note failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createNoteOverview, error };
@@ -346,7 +472,14 @@ export function useUpdateNoteOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update note failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateNoteOverview, error };
@@ -365,7 +498,14 @@ export function useDeleteNoteOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete note failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteNoteOverview, error };
@@ -385,7 +525,14 @@ export function useCreateChecklistOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create checklist failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createChecklistOverview, error };
@@ -408,7 +555,14 @@ export function useUpdateChecklistOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update checklist failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateChecklistOverview, error };
@@ -427,7 +581,14 @@ export function useDeleteChecklistOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete checklist failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteChecklistOverview, error };
@@ -452,7 +613,14 @@ export function useCreateChecklistItemOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create checklist item failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createChecklistItemOverview, error };
@@ -483,7 +651,14 @@ export function useUpdateChecklistItemOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update checklist item failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateChecklistItemOverview, error };
@@ -502,10 +677,458 @@ export function useDeleteChecklistItemOverview() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.sectionId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete checklist item failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteChecklistItemOverview, error };
+}
+
+// Flights
+export function useCreateTripFlight() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createTripFlight,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; createTripFlightReq: CreateTripFlightREQ }) =>
+            createTripFlightApi(data.tripId, data.createTripFlightReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                predicate: (query) =>
+                    query.queryKey.some((key) => typeof key === 'string' && key.includes('trip-overview-section'))
+            });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create flight reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, createTripFlight, error };
+}
+
+export function useVerifyFlightEmailForwarded() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: verifyFlightEmailForwarded,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number }) => verifyFLightEmailForwardedApi(data.tripId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                predicate: (query) =>
+                    query.queryKey.some((key) => typeof key === 'string' && key.includes('trip-overview-section'))
+            });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Verify flight email failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, verifyFlightEmailForwarded, error };
+}
+
+export function useUpdateTripFlight() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: updateTripFlight,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; flightId: number; updateTripFlightReq: UpdateTripFlightREQ }) =>
+            updateTripFlightApi(data.tripId, data.flightId, data.updateTripFlightReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update flight reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, updateTripFlight, error };
+}
+
+export function useDeleteTripFlight() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deleteTripFlight,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; tripOverviewSectionId: number; flightId: number }) =>
+            deleteTripFlightApi(data.tripId, data.flightId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.tripOverviewSectionId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete flight reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, deleteTripFlight, error };
+}
+
+// Transits
+export function useCreateTripTransit() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createTripTransit,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; createTripTransitReq: CreateTripTransitREQ }) =>
+            createTripTransitApi(data.tripId, data.createTripTransitReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                predicate: (query) =>
+                    query.queryKey.some((key) => typeof key === 'string' && key.includes('trip-overview-section'))
+            });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create transit reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, createTripTransit, error };
+}
+
+export function useVerifyTransitEmailForwarded() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: verifyTransitEmailForwarded,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; transitType: TransitType }) =>
+            verifyTransitEmailForwardedApi(data.tripId, data.transitType),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Verify transit email failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, verifyTransitEmailForwarded, error };
+}
+
+export function useUpdateTripTransit() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: updateTripTransit,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; transitId: number; updateTripTransitReq: UpdateTripTransitREQ }) =>
+            updateTripTransitApi(data.tripId, data.transitId, data.updateTripTransitReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update transit reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, updateTripTransit, error };
+}
+
+export function useDeleteTripTransit() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deleteTripTransit,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; tripOverviewSectionId: number; transitId: number }) =>
+            deleteTripTransitApi(data.tripId, data.transitId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.tripOverviewSectionId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete transit reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, deleteTripTransit, error };
+}
+
+// Cruises
+export function useCreateTripCruise() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createTripCruise,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; createTripCruiseReq: CreateTripCruiseREQ }) =>
+            createTripCruiseApi(data.tripId, data.createTripCruiseReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                predicate: (query) =>
+                    query.queryKey.some((key) => typeof key === 'string' && key.includes('trip-overview-section'))
+            });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create cruise reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, createTripCruise, error };
+}
+
+export function useVerifyCruiseEmailForwarded() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: verifyCruiseEmailForwarded,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number }) => verifyCruiseEmailForwardedApi(data.tripId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Verify cruise email failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, verifyCruiseEmailForwarded, error };
+}
+
+export function useUpdateTripCruise() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: updateTripCruise,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; cruiseId: number; updateTripCruiseReq: UpdateTripCruiseREQ }) =>
+            updateTripCruiseApi(data.tripId, data.cruiseId, data.updateTripCruiseReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update cruise reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, updateTripCruise, error };
+}
+
+export function useDeleteTripCruise() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deleteTripCruise,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; tripOverviewSectionId: number; cruiseId: number }) =>
+            deleteTripCruiseApi(data.tripId, data.cruiseId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.tripOverviewSectionId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete cruise reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, deleteTripCruise, error };
+}
+
+// Lodging
+export function useCreateTripLodging() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createTripLodging,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; createTripLodgingReq: CreateTripLodgingREQ }) =>
+            createTripLodgingApi(data.tripId, data.createTripLodgingReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                predicate: (query) =>
+                    query.queryKey.some((key) => typeof key === 'string' && key.includes('trip-overview-section'))
+            });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create lodging reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, createTripLodging, error };
+}
+
+export function useVerifyLodgingEmailForwarded() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: verifyLodgingEmailForwarded,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number }) => verifyLodgingEmailForwardedApi(data.tripId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Verify lodging email failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, verifyLodgingEmailForwarded, error };
+}
+
+export function useUpdateTripLodging() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: updateTripLodging,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; lodgingId: number; updateTripLodgingReq: UpdateTripLodgingREQ }) =>
+            updateTripLodgingApi(data.tripId, data.lodgingId, data.updateTripLodgingReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update lodging reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, updateTripLodging, error };
+}
+
+export function useDeleteTripLodging() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deleteTripLodging,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; tripOverviewSectionId: number; lodgingId: number }) =>
+            deleteTripLodgingApi(data.tripId, data.lodgingId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-overview-section-${variables.tripOverviewSectionId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
+        },
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete lodging reservation failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
+    });
+
+    return { isPending, deleteTripLodging, error };
 }
 
 // Trip Itinerary Day
@@ -515,7 +1138,13 @@ export function useTripItineraryDayDetails(tripId: number, dayId: number) {
         queryFn: () => getTripItineraryDayDetailsApi(tripId, dayId)
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip itinerary day failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, tripItineraryDay: data, error };
@@ -534,7 +1163,14 @@ export function useUpdateTripItineraryDay() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete trip itinerary day failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateTripItineraryDay, error };
@@ -552,7 +1188,14 @@ export function useDeleteTripItineraryDay() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete trip itinerary day failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteTripItineraryDay, error };
@@ -565,7 +1208,13 @@ export function useGetPlaceToVisitDetailsItinerary(tripId: number, dayId: number
         queryFn: () => getPlaceToVisitDetailsItineraryApi(tripId, dayId, placeToVisitId)
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get place to visit failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, data, error };
@@ -590,7 +1239,14 @@ export function useCreatePlaceToVisitItinerary() {
                 position: 'top'
             });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create place to visit failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createPlaceToVisitItinerary, error };
@@ -613,7 +1269,14 @@ export function useUpdatePlaceToVisitItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update place to visit failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updatePlaceToVisitItinerary, error };
@@ -632,7 +1295,14 @@ export function useDeletePlaceToVisitItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete place to visit failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deletePlaceToVisitItinerary, error };
@@ -652,7 +1322,14 @@ export function useCreateNoteItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create note failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createNoteItinerary, error };
@@ -671,7 +1348,14 @@ export function useUpdateNoteItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update note failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateNoteItinerary, error };
@@ -690,7 +1374,14 @@ export function useDeleteNoteItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete note failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteNoteItinerary, error };
@@ -710,7 +1401,14 @@ export function useCreateChecklistItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create checklist failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createChecklistItinerary, error };
@@ -733,7 +1431,14 @@ export function useUpdateChecklistItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update checklist failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateChecklistItinerary, error };
@@ -752,7 +1457,14 @@ export function useDeleteChecklistItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete checklist item failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteChecklistItinerary, error };
@@ -776,7 +1488,14 @@ export function useCreateChecklistItemItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Create checklist item failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, createChecklistItemItinerary, error };
@@ -807,7 +1526,14 @@ export function useUpdateChecklistItemItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update checklist item failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateChecklistItemItinerary, error };
@@ -826,7 +1552,14 @@ export function useDeleteChecklistItemItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-itinerary-day-${variables.dayId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Delete checklist item failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, deleteChecklistItemItinerary, error };
@@ -840,7 +1573,13 @@ export function useTripBudgetDetails(tripId: number) {
         queryFn: () => getTripBudgetDetailsApi(tripId)
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip budget failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, tripBudget: data, error };
@@ -861,7 +1600,14 @@ export function useUpdateTripBudget() {
             queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) =>
+            Toast.show({
+                type: 'error',
+                text1: 'Update trip expense failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            })
     });
 
     return { isPending, updateTripBudget, error };
@@ -874,7 +1620,13 @@ export function useTripExpenses(tripId: number, sortBy: string, sortOrder: strin
         queryFn: () => getTripExpensesApi(tripId, sortBy, sortOrder)
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Retrieve trip expenses failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, tripExpenses: data, error, refetch };
@@ -887,7 +1639,13 @@ export function useTripExpenseDetails(tripId: number, expenseId: number) {
         enabled: !!tripId && !!expenseId && expenseId !== -1
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Retrieve trip expense failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, tripExpense: data, error };
@@ -919,6 +1677,34 @@ export function useCreateTripExpense() {
     });
 
     return { isPending, createTripExpense, error };
+}
+
+export function useCreateTripExpenseFromInvoice() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: createTripExpenseFromInvoice,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; invoice: any }) =>
+            createTripExpenseFromInvoiceApi(data.tripId, data.invoice),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-expenses-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-budget-${variables.tripId}`] });
+        },
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Expense created from invoice failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
+    });
+
+    return { isPending, createTripExpenseFromInvoice, error };
 }
 
 export function useUpdateTripExpense() {
@@ -976,6 +1762,118 @@ export function useDeleteTripExpense() {
     return { isPending, deleteTripExpense, error };
 }
 
+// Trip debts
+export function useMyTripDebts(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-my-debts-${tripId}`, tripId],
+        queryFn: () => getMyTripDebtsApi(tripId)
+    });
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip debts failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
+    }
+
+    return { isLoading, tripDebts: data, error };
+}
+
+export function useGroupTripDebts(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-group-debts-${tripId}`, tripId],
+        queryFn: () => getGroupTripDebtsApi(tripId)
+    });
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip debts failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
+    }
+
+    return { isLoading, tripDebts: data, error };
+}
+
+export function useSettleTripDebt() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: settleTripDebt,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; settleTripDebtReq: SettleTripDebtREQ }) =>
+            settleTripDebtApi(data.tripId, data.settleTripDebtReq),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-my-debts-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-group-debts-${variables.tripId}`] });
+        },
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Settle trip debt failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
+    });
+
+    return { isPending, settleTripDebt, error };
+}
+
+export function useGetTripDebtSettlements(tripId: number) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: [`trip-debt-settlements-${tripId}`, tripId],
+        queryFn: () => getTripDebtSettlementsApi(tripId)
+    });
+    if (error) {
+        Toast.show({
+            type: 'error',
+            text1: 'Get trip debt settlements failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
+    }
+
+    return { isLoading, tripDebtSettlements: data, error };
+}
+
+export function useDeleteTripDebtSettlement() {
+    const queryClient = useQueryClient();
+
+    const {
+        mutate: deleteTripDebtSettlement,
+        isPending,
+        error
+    } = useMutation({
+        mutationFn: (data: { tripId: number; settlementId: number }) =>
+            deleteTripDebtSettlementApi(data.tripId, data.settlementId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: [`trip-my-debts-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-group-debts-${variables.tripId}`] });
+            queryClient.invalidateQueries({ queryKey: [`trip-debt-settlements-${variables.tripId}`] });
+        },
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Delete trip debt settlement failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
+    });
+
+    return { isPending, deleteTripDebtSettlement, error };
+}
+
 // Trip Participants
 export function useGetTripParticipants(tripId: number) {
     const { data, isLoading, error } = useQuery({
@@ -983,7 +1881,13 @@ export function useGetTripParticipants(tripId: number) {
         queryFn: () => getTripParticipantsApi(tripId)
     });
     if (error) {
-        console.log('error', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Get tripmates failed',
+            text2: error.message,
+            text2Style: { flexWrap: 'wrap' },
+            position: 'top'
+        });
     }
 
     return { isLoading, tripParticipants: data, error };
@@ -1083,7 +1987,15 @@ export function useAutofillTripItinerary() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: [`trip-${variables.tripId}`] });
         },
-        onError: (err) => console.error(err.message)
+        onError: (err) => {
+            Toast.show({
+                type: 'error',
+                text1: 'Autofill trip itinerary failed',
+                text2: err.message,
+                text2Style: { flexWrap: 'wrap' },
+                position: 'top'
+            });
+        }
     });
 
     return { isPending, autofillTripItinerary, error };

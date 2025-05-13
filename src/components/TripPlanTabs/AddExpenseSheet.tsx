@@ -1,16 +1,20 @@
 import { CheckBox, Icon } from '@rneui/base';
 import dayjs from 'dayjs';
+import * as ImagePicker from 'expo-image-picker';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import Iconify from 'react-native-iconify';
+import Toast from 'react-native-toast-message';
 import type { DateType } from 'react-native-ui-datepicker';
-import DateTimePicker, { useDefaultStyles } from 'react-native-ui-datepicker';
+import DateTimePicker from 'react-native-ui-datepicker';
 
 import { useUser } from '@/src/hooks/use-authenticate';
 import {
     useCreateTripExpense,
+    useCreateTripExpenseFromInvoice,
     useDeleteTripExpense,
     useTripExpenseDetails,
     useUpdateTripExpense
@@ -47,6 +51,7 @@ const ExpenseCategory = ({
     expenseDetails: any;
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
 }) => {
+    const { t } = useTranslation();
     return (
         <View className="bg-white px-4">
             {/* Header */}
@@ -57,13 +62,13 @@ const ExpenseCategory = ({
                 >
                     <Text className="text-base text-black">←</Text>
                 </TouchableOpacity>
-                <Text className="text-center text-base font-bold">Expense Category</Text>
+                <Text className="text-center text-base font-bold">{t('Expense Category')}</Text>
                 <View />
             </View>
             {/* Options */}
             <ScrollView className="py-6">
                 {/* Trip Plan Section */}
-                <Text className="mb-2 font-bold text-black">Select from your trip plan</Text>
+                <Text className="mb-2 font-bold text-black">{t('Select from your trip plan')}</Text>
                 <View className="space-y-2">
                     {[
                         { name: 'Shanghai', icon: 'mdi:car' },
@@ -83,7 +88,7 @@ const ExpenseCategory = ({
                     ))}
                 </View>
                 {/* Category Section */}
-                <Text className="mb-2 mt-6 font-bold text-gray-700">Or select from a category</Text>
+                <Text className="mb-2 mt-6 font-bold text-gray-700">{t('Or select from a category')}</Text>
                 <View className="flex-row flex-wrap justify-between gap-2">
                     {categories.map((category, index) =>
                         category.name ? (
@@ -124,6 +129,16 @@ const PaidBy = ({
     expenseDetails: any;
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
 }) => {
+    const { isLoading, user } = useUser();
+    const { t } = useTranslation();
+    if (isLoading) {
+        return (
+            <View className="bg-white px-4">
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
+
     return (
         <View className="bg-white px-4">
             <View className="relative flex-row items-center justify-center">
@@ -133,7 +148,7 @@ const PaidBy = ({
                 >
                     <Text className="text-base text-black">←</Text>
                 </TouchableOpacity>
-                <Text className="text-center text-base font-bold">Paid by</Text>
+                <Text className="text-center text-base font-bold">{t('Paid by')}</Text>
                 <View />
             </View>
             <ScrollView className="mt-2">
@@ -146,8 +161,8 @@ const PaidBy = ({
                                 ...expenseDetails,
                                 payerId: participant.user.id,
                                 displayPayer:
-                                    participant.user.id === expenseDetails.payerId
-                                        ? `You (${participant.user.name})`
+                                    participant.user.id === user.id
+                                        ? `${t('You')} (${participant.user.name})`
                                         : participant.user.name
                             });
                             setCurrentView(AddExpenseSheetView.ADD_EXPENSE);
@@ -167,9 +182,9 @@ const PaidBy = ({
                                 }}
                             />
                             <Text className="ml-2 text-base font-semibold">
-                                {participant.user.id === expenseDetails.payerId && 'You ('}
+                                {participant.user.id === user.id && `${t('You')} (`}
                                 {participant.user.name}
-                                {participant.user.id === expenseDetails.payerId && ')'}
+                                {participant.user.id === user.id && ')'}
                             </Text>
                         </View>
                         {participant.user.id === expenseDetails.payerId && <Icon name="check" color="#60ABEF" />}
@@ -197,6 +212,7 @@ const SplitBetween = ({
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
     participants: any[];
 }) => {
+    const { t } = useTranslation();
     return (
         <View className="bg-white px-4">
             {/* Header */}
@@ -207,7 +223,7 @@ const SplitBetween = ({
                 >
                     <Text className="text-base text-black">←</Text>
                 </TouchableOpacity>
-                <Text className="text-center text-base font-bold">Split between</Text>
+                <Text className="text-center text-base font-bold">{t('Split between')}</Text>
             </View>
             {/* Options List */}
             <ScrollView className="mt-2">
@@ -219,14 +235,14 @@ const SplitBetween = ({
                             setExpenseDetails({
                                 ...expenseDetails,
                                 tripExpenseSplitType: type,
-                                displayTripExpenseSplitType: label
+                                displayTripExpenseSplitType: t(label)
                             });
                             if (type !== TripExpenseSplitType.INDIVIDUALS) {
                                 setCurrentView(AddExpenseSheetView.ADD_EXPENSE);
                             }
                         }}
                     >
-                        <Text className="text-sm text-gray-700">{label}</Text>
+                        <Text className="text-sm text-gray-700">{t(label)}</Text>
                         {expenseDetails.tripExpenseSplitType === type && <Icon name="check" color="#60ABEF" />}
                     </TouchableOpacity>
                 ))}
@@ -241,7 +257,7 @@ const SplitBetween = ({
                                     payerId: participant.user.id,
                                     displayPayer:
                                         participant.user.id === expenseDetails.payerId
-                                            ? `You (${participant.user.name})`
+                                            ? `${t('You')} (${participant.user.name})`
                                             : participant.user.name
                                 });
                                 setCurrentView(AddExpenseSheetView.ADD_EXPENSE);
@@ -261,7 +277,7 @@ const SplitBetween = ({
                                     }}
                                 />
                                 <Text className="ml-2 text-base font-semibold">
-                                    {participant.user.id === expenseDetails.payerId && 'You ('}
+                                    {participant.user.id === expenseDetails.payerId && `${t('You')} (`}
                                     {participant.user.name}
                                     {participant.user.id === expenseDetails.payerId && ')'}
                                 </Text>
@@ -288,7 +304,7 @@ const SplitBetween = ({
                                         setExpenseDetails({
                                             ...expenseDetails,
                                             tripExpenseSplitType: TripExpenseSplitType.EVERYONE,
-                                            displayTripExpenseSplitType: 'Everyone'
+                                            displayTripExpenseSplitType: t('Everyone')
                                         });
                                     }
                                 }}
@@ -315,9 +331,9 @@ const SelectDate = ({
     expenseDetails: any;
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
 }) => {
-    const defaultStyles = useDefaultStyles();
+    const { t } = useTranslation();
     const [selected, setSelected] = useState<DateType>(
-        expenseDetails.date === 'Optional' ? undefined : new Date(expenseDetails.date)
+        expenseDetails.date === t('Optional') ? undefined : new Date(expenseDetails.date)
     );
 
     return (
@@ -330,7 +346,7 @@ const SelectDate = ({
                 >
                     <Text className="text-base text-black">←</Text>
                 </TouchableOpacity>
-                <Text className="text-center text-base font-bold">Select date</Text>
+                <Text className="text-center text-base font-bold">{t('Select date')}</Text>
             </View>
             {/* Options List */}
             <ScrollView className="mt-2">
@@ -341,12 +357,11 @@ const SelectDate = ({
                         setSelected(date);
                         setExpenseDetails({
                             ...expenseDetails,
-                            date: date ? dayjs(date).format('YYYY-MM-DD') : 'Optional'
+                            date: date ? dayjs(date).format('YYYY-MM-DD') : t('Optional')
                         });
                         setCurrentView(AddExpenseSheetView.ADD_EXPENSE);
                     }}
                     styles={{
-                        ...defaultStyles,
                         today: { borderColor: '#60ABEF', borderWidth: 1, borderRadius: 50 },
                         selected: { backgroundColor: '#60ABEF', borderRadius: 50 },
                         selected_label: { color: 'white' }
@@ -358,6 +373,7 @@ const SelectDate = ({
 };
 
 const AddExpense = ({
+    tripId,
     setCurrentView,
     expenseDetails,
     setExpenseDetails,
@@ -368,6 +384,7 @@ const AddExpense = ({
     isPending,
     isUpdateView
 }: {
+    tripId: number;
     setCurrentView: React.Dispatch<React.SetStateAction<AddExpenseSheetView>>;
     expenseDetails: any;
     setExpenseDetails: React.Dispatch<React.SetStateAction<any>>;
@@ -378,54 +395,154 @@ const AddExpense = ({
     isPending: boolean;
     isUpdateView: boolean;
 }) => {
+    const { t } = useTranslation();
+    const [invoice, setInvoice] = useState('');
     const [displayExpense, setDisplayExpense] = useState(
         expenseDetails.expense !== null && expenseDetails.expense !== undefined && expenseDetails.expense !== 0
-            ? expenseDetails.expense.toLocaleString('en-US', { maximumFractionDigits: 2 })
+            ? expenseDetails.expense.toLocaleString('en-US')
             : ''
     );
-    const handleExpenseChange = (text: string) => {
-        const cleanedText = text.replace(/[^0-9.,]/g, '');
-        setDisplayExpense(cleanedText);
+    const [errorMessage, setErrorMessage] = useState('');
+    const { isPending: isPendingCreateTripExpenseFromInvoice, createTripExpenseFromInvoice } =
+        useCreateTripExpenseFromInvoice();
 
-        const parsedValue = parseFloat(cleanedText.replace(/,/g, '.')).toFixed(2);
+    const handleExpenseChange = (text: string) => {
+        setDisplayExpense(text);
+        const delimiterCount = (text.match(/[.,]/g) || []).length;
+        if (delimiterCount > 1) {
+            setErrorMessage('Please enter a valid amount');
+            setExpenseDetails({
+                ...expenseDetails,
+                expense: null
+            });
+            return;
+        }
+
+        setErrorMessage('');
+        const parsedValue = parseFloat(text.replace(/,/g, '.'));
         setExpenseDetails({
             ...expenseDetails,
-            expense: Number.isNaN(Number(parsedValue)) ? 0 : Number(parsedValue)
+            expense: Number.isNaN(parsedValue) ? 0 : Number(parsedValue)
         });
+    };
+
+    const handleChoosePhoto = async () => {
+        Alert.alert(t('Upload invoice'), t('Choose image source'), [
+            {
+                text: t('Take a photo'),
+                onPress: async () => {
+                    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                    if (status !== 'granted') {
+                        Alert.alert('Permission Denied', 'Camera access is required to take a photo.');
+                        return;
+                    }
+
+                    const result = await ImagePicker.launchCameraAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        allowsEditing: true,
+                        quality: 0.8
+                    });
+
+                    if (!result.canceled) {
+                        if (result.assets && result.assets.length > 0) {
+                            setInvoice(result?.assets[0]?.uri || '');
+                        }
+                    }
+                }
+            },
+            {
+                text: t('Choose from library'),
+                onPress: async () => {
+                    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (status !== 'granted') {
+                        Alert.alert('Permission Denied', 'Gallery access is required to choose a photo.');
+                        return;
+                    }
+
+                    const result = await ImagePicker.launchImageLibraryAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        allowsEditing: false,
+                        quality: 1
+                    });
+
+                    if (!result.canceled) {
+                        setInvoice(result?.assets[0]?.uri || '');
+                    }
+                }
+            },
+            { text: t('Cancel'), style: 'cancel' }
+        ]);
     };
 
     useEffect(() => {
         if (expenseDetails.expense !== null && expenseDetails.expense !== undefined && expenseDetails.expense === 0) {
             setDisplayExpense(null);
         } else if (expenseDetails.expense !== null && expenseDetails.expense !== undefined) {
-            setDisplayExpense(expenseDetails.expense.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            setDisplayExpense(expenseDetails.expense.toString().replace('.', ','));
         }
     }, [expenseDetails.expense]);
+
+    if (isPendingCreateTripExpenseFromInvoice) {
+        return (
+            <View className="px-4">
+                <ActivityIndicator size="large" color="#60ABEF" />
+            </View>
+        );
+    }
 
     return (
         <View className="bg-white">
             <View className="px-4">
                 {/* Header */}
                 <View className="flex-row items-center justify-center">
-                    <Text className="text-base font-bold">{isUpdateView ? 'Update expense' : 'Add expense'}</Text>
-                    <TouchableOpacity onPress={handleExpense} disabled={isPending} className="absolute right-2">
-                        <Text className="text-sm text-[#60ABEF]">Done</Text>
+                    <Text className="text-base font-bold">{isUpdateView ? t('Update expense') : t('Add expense')}</Text>
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (invoice) {
+                                createTripExpenseFromInvoice(
+                                    {
+                                        tripId,
+                                        invoice
+                                    },
+                                    {
+                                        onSuccess: () => {
+                                            Toast.show({
+                                                type: 'success',
+                                                text1: 'Expense imported from invoice',
+                                                position: 'top'
+                                            });
+                                            setInvoice('');
+                                            setCurrentView(AddExpenseSheetView.ADD_EXPENSE);
+                                        }
+                                    }
+                                );
+                            } else {
+                                handleExpense();
+                            }
+                        }}
+                        disabled={isPending || isPendingCreateTripExpenseFromInvoice}
+                        className="absolute right-2"
+                    >
+                        <Text className="text-sm text-[#60ABEF]">{t('Done')}</Text>
                     </TouchableOpacity>
                 </View>
                 {/* Amount Input */}
                 <View className="mt-2 flex-row items-center justify-between border-b border-gray-200 pb-3">
                     <Text className="text-lg font-bold">{currency}</Text>
-                    <View className="flex-1 flex-row items-center justify-end">
-                        <Text className="mr-2 text-gray-500">{currencyCode}</Text>
-                        <TextInput
-                            className="text-xl font-semibold"
-                            placeholder="0.00"
-                            placeholderTextColor="#999"
-                            keyboardType="numeric"
-                            returnKeyType="done"
-                            value={displayExpense}
-                            onChangeText={handleExpenseChange}
-                        />
+                    <View className="flex-1 flex-col items-end">
+                        <View className="flex-row items-center justify-end">
+                            <Text className="mr-2 text-gray-500">{currencyCode}</Text>
+                            <TextInput
+                                className="text-xl font-semibold"
+                                placeholder="0.00"
+                                placeholderTextColor="#999"
+                                keyboardType="numeric"
+                                returnKeyType="done"
+                                value={displayExpense}
+                                onChangeText={handleExpenseChange}
+                            />
+                        </View>
+                        {errorMessage !== '' && <Text className="mt-1 text-xs text-red-500">{errorMessage}</Text>}
                     </View>
                 </View>
                 {/* Select Expense type */}
@@ -435,7 +552,7 @@ const AddExpense = ({
                 >
                     <Iconify icon={expenseDetails.categoryIcon} className="text-black" size={24} />
                     <Text className={`text-sm text-gray-400 ${expenseDetails.category && 'font-bold text-black'}`}>
-                        {expenseDetails.category ? expenseDetails.displayCategory : 'Select item'}
+                        {expenseDetails.category ? expenseDetails.displayCategory : t('Select item')}
                     </Text>
                 </TouchableOpacity>
                 {/* Description */}
@@ -463,7 +580,7 @@ const AddExpense = ({
                     onPress={() => setCurrentView(AddExpenseSheetView.PAID_BY)}
                 >
                     <View className="flex-row items-center space-x-2">
-                        <Text className="font-bold">Paid by:</Text>
+                        <Text className="font-bold">{t('Paid by')}:</Text>
                         <Text className="text-gray-500">{expenseDetails.displayPayer}</Text>
                     </View>
                     <Iconify icon="mdi:chevron-right" className="text-black" size={24} />
@@ -473,7 +590,7 @@ const AddExpense = ({
                     onPress={() => setCurrentView(AddExpenseSheetView.SPLIT_BETWEEN)}
                 >
                     <View className="flex-row items-center space-x-2">
-                        <Text className="font-bold">Split:</Text>
+                        <Text className="font-bold">{t('Split')}:</Text>
                         <Text className="text-gray-500">{expenseDetails.displayTripExpenseSplitType}</Text>
                     </View>
                     <Iconify icon="mdi:chevron-right" className="text-black" size={24} />
@@ -483,13 +600,13 @@ const AddExpense = ({
                     onPress={() => setCurrentView(AddExpenseSheetView.SELECT_DATE)}
                 >
                     <View className="flex-row items-center space-x-2">
-                        <Text className="font-bold">Date:</Text>
+                        <Text className="font-bold">{t('Date')}:</Text>
                         <Text className="text-gray-500">{expenseDetails.date}</Text>
                     </View>
                     <Iconify icon="mdi:chevron-right" className="text-black" size={24} />
                 </TouchableOpacity>
             </View>
-            {isUpdateView && (
+            {isUpdateView ? (
                 <View className="flex-row justify-center">
                     <TouchableOpacity
                         className="mt-4 flex-row items-center justify-center rounded-full bg-gray-200 px-3 py-2"
@@ -497,8 +614,28 @@ const AddExpense = ({
                         disabled={isPending}
                     >
                         <Iconify icon="mdi:trash-can" className="text-gray-400" size={14} />
-                        <Text className="text-sm font-semibold text-gray-500">Delete</Text>
+                        <Text className="text-sm font-semibold text-gray-500">{t('Delete')}</Text>
                     </TouchableOpacity>
+                </View>
+            ) : (
+                <View className="flex-row justify-center">
+                    <TouchableOpacity
+                        className="mt-4 flex-row items-center justify-center rounded-full bg-gray-200 px-3 py-2"
+                        onPress={handleChoosePhoto}
+                        disabled={isPending}
+                    >
+                        <Iconify icon="mdi:camera-outline" className="text-gray-400" size={14} />
+                        <Text className="ml-1 text-sm font-semibold text-gray-500">{t('Add with your invoice')}</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+            {invoice !== '' && (
+                <View className="mt-4 px-4">
+                    <Image
+                        source={{ uri: invoice }}
+                        style={{ width: '100%', height: 200, borderRadius: 8 }}
+                        resizeMode="contain"
+                    />
                 </View>
             )}
         </View>
@@ -511,7 +648,8 @@ export const AddExpenseSheet = ({
     participants,
     currencyCode,
     closeSheet,
-    expenseId
+    expenseId,
+    isCreateNewExpense = false
 }: {
     tripId: number;
     currency: string;
@@ -519,7 +657,9 @@ export const AddExpenseSheet = ({
     currencyCode: string;
     closeSheet: () => void;
     expenseId?: number;
+    isCreateNewExpense?: boolean;
 }) => {
+    const { t } = useTranslation();
     const [currentView, setCurrentView] = useState<AddExpenseSheetView>(AddExpenseSheetView.ADD_EXPENSE);
     const [expenseDetails, setExpenseDetails] = useState<{
         expense: number;
@@ -557,13 +697,13 @@ export const AddExpenseSheet = ({
             setExpenseDetails((prevDetails) => ({
                 ...prevDetails,
                 payerId: user.id,
-                displayPayer: `You (${user.name})`
+                displayPayer: `${t('You')} (${user.name})`
             }));
         }
-    }, [user, isFetchingUser]);
+    }, [user, isFetchingUser, t]);
 
     useEffect(() => {
-        if (tripExpense && user) {
+        if (tripExpense && user && !isCreateNewExpense) {
             setExpenseDetails({
                 expense: tripExpense.expense,
                 category: tripExpense.tripExpenseType,
@@ -576,15 +716,31 @@ export const AddExpenseSheet = ({
                 tripExpenseSplitType:
                     TripExpenseSplitType[tripExpense.tripExpenseSplitType as keyof typeof TripExpenseSplitType],
                 displayTripExpenseSplitType:
-                    splitOptions.find((option) => option.type === tripExpense.tripExpenseSplitType)?.label ||
-                    "Don't split",
+                    t(splitOptions.find((option) => option.type === tripExpense.tripExpenseSplitType)?.label || '') ||
+                    t("Don't split"),
                 payerId: tripExpense.payerId,
-                displayPayer: user.id === tripExpense.payerId ? `You (${user.name})` : tripExpense.payer.name,
-                date: tripExpense.date ? convertDateStringFormat(tripExpense.date) : 'Optional',
+                displayPayer: user.id === tripExpense.payerId ? `${t('You')} (${user.name})` : tripExpense.payer.name,
+                date: tripExpense.date ? convertDateStringFormat(tripExpense.date) : t('Optional'),
                 tripExpenseIndividuals: tripExpense.tripExpenseIndividuals.map((ted: any) => ted.individualId) || []
             });
         }
-    }, [tripExpense, user, isFetchingUser]);
+
+        if (isCreateNewExpense) {
+            setExpenseDetails({
+                expense: 0,
+                category: undefined,
+                categoryIcon: 'mdi:help-circle-outline',
+                displayCategory: '',
+                description: '',
+                tripExpenseSplitType: TripExpenseSplitType.NONE,
+                displayTripExpenseSplitType: t("Don't split"),
+                payerId: 0,
+                displayPayer: '',
+                date: t('Optional'),
+                tripExpenseIndividuals: []
+            });
+        }
+    }, [tripExpense, user, isFetchingUser, isCreateNewExpense, t]);
 
     const handleExpense = useCallback(() => {
         if (!expenseDetails.expense || expenseDetails.expense <= 0) {
@@ -607,8 +763,9 @@ export const AddExpenseSheet = ({
                         tripExpenseType: expenseDetails.category,
                         payerId: expenseDetails.payerId,
                         details: expenseDetails.description,
-                        date: expenseDetails.date === 'Optional' ? undefined : expenseDetails.date,
-                        tripExpenseIndividuals: expenseDetails.tripExpenseIndividuals
+                        date: expenseDetails.date === t('Optional') ? undefined : expenseDetails.date,
+                        tripExpenseIndividuals: expenseDetails.tripExpenseIndividuals,
+                        currency
                     }
                 },
                 {
@@ -624,10 +781,10 @@ export const AddExpenseSheet = ({
                                         displayCategory: '',
                                         description: '',
                                         tripExpenseSplitType: TripExpenseSplitType.NONE,
-                                        displayTripExpenseSplitType: "Don't split",
+                                        displayTripExpenseSplitType: t("Don't split"),
                                         payerId: user.id,
-                                        displayPayer: `You (${user.name})`,
-                                        date: 'Optional',
+                                        displayPayer: `${t('You')} (${user.name})`,
+                                        date: t('Optional'),
                                         tripExpenseIndividuals: []
                                     });
                                     closeSheet();
@@ -647,8 +804,9 @@ export const AddExpenseSheet = ({
                         tripExpenseType: expenseDetails.category,
                         payerId: expenseDetails.payerId,
                         details: expenseDetails.description,
-                        date: expenseDetails.date === 'Optional' ? undefined : expenseDetails.date,
-                        tripExpenseIndividuals: expenseDetails.tripExpenseIndividuals
+                        date: expenseDetails.date === t('Optional') ? undefined : expenseDetails.date,
+                        tripExpenseIndividuals: expenseDetails.tripExpenseIndividuals,
+                        currency
                     }
                 },
                 {
@@ -664,10 +822,10 @@ export const AddExpenseSheet = ({
                                         displayCategory: '',
                                         description: '',
                                         tripExpenseSplitType: TripExpenseSplitType.NONE,
-                                        displayTripExpenseSplitType: "Don't split",
+                                        displayTripExpenseSplitType: t("Don't split"),
                                         payerId: user.id,
-                                        displayPayer: `You (${user.name})`,
-                                        date: 'Optional',
+                                        displayPayer: `${t('You')} (${user.name})`,
+                                        date: t('Optional'),
                                         tripExpenseIndividuals: []
                                     });
                                     closeSheet();
@@ -678,7 +836,7 @@ export const AddExpenseSheet = ({
                 }
             );
         }
-    }, [tripId, expenseDetails, createTripExpense, updateTripExpense, expenseId, closeSheet, user]);
+    }, [tripId, expenseDetails, createTripExpense, updateTripExpense, expenseId, closeSheet, user, currency, t]);
 
     const handleDeleteExpense = useCallback(() => {
         Alert.alert('Delete expense', 'Are you sure you want to delete this expense?', [
@@ -705,10 +863,10 @@ export const AddExpenseSheet = ({
                                                 displayCategory: '',
                                                 description: '',
                                                 tripExpenseSplitType: TripExpenseSplitType.NONE,
-                                                displayTripExpenseSplitType: "Don't split",
+                                                displayTripExpenseSplitType: t("Don't split"),
                                                 payerId: user.id,
-                                                displayPayer: `You (${user.name})`,
-                                                date: 'Optional',
+                                                displayPayer: `${t('You')} (${user.name})`,
+                                                date: t('Optional'),
                                                 tripExpenseIndividuals: []
                                             });
                                             closeSheet();
@@ -721,13 +879,14 @@ export const AddExpenseSheet = ({
                 }
             }
         ]);
-    }, [tripId, expenseId, deleteTripExpense, closeSheet, expenseDetails, user]);
+    }, [tripId, expenseId, deleteTripExpense, closeSheet, expenseDetails, user, t]);
 
     const renderContent = useCallback(() => {
         switch (currentView) {
             case AddExpenseSheetView.ADD_EXPENSE:
                 return (
                     <AddExpense
+                        tripId={tripId}
                         setCurrentView={setCurrentView}
                         expenseDetails={expenseDetails}
                         setExpenseDetails={setExpenseDetails}
@@ -789,7 +948,8 @@ export const AddExpenseSheet = ({
         handleExpense,
         expenseId,
         isPendingDeleteTripExpense,
-        handleDeleteExpense
+        handleDeleteExpense,
+        tripId
     ]);
 
     if (isFetchingUser || isFetchingTripExpense) {

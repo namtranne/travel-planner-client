@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Keyboard, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
@@ -5,16 +6,8 @@ import { useCreateTripOverviewSection } from '@/src/hooks/use-trip';
 import { SectionType } from '@/src/services/types';
 
 import Button from '../ui/CommonButton';
+import { AddReservationSheet } from './AddReservationSheet';
 import TripOverviewSection from './TripOverviewSection';
-
-const reservationData = [
-    { name: 'Flight', icon: 'mdi:airplane' },
-    { name: 'Lodging', icon: 'mdi:bed' },
-    { name: 'Rental car', icon: 'mdi:car' },
-    { name: 'Restaurant', icon: 'mdi:silverware-fork-knife' },
-    { name: 'Attachment', icon: 'mdi:paperclip' },
-    { name: 'Other', icon: 'mdi:dots-horizontal' }
-];
 
 export default function OverviewTab({
     trip,
@@ -29,48 +22,85 @@ export default function OverviewTab({
     setBottomSheetContent: (content: React.ReactNode) => void;
     setSnapPoints: (points: string[]) => void;
 }) {
+    const { t } = useTranslation();
     const { isPending, createTripOverviewSection } = useCreateTripOverviewSection();
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View className="py-4">
                 <View className="mb-4 border-y border-gray-200 bg-white p-4 shadow-sm">
-                    <Text className="mb-2 text-lg font-bold">Reservations and attachments</Text>
-                    <View className="flex-row flex-wrap justify-between">
-                        {reservationData.map((item, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                className="flex items-center"
-                                onPress={() => {
+                    <Text className="mb-2 text-lg font-bold">{t('Reservations and attachments')}</Text>
+                    <ScrollView className="flex-row space-x-6" horizontal showsHorizontalScrollIndicator>
+                        {[
+                            {
+                                name: t('Flight'),
+                                icon: 'mdi:airplane',
+                                handlePress: () => {
                                     setBottomSheetContent(
-                                        <View className="bg-white p-4">
-                                            <Text className="text-center text-base font-bold">
-                                                Reservations and attachments
-                                            </Text>
-                                            {reservationData
-                                                .concat([
-                                                    { name: 'Train', icon: 'mdi:train' },
-                                                    { name: 'Bus', icon: 'mdi:bus' },
-                                                    { name: 'Ferry', icon: 'mdi:ferry' },
-                                                    { name: 'Cruise', icon: 'mdi:ship-wheel' }
-                                                ])
-                                                .map((innerItem, innerIndex) => (
-                                                    <TouchableOpacity
-                                                        key={innerIndex}
-                                                        className="flex-row items-center py-2"
-                                                    >
-                                                        <Iconify
-                                                            icon={innerItem.icon}
-                                                            className="mr-4 text-xl text-black"
-                                                            color="black"
-                                                        />
-                                                        <Text className="flex-1 text-sm">{innerItem.name}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                        </View>
+                                        <AddReservationSheet reservationType="Flight" tripId={trip.id} />
                                     );
                                     openSheet();
-                                }}
-                            >
+                                    setSnapPoints(['70%']);
+                                }
+                            },
+                            {
+                                name: t('Cruise'),
+                                icon: 'mdi:ship-wheel',
+                                handlePress: () => {
+                                    setBottomSheetContent(
+                                        <AddReservationSheet reservationType="Cruise" tripId={trip.id} />
+                                    );
+                                    openSheet();
+                                    setSnapPoints(['70%']);
+                                }
+                            },
+                            {
+                                name: t('Bus'),
+                                icon: 'mdi:bus',
+                                handlePress: () => {
+                                    setBottomSheetContent(
+                                        <AddReservationSheet reservationType="Bus" tripId={trip.id} />
+                                    );
+                                    openSheet();
+                                    setSnapPoints(['70%']);
+                                }
+                            },
+                            {
+                                name: t('Ferry'),
+                                icon: 'mdi:ferry',
+                                handlePress: () => {
+                                    setBottomSheetContent(
+                                        <AddReservationSheet reservationType="Ferry" tripId={trip.id} />
+                                    );
+                                    openSheet();
+                                    setSnapPoints(['70%']);
+                                }
+                            },
+                            {
+                                name: t('Train'),
+                                icon: 'mdi:train',
+                                handlePress: () => {
+                                    setBottomSheetContent(
+                                        <AddReservationSheet reservationType="Train" tripId={trip.id} />
+                                    );
+                                    openSheet();
+                                    setSnapPoints(['70%']);
+                                }
+                            },
+                            {
+                                name: t('Lodging'),
+                                icon: 'mdi:bed',
+                                handlePress: () => {
+                                    setBottomSheetContent(
+                                        <AddReservationSheet reservationType="Lodging" tripId={trip.id} />
+                                    );
+                                    openSheet();
+                                    setSnapPoints(['70%']);
+                                }
+                            },
+                            { name: t('Restaurant'), icon: 'mdi:silverware-fork-knife' },
+                            { name: t('Attachment'), icon: 'mdi:paperclip' }
+                        ].map((item, index) => (
+                            <TouchableOpacity key={index} className="flex items-center" onPress={item.handlePress}>
                                 <Iconify
                                     icon={item.icon}
                                     size={24}
@@ -80,7 +110,7 @@ export default function OverviewTab({
                                 <Text className="mt-1 text-[10px]">{item.name}</Text>
                             </TouchableOpacity>
                         ))}
-                    </View>
+                    </ScrollView>
                 </View>
                 <ScrollView contentContainerStyle={{ paddingBottom: 200 }} keyboardShouldPersistTaps="handled">
                     {trip.tripOverview.sections.map((section: any) => (
@@ -97,7 +127,7 @@ export default function OverviewTab({
                     ))}
                     <View className="px-4">
                         <Button
-                            text="New section"
+                            text={t('New section')}
                             onPress={() =>
                                 createTripOverviewSection({
                                     tripId: trip.id,

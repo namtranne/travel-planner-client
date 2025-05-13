@@ -1,6 +1,7 @@
 import { Avatar } from '@rneui/base';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
     Alert,
@@ -33,6 +34,7 @@ export default function ProfileScreen() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [profile, setProfile] = useState(initialProfile);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (user) {
@@ -78,9 +80,9 @@ export default function ProfileScreen() {
     }
 
     const handleChoosePhoto = async () => {
-        Alert.alert('Upload Photo', 'Choose image source', [
+        Alert.alert(t('Upload Photo'), t('Choose image source'), [
             {
-                text: 'Take a photo',
+                text: t('Take a photo'),
                 onPress: async () => {
                     const { status } = await ImagePicker.requestCameraPermissionsAsync();
                     if (status !== 'granted') {
@@ -102,7 +104,7 @@ export default function ProfileScreen() {
                 }
             },
             {
-                text: 'Choose from library',
+                text: t('Choose from library'),
                 onPress: async () => {
                     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
                     if (status !== 'granted') {
@@ -122,7 +124,7 @@ export default function ProfileScreen() {
                     }
                 }
             },
-            { text: 'Cancel', style: 'cancel' }
+            { text: t('Cancel'), style: 'cancel' }
         ]);
     };
 
@@ -130,7 +132,7 @@ export default function ProfileScreen() {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <ScrollView className="flex-1 bg-gray-50">
                 <SafeAreaView>
-                    <HeaderComponent title="Profile" hasBackButton backPath="/home-tabs/account" />
+                    <HeaderComponent title={t('Profile')} hasBackButton backPath="/home-tabs/account" />
                     <View className="w-full px-6 pt-4">
                         <View className="relative mt-6 items-center">
                             <Avatar
@@ -161,11 +163,11 @@ export default function ProfileScreen() {
 
                         <View className="mt-8 space-y-6">
                             {Object.keys(profile)
-                                .filter((key) => key !== 'AvatarUrl') // Không hiển thị field AvatarUrl ở đây
+                                .filter((key) => key !== 'AvatarUrl')
                                 .map((key) => (
                                     <View key={key} className="space-y-2">
                                         <Text className="text-sm font-semibold text-gray-600">
-                                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                                            {t(key.replace(/([A-Z])/g, ' $1').trim())}
                                         </Text>
                                         {isEditing ? (
                                             <TextInput
@@ -187,12 +189,12 @@ export default function ProfileScreen() {
                             {isEditing ? (
                                 <>
                                     <Button
-                                        text="Cancel"
+                                        text={t('Cancel')}
                                         onPress={handleCancel}
                                         additionalStyle="bg-gray-500 w-[150px]"
                                     />
                                     <Button
-                                        text="Save"
+                                        text={t('Save')}
                                         onPress={handleSave}
                                         additionalStyle="bg-[#60ABEF] w-[150px]"
                                         isPending={isPending}
@@ -200,7 +202,7 @@ export default function ProfileScreen() {
                                 </>
                             ) : (
                                 <Button
-                                    text="Edit"
+                                    text={t('Edit')}
                                     onPress={() => setIsEditing(true)}
                                     additionalStyle="bg-[#60ABEF] w-[150px]"
                                 />

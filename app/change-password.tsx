@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Alert,
     Keyboard,
@@ -22,6 +23,7 @@ const ChangePasswordScreen = () => {
     const [newPassword, setNewPassword] = useState('');
     const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
     const { changePassword, isPending } = useChangePassword();
+    const { t } = useTranslation();
 
     const handleChangePassword = () => {
         if (!oldPassword || !newPassword || !newPasswordConfirm) {
@@ -65,32 +67,32 @@ const ChangePasswordScreen = () => {
                     <ScrollView showsHorizontalScrollIndicator={false}>
                         <SafeAreaView>
                             <BackButton />
-                            <HeaderComponent title="Password & Security" hasBackButton={false} />
+                            <HeaderComponent title={t('Password & Security')} hasBackButton={false} />
                             <View className="w-full flex-1 px-6 pt-4">
-                                <Text className="mb-1 font-semibold">Current Password</Text>
+                                <Text className="mb-1 font-semibold">{t('Current Password')}</Text>
                                 <AuthInputField
-                                    placeholder="Enter old password"
+                                    placeholder={t('Enter old password')}
                                     value={oldPassword}
                                     onChangeText={setOldPassword}
                                     secureTextEntry
                                 />
-                                <Text className="mb-1 mt-4 font-semibold">New Password</Text>
+                                <Text className="mb-1 mt-4 font-semibold">{t('New Password')}</Text>
                                 <AuthInputField
-                                    placeholder="Enter New Password"
+                                    placeholder={t('Enter New Password')}
                                     value={newPassword}
                                     onChangeText={setNewPassword}
                                     secureTextEntry
                                 />
-                                <Text className="mb-1 mt-4 font-semibold">Confirm New Password</Text>
+                                <Text className="mb-1 mt-4 font-semibold">{t('Confirm New Password')}</Text>
                                 <AuthInputField
-                                    placeholder="Confirm New Password"
+                                    placeholder={t('Confirm New Password')}
                                     value={newPasswordConfirm}
                                     onChangeText={setNewPasswordConfirm}
                                     secureTextEntry
                                 />
                                 <View className="flex flex-row items-center justify-center">
                                     <Button
-                                        text="Change Password"
+                                        text={t('Change Password')}
                                         onPress={handleChangePassword}
                                         additionalStyle="bg-[#60ABEF] w-[200px] mt-6"
                                         isPending={isPending}

@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
@@ -23,6 +24,7 @@ export default function ItineraryScreen({
     setSnapPoints: (points: string[]) => void;
     setOnEnteringDate?: (value: boolean) => void;
 }) {
+    const { t } = useTranslation();
     const [selectedDayId, setSelectedDayId] = useState(trip?.tripItinerary?.days[0].id);
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -106,20 +108,21 @@ export default function ItineraryScreen({
             >
                 <View className="flex-1 items-center justify-center bg-black/50">
                     <View className="w-11/12 rounded-xl bg-white p-6">
-                        <Text className="mb-4 text-lg font-semibold text-gray-800">Fill itinerary with AI?</Text>
+                        <Text className="mb-4 text-lg font-semibold text-gray-800">{t('Fill itinerary with AI?')}</Text>
                         <Text className="mb-6 text-gray-600">
-                            This will automatically populate your itinerary for all days using AI. Do you want to
-                            continue?
+                            {t(
+                                'This will automatically populate your itinerary for all days using AI. Do you want to continue?'
+                            )}
                         </Text>
                         <View className="flex-row justify-end space-x-3">
                             <TouchableOpacity
                                 onPress={() => setModalVisible(false)}
                                 disabled={isPendingAutofillTripItinerary}
                             >
-                                <Text className="text-gray-500">Cancel</Text>
+                                <Text className="text-gray-500">{t('Cancel')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleAutoFill} disabled={isPendingAutofillTripItinerary}>
-                                <Text className="font-semibold text-[#ffaaec]">Yes, do it</Text>
+                                <Text className="font-semibold text-[#ffaaec]">{t('Yes, do it')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

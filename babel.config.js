@@ -153,7 +153,14 @@ module.exports = (api) => {
                         'codicon:send',
                         'mdi:remove',
                         'mdi:map-outline',
-                        'mdi:arrow-left'
+                        'mdi:arrow-left',
+                        'material-symbols:mail-outline',
+                        'mdi:arrow-right',
+                        'mdi:content-copy',
+                        'material-symbols:directions',
+                        'mdi:map',
+                        'mdi:camera-outline',
+                        'hugeicons:transaction'
                     ]
                 }
             ]

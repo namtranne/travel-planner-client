@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Iconify from 'react-native-iconify';
 
@@ -18,6 +19,7 @@ const SearchPlaceSheet = ({
     dayId?: number;
     closeSheet: () => void;
 }) => {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const { searchPlaces, data: results, isPending: isLoadingSearchedPlaces, error } = useSearchPlaces();
@@ -60,11 +62,11 @@ const SearchPlaceSheet = ({
 
     return (
         <View className="px-5 pb-6 pt-2">
-            <Text className="text-center text-base font-bold">Add a place</Text>
+            <Text className="text-center text-base font-bold">{t('Add a place')}</Text>
             {/* Search Input */}
             <View className="mt-4 flex-row items-center rounded-lg bg-gray-100 px-4">
                 <TextInput
-                    placeholder="Search by name or address"
+                    placeholder={t('Search by name or address')}
                     className="flex-1 py-4 text-xs text-gray-600"
                     value={searchQuery}
                     onChangeText={handleSearch}
@@ -136,9 +138,9 @@ const SearchPlaceSheet = ({
             {/* "Explore Guides" Button */}
             {!isLoadingSearchedPlaces && !searchQuery && (
                 <View className="mt-12 items-center">
-                    <Text className="text-center text-gray-500">Need more ideas?</Text>
+                    <Text className="text-center text-gray-500">{t('Need more ideas')}?</Text>
                     <Button
-                        text="Explore guides and blogs"
+                        text={t('Explore guides and blogs')}
                         onPress={() => {}}
                         additionalStyle="mt-2 bg-[#60ABEF] w-[250px] rounded-xl"
                     />
