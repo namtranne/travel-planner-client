@@ -83,6 +83,21 @@ export const getDaysAgo = (dateString: string) => {
     return diffDays === 0 ? 'Today' : `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 };
 
+export const convertToNotificationDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    };
+    const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+    const [month, day, year, hour, minute] = formattedDate.split(/[\s,/:]+/);
+    return `${day}/${month}/${year} ${hour}:${minute}`;
+};
+
 type OpeningPeriod = {
     openDay: number;
     openTime: string;

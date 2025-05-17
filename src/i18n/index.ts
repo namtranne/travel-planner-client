@@ -192,7 +192,12 @@ const resources = {
             money: 'money',
             Get: 'Get',
             'Mark as paid': 'Mark as paid',
-            'Please enter a valid amount': 'Please enter a valid amount'
+            'Please enter a valid amount': 'Please enter a valid amount',
+            Notifications: 'Notifications',
+            Unread: 'Unread',
+            Read: 'Read',
+            'No unread notifications': 'No unread notifications',
+            'No read notifications': 'No read notifications'
         }
     },
     vi: {
@@ -383,7 +388,12 @@ const resources = {
             money: 'tiền',
             Get: 'Nhận',
             'Mark as paid': 'Đánh dấu là đã thanh toán',
-            'Please enter a valid amount': 'Nhập số tiền hợp lệ'
+            'Please enter a valid amount': 'Nhập số tiền hợp lệ',
+            Notifications: 'Thông báo',
+            Unread: 'Chưa đọc',
+            Read: 'Đã đọc',
+            'No unread notifications': 'Không có thông báo chưa đọc',
+            'No read notifications': 'Không có thông báo đã đọc'
         }
     },
     zh: {
@@ -574,7 +584,12 @@ const resources = {
             money: '钱',
             Get: '获取',
             'Mark as paid': '标记为已支付',
-            'Please enter a valid amount': '输入有效金额'
+            'Please enter a valid amount': '输入有效金额',
+            Notifications: '通知',
+            Unread: '未读',
+            Read: '已读',
+            'No unread notifications': '没有未读通知',
+            'No read notifications': '没有已读通知'
         }
     }
 };
