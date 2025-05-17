@@ -152,6 +152,8 @@ module.exports = (api) => {
                         'flowbite:user-add-solid',
                         'codicon:send',
                         'mdi:remove',
+                        'mdi:map-outline',
+                        'mdi:arrow-left',
                         'material-symbols:mail-outline',
                         'mdi:arrow-right',
                         'mdi:content-copy',
